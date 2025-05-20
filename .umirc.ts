@@ -16,8 +16,10 @@ export default defineConfig({
       routes: [
         { path: "/", component: "@/pages/index", },
         { path: 'questions', component: "@/pages/Questions/index", },
+        {path: "tags", component: "@/pages/Tags/index",},
       ],
     },
+
     {
       path: "*",
       component: "@/pages/404",
@@ -26,9 +28,6 @@ export default defineConfig({
 
   npmClient: "npm",
   tailwindcss: {},
-  plugins: [
-    "@umijs/plugins/dist/model", // 
-    "@umijs/plugins/dist/tailwindcss"
-  ],
+  plugins: ["@umijs/plugins/dist/model", "@umijs/plugins/dist/tailwindcss"],
   model: {},
 });
