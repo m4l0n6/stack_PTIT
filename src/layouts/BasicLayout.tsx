@@ -48,7 +48,7 @@ const sider: MenuProps["items"] = [
   {
     key: "sub3",
     icon: <TagsOutlined />,
-    label: <Link to="/tags">Tags</Link>,
+    label: <Link to="/tags">Từ khóa</Link>,
   },
 ];
 
