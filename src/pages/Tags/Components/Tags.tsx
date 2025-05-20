@@ -1,15 +1,12 @@
 import React from 'react';
 import { Card, Tag as AntTag, Typography, Space } from 'antd';
+import { Tag } from '@/services/Tags/typing';
+
 const { Text } = Typography;
 
-export interface TagItem {
-  name: string;
-  count: number;
-  description: string;
-}
 
 // Component for individual tag card
-const Tags: React.FC<{ tag: TagItem }> = ({ tag }) => {
+const Tags: React.FC<{ tag: Tag }> = ({ tag }) => {
   return (
     <Card
       hoverable

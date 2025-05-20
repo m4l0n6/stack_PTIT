@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Layout, Row, Col, Typography, Input, Button, Space, Pagination } from 'antd';
-import Tags, { TagItem } from './Components/Tags';
+import Tags from './components/Tags';
+import { Tag } from '@/services/Tags/typing';
 
 const { Content } = Layout;
 const { Title } = Typography;
 
 // Function to generate fake tags data
-const generateFakeTags = (): TagItem[] => {
-  const tags: TagItem[] = [];
+const generateFakeTags = (): Tag[] => {
+  const tags: Tag[] = [];
   const baseTags = ['javascript', 'python', 'java', 'c#', 'php', 'android', 'html', 'jquery', 'c++', 'css', 'ios', 'sql'];
   for (let i = 0; i < 50; i++) {
     const randomBaseTag = baseTags[Math.floor(Math.random() * baseTags.length)];
@@ -21,7 +22,7 @@ const generateFakeTags = (): TagItem[] => {
 };
 
 const TagsPage: React.FC = () => {
-  const [tags] = useState<TagItem[]>(generateFakeTags());
+  const [tags] = useState<Tag[]>(generateFakeTags());
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12; // Số lượng thẻ mỗi trang

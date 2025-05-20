@@ -1,28 +1,15 @@
 import { Avatar, Card, Space, Tag, Typography, Tooltip } from "antd";
 import { Link } from "umi";
 import React from "react";
+import { Question } from "@/services/Questions/typing";
 
 const { Title, Text, Paragraph } = Typography;
 
 interface QuestionProps {
-  question: {
-    id: number;
-    title: string;
-    content: string;
-    tags: string[];
-    user: {
-      id: number;
-      name: string;
-      avatar: string;
-    };
-    createdAt: string;
-    voteCount: number;
-    answerCount: number;
-    viewCount: number;
-  };
+  question: Question;
 }
 
-const Question: React.FC<QuestionProps> = ({ question }) => {
+const QuestionCard: React.FC<QuestionProps> = ({ question }) => {
   return (
     <Card
       className="mb-3 rounded-lg"
@@ -57,7 +44,7 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
 
         {/* Content column */}
         <div className="flex-1">
-          <Link to={`/questions/${question.id}`}>
+          <Link to={`/question/${question.id}`}>
             <Title
               level={4}
               className="mt-0 mb-2 hover:text-[#1890ff]"
@@ -98,4 +85,4 @@ const Question: React.FC<QuestionProps> = ({ question }) => {
   );
 };
 
-export default Question;
+export default QuestionCard;
