@@ -26,6 +26,9 @@ export default defineConfig({
 
   npmClient: "npm",
   tailwindcss: {},
-  plugins: ["@umijs/plugins/dist/model", "@umijs/plugins/dist/tailwindcss"],
+  plugins: [
+    "@umijs/plugins/dist/model", // 
+    "@umijs/plugins/dist/tailwindcss"
+  ],
   model: {},
 });
