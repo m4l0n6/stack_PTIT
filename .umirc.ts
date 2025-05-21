@@ -4,19 +4,25 @@ export default defineConfig({
   routes: [
     {
       path: "/login",
-      component: "@/pages/Login/index",
+      component: "@/pages/Auth/Login/index",
     },
     {
       path: "/register",
-      component: "@/pages/Resgister/index",
+      component: "@/pages//Auth/Resgister/index",
     },
     {
       path: "/",
       component: "@/layouts/BasicLayout",
       routes: [
-        { path: "/", component: "@/pages/index", },
-        { path: 'questions', component: "@/pages/Questions/index", },
-        { path: "tags", component: "@/pages/Tags/index", },
+        { path: "/", component: "@/pages/index" },
+        { path: "questions", component: "@/pages/Questions/index" },
+        { path: "tags", component: "@/pages/Tags/index" },
+        {
+          path: "ask",
+          component: "@/pages/Question/Create",
+          wrappers: ["@/wrappers/auth"],
+        },
+        { path: "profile", component: "@/pages/Profile/index" },
       ],
     },
 
@@ -30,4 +36,7 @@ export default defineConfig({
   tailwindcss: {},
   plugins: ["@umijs/plugins/dist/model", "@umijs/plugins/dist/tailwindcss"],
   model: {},
+  mock: {
+    include: ["src/mock/**/*.ts"],
+  },
 });

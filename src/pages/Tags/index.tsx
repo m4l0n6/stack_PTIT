@@ -58,11 +58,19 @@ const TagsPage: React.FC = () => {
       </Space>
 
       <Row gutter={[24, 24]}>
-        {paginatedTags.map((tag) => (
-          <Col key={tag.name} xs={24} sm={12} md={8} lg={6}>
-            <Tags tag={tag} />
+        {paginatedTags.length > 0 ? (
+          paginatedTags.map((tag) => (
+            <Col key={tag.name} xs={24} sm={12} md={8} lg={6}>
+              <Tags tag={tag} />
+            </Col>
+          ))
+        ) : (
+          <Col span={24} className='text-center'>
+            <Typography.Text type="secondary">
+              No tags found
+            </Typography.Text>
           </Col>
-        ))}
+        )}
       </Row>
       
       <Pagination

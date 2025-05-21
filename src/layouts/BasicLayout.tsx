@@ -1,20 +1,16 @@
-import React from "react";
-import { Link, Outlet, history, useLocation } from "umi";
+import React, { useState, useEffect } from "react";
+import { Link, Outlet, history, useModel } from "umi";
 import {
   LaptopOutlined,
-  NotificationOutlined,
   UserOutlined,
   HomeOutlined,
   FileTextOutlined,
-  ShoppingOutlined,
   SettingOutlined,
-  TeamOutlined,
-  BookOutlined,
-  AppstoreOutlined,
-  TagsOutlined
+  TagsOutlined,
+  LogoutOutlined
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Breadcrumb, Layout, Menu, theme, Input, Button } from "antd";
+import { Breadcrumb, Layout, Menu, theme, Input, Button, Avatar, Dropdown } from "antd";
 
 const { Header, Content, Sider, Footer } = Layout;
 const { Search } = Input;
@@ -56,7 +52,27 @@ export default function AppLayout() {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const location = useLocation();
+
+  const { user, handleLogout, loadUserFromStorage } = useModel('user');
+
+  useEffect(() => {
+    loadUserFromStorage();
+  }, [loadUserFromStorage]);
+
+  const userMenu: MenuProps['items'] = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: 'Hồ sơ',
+      onClick: () => history.push('/profile'),
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Đăng xuất',
+      onClick: handleLogout,
+    },
+  ];
   
   return (
     <Layout className="min-h-screen">
@@ -74,7 +90,7 @@ export default function AppLayout() {
           defaultSelectedKeys={["1"]}
           items={header}
           className="flex-1 min-w-0"
-        />
+        />        
         <Search
           placeholder="Search"
           allowClear
@@ -84,20 +100,35 @@ export default function AppLayout() {
           onSearch={(value) => console.log(value)}
         />
         <div>
-          <Button
-            type="primary"
-            style={{ marginLeft: "16px" }}
-            onClick={() => history.push("/login")}
-          >
-            Log In
-          </Button>
-          <Button
-            type="default"
-            style={{ marginLeft: "8px" }}
-            onClick={() => history.push("/register")}
-          >
-            Sign Up
-          </Button>
+          {user ? (
+            <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+              <div className="flex items-center ml-4 cursor-pointer">
+                <Avatar 
+                  style={{ backgroundColor: '#1677ff' }} 
+                  icon={<UserOutlined />}
+                  src={user.avatar}
+                />
+                <span className="ml-2 text-white">{user.name}</span>
+              </div>
+            </Dropdown>
+          ) : (
+            <>
+              <Button
+                type="primary"
+                style={{ marginLeft: "8px" }}
+                onClick={() => history.push("/login")}
+              >
+                Log In
+              </Button>
+              <Button
+                type="default"
+                style={{ marginLeft: "8px" }}
+                onClick={() => history.push("/register")}
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
       </Header>
       <Layout>

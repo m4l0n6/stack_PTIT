@@ -9,7 +9,8 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "umi": "^4.4.11"
+    "umi": "^4.4.11",
+    "umi-request": "^1.4.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.33",

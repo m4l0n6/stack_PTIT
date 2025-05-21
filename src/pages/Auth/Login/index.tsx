@@ -1,19 +1,39 @@
-import React from "react";
-import { Form, Input, Button, Card, Layout, Space } from "antd";
+import React, { useState } from "react";
+import { Form, Input, Button, Card, Layout, Space, message } from "antd";
 import {
   UserOutlined,
   LockOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { Link } from "umi";
-import FormItem from "antd/es/form/FormItem";
+import { Link, useModel } from "umi";
+import { login } from "@/services/auth";
+import { history } from "umi";
 
 const { Header, Content } = Layout;
 
-const LoginPage = () => {
-  const onFinish = (values: any) => {
-    console.log("Received values:", values);
-    // Add your login logic here
+const LoginPage: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useModel('user');
+
+  const onFinish = async (values: any) => {
+    setLoading(true);
+    try {
+      const res = await login(values);
+      if (res.success) {
+        localStorage.setItem("token", res.data.token);
+        setUser(res.data.user);
+        message.success("Đăng nhập thành công");
+        if (res.data.user.role === "admin") {
+          history.push("/admin");
+        } else {
+          history.push("/");
+        }
+      }
+    } catch (err: any) {
+      message.error(err?.data?.message || "Lỗi đăng nhập");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,22 +51,19 @@ const LoginPage = () => {
             onFinish={onFinish}
           >
             <Form.Item
+              label="Email"
               name="email"
               rules={[{ required: true, message: "Please input your email!" }]}
             >
-              <h1 className="mb-2 font-bold text-ms text-left">Email</h1>
               <Input prefix={<UserOutlined />} placeholder="Email" />
             </Form.Item>
             <Form.Item
+              label="Password"
               name="password"
               rules={[
                 { required: true, message: "Please input your Password!" },
               ]}
             >
-              <div className="flex justify-between text-ms">
-                <h1 className="mb-2 font-bold">Password</h1>
-                <Link to="/forgot-password">Forgot password?</Link>
-              </div>
               <Input.Password
                 prefix={<LockOutlined />}
                 type="password"
@@ -55,7 +72,13 @@ const LoginPage = () => {
             </Form.Item>
             <Form.Item>
               <Space direction="vertical" className="w-full">
-                <Button type="primary" htmlType="submit" className="w-full">
+                <Button
+                  loading={loading}
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  className="w-full"
+                >
                   Log in
                 </Button>
                 <div>

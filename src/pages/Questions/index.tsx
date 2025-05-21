@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Select } from "antd";
 import Question from "./components/Question";
-
+import { Link } from "umi";
 
 const QuestionPage = () => {
   const questionList = [
@@ -40,12 +40,14 @@ const QuestionPage = () => {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h1 className="mb-2 font-bold text-3xl">Câu hỏi từ cộng đồng</h1>
-        <Button
-          type="primary"
-          onClick={() => console.log("Create new question")}
-        >
-          + Đặt câu hỏi
-        </Button>
+        <Link to="/ask">
+          <Button
+            type="primary"
+            onClick={() => console.log("Create new question")}
+          >
+            + Đặt câu hỏi
+          </Button>
+        </Link>
       </div>
       <div>
         <h3 className="mb-4">Số lượng câu hỏi: {questionList.length}</h3>

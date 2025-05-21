@@ -1,4 +1,5 @@
-import { Form, Input, Button, Card, Layout, Divider, Space } from "antd";
+import { Form, Input, Button, Card, Layout, Divider, Space, message } from "antd";
+import React, { useState } from "react";
 import {
   UserOutlined,
   LockOutlined,
@@ -6,13 +7,42 @@ import {
   FacebookOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
-import { Link } from "umi";
+import { Link, useModel, history } from "umi";
+import { register } from "@/services/auth";
 
 const { Header, Content } = Layout;
 
 const RegisterPage = () => {
-  const onFinish = (values: any) => {
-    console.log("Received values:", values);
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useModel('user');
+
+  const onFinish = async (values: any) => {
+    if (values.password !== values.confirmPassword) {
+      message.error("Mật khẩu xác nhận không khớp!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await register({
+        email: values.email,
+        password: values.password,
+        name: values.username,
+        role: "student" // Default role
+      });
+      
+      if (res.success) {
+        localStorage.setItem("token", res.data.token);
+        // Use our new model function to set user in both localStorage and state
+        setUser(res.data.user);
+        message.success("Đăng ký thành công");
+        history.push("/");
+      }
+    } catch (err: any) {
+      message.error(err?.data?.message || "Lỗi đăng ký");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,24 +108,22 @@ const RegisterPage = () => {
                 prefix={<LockOutlined />}
                 type="password"
                 placeholder="Password"
-              />
-            </Form.Item>
+              />            </Form.Item>
             <Form.Item
-              name="password"
+              name="confirmPassword"
               rules={[
-                { required: true, message: "Please input your Password!" },
+                { required: true, message: "Please confirm your password!" },
               ]}
-            >
-              <h1 className="mb-2 font-bold text-ms text-left">Comfirm Password</h1>
+            >              <h1 className="mb-2 font-bold text-ms text-left">Confirm Password</h1>
               <Input.Password
                 prefix={<LockOutlined />}
                 type="password"
-                placeholder="Comfirm Password"
+                placeholder="Confirm Password"
               />
             </Form.Item>
             <Form.Item>
               <Space direction="vertical" className="w-full">
-                <Button type="primary" htmlType="submit" className="w-full">
+                <Button type="primary" htmlType="submit" loading={loading} className="w-full">
                   Sign up
                 </Button>
                 <div>

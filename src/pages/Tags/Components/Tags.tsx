@@ -4,30 +4,16 @@ import { Tag } from '@/services/Tags/typing';
 
 const { Text } = Typography;
 
-
-// Component for individual tag card
-const Tags: React.FC<{ tag: Tag }> = ({ tag }) => {
+const TagCard: React.FC<{ tag: Tag }> = ({ tag }) => {
   return (
     <Card
       hoverable
-      style={{
-        height: 200,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        background: '#fff',
-        borderRadius: 8,
-        border: '1px solid #e8e8e8',
-      }}
+      className='flex flex-col justify-between bg-white border border-[#e8e8e8] rounded-lg h-[200px]'
     >
-      <Space direction="vertical" style={{ width: '100%' }}>
+      <Space direction="vertical" className='w-full'>
         <AntTag
-          style={{
-            fontSize: 16,
-            borderRadius: 4,
-            padding: '2px 8px',
-          }}
           color='blue'
+          className='px-2 py-1 rounded-lg text-sm'
         >
           {tag.name}
         </AntTag>
@@ -49,4 +35,4 @@ const Tags: React.FC<{ tag: Tag }> = ({ tag }) => {
   );
 };
 
-export default Tags;
+export default TagCard;
