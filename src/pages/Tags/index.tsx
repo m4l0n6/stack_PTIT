@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layout, Row, Col, Typography, Input, Button, Space, Pagination } from 'antd';
-import Tags from '@/pages/Tags/Components/Tags';
+import Tags from './components/Tags';
 import { Tag } from '@/services/Tags/typing';
 
 const { Content } = Layout;

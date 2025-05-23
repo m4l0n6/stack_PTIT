@@ -1,20 +1,6 @@
 import request from "umi-request";
 
-interface AuthResponse {
-  success: boolean;
-  data: {
-    token: string;
-    user: {
-      id: number;
-      name: string;
-      email: string;
-      role: string;
-    };
-  };
-  message?: string;
-}
-
-export function login(data: { email: string; password: string }): Promise<AuthResponse> {
+export function login(data: { email: string; password: string }) {
   return request("/api/login", {
     method: "POST",
     data,
@@ -30,7 +16,7 @@ export function register(data: {
   password: string;
   name: string;
   role: string;
-}): Promise<AuthResponse> {
+}) {
   return request("/api/register", {
     method: "POST",
     data,

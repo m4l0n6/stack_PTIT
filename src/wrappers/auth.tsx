@@ -20,7 +20,7 @@ export default (props: any) => {
     }
     
     setIsLoading(false);
-  }, [loadUserFromStorage]);
+  }, [loadUserFromStorage, user]);
 
   if (isLoading) {
     return <div>Loading...</div>;

@@ -8,7 +8,7 @@ export default defineConfig({
     },
     {
       path: "/register",
-      component: "@/pages/Auth/Register/index",
+      component: "@/pages//Auth/Resgister/index",
     },
     {
       path: "/",
@@ -16,7 +16,6 @@ export default defineConfig({
       routes: [
         { path: "/", component: "@/pages/index" },
         { path: "questions", component: "@/pages/Questions/index" },
-        { path: "question/:id", component: "@/pages/Question/Detail" },
         { path: "tags", component: "@/pages/Tags/index" },
         {
           path: "ask",

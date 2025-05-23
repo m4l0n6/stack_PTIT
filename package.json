@@ -9,7 +9,6 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "@tinymce/tinymce-react": "^6.1.0",
     "umi": "^4.4.11",
     "umi-request": "^1.4.0"
   },
