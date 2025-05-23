@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { history } from "umi";
+import { message } from "antd";
 
 export default () => {
   const [user, setUser] = useState<any>(null);
@@ -41,7 +42,8 @@ export default () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-    history.push("/login");
+    message.success("Đăng xuất thành công");
+    history.push("/");
   };
 
   // Function to set user data in both state and localStorage

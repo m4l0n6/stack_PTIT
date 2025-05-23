@@ -1,0 +1,117 @@
+import React, { useState } from "react";
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UploadOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  BarChartOutlined
+} from "@ant-design/icons";
+import { Button, Layout, Menu, theme, Dropdown, Avatar } from "antd";
+import type { MenuProps } from "antd";
+import { Outlet, Link } from "umi";
+import { useModel } from "umi";
+
+const { Header, Sider, Content } = Layout;
+
+const AdminLayout: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
+const { user, handleLogout } = useModel("user");
+
+const userMenu: MenuProps["items"] = [
+  {
+    key: "profile",
+    icon: <UserOutlined />,
+    label: "Hồ sơ",
+    // onClick: () => history.push("/profile"),
+  },
+  {
+    key: "logout",
+    icon: <LogoutOutlined className="text-red-500" />,
+    label: <div className="text-red-500">Đăng xuất</div>,
+    onClick: handleLogout,
+  },
+];
+
+  return (
+    <Layout className="min-h-screen">
+      <Sider trigger={null} collapsible collapsed={collapsed}>
+        <div className="flex justify-center items-center p-4">
+          <h1 className="text-white text-2xl">stack PTIT</h1>
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={["1"]}
+          items={[
+            {
+              key: "1",
+              icon: <BarChartOutlined />,
+              label: <Link to="/admin/dashboard">Bảng điều kiển</Link>,
+            },
+            {
+              key: "2",
+              icon: <UserOutlined/>,
+              label: "Người dùng",
+            },
+            {
+              key: "3",
+              icon: <UploadOutlined />,
+              label: "Câu hỏi",
+            },
+          ]}
+        />
+      </Sider>
+      <Layout>
+        <Header
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingInline: "20px ",
+          }}
+        >
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              fontSize: "16px",
+              width: 64,
+              height: 64,
+            }}
+          />
+          <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+            <div className="flex items-center ml-4 cursor-pointer">
+              <Avatar
+                style={{ backgroundColor: "#1677ff" }}
+                icon={<UserOutlined />}
+                src={user.avatar}
+              />
+              <span className="ml-2">{user.name}</span>
+            </div>
+          </Dropdown>
+        </Header>
+        <Content
+          style={{
+            margin: "24px 16px",
+            padding: 24,
+            minHeight: 280,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <Outlet />
+        </Content>
+      </Layout>
+    </Layout>
+  );
+};
+
+export default AdminLayout;

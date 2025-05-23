@@ -68,8 +68,8 @@ export default function AppLayout() {
     },
     {
       key: 'logout',
-      icon: <LogoutOutlined />,
-      label: 'Đăng xuất',
+      icon: <LogoutOutlined className="text-red-500"/>,
+      label: <p className="text-red-500">Đăng xuất</p>,
       onClick: handleLogout,
     },
   ];

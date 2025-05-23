@@ -25,7 +25,14 @@ export default defineConfig({
         { path: "profile", component: "@/pages/Profile/index" },
       ],
     },
-
+    {
+      path: "admin",
+      component: "@/layouts/AdminLayout",
+      routes: [
+        { path: "Dashboard", component: "@/pages/Admin/Dashboard" },
+      ],
+      wrappers: ["@/wrappers/auth"],
+    },
     {
       path: "*",
       component: "@/pages/404",
