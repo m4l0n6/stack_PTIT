@@ -17,6 +17,7 @@ export default defineConfig({
         { path: "/", component: "@/pages/index" },
         { path: "questions", component: "@/pages/Questions/index" },
         { path: "tags", component: "@/pages/Tags/index" },
+        { path: "question/:id", component: "@/pages/Question/Detail" },
         {
           path: "ask",
           component: "@/pages/Question/Create",

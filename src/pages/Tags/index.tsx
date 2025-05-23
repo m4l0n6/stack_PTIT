@@ -6,7 +6,7 @@ import { Tag } from '@/services/Tags/typing';
 const { Content } = Layout;
 const { Title } = Typography;
 
-// Function to generate fake tags data
+
 const generateFakeTags = (): Tag[] => {
   const tags: Tag[] = [];
   const baseTags = ['javascript', 'python', 'java', 'c#', 'php', 'android', 'html', 'jquery', 'c++', 'css', 'ios', 'sql'];
