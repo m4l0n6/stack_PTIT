@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Card, Layout, Divider, message } from "antd";
 import {
-  UserOutlined,
-  LockOutlined,
   GoogleOutlined,
   FacebookOutlined,
   GithubOutlined,
@@ -39,34 +37,34 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Layout className="min-h-screen bg-gray-50">
+    <Layout className="bg-gray-50 min-h-screen">
       <Header className="flex items-center bg-white shadow-sm">
         <Link to="/" className="flex items-center">
-          <h1 className="text-blue-700 text-3xl font-bold">stack PTIT</h1>
+          <h1 className="font-bold text-blue-700 text-3xl">stack PTIT</h1>
         </Link>
       </Header>
       <Content className="flex justify-center items-center p-6">
         <Card 
           title="Đăng nhập vào Stack PTIT"
-          className="w-full max-w-md login-card shadow-md"
+          className="shadow-md w-full max-w-md login-card"
           headStyle={{ fontSize: "20px", textAlign: "center", fontWeight: "bold" }}
         >
           <div className="flex gap-2 mb-4">
             <Button
               type="default"
-              className="flex justify-center items-center bg-[#db4437] h-10 text-white hover:opacity-90"
+              className="flex justify-center items-center bg-[#db4437] hover:opacity-90 h-10 text-white"
               style={{ width: "calc(100%/3 - 10px)" }}
               icon={<GoogleOutlined />}
             />
             <Button
               type="default"
-              className="flex justify-center items-center bg-[#3b5998] h-10 text-white hover:opacity-90"
+              className="flex justify-center items-center bg-[#3b5998] hover:opacity-90 h-10 text-white"
               style={{ width: "calc(100%/3 - 10px)" }}
               icon={<FacebookOutlined />}
             />
             <Button
               type="default"
-              className="flex justify-center items-center bg-[#333] h-10 text-white hover:opacity-90"
+              className="flex justify-center items-center bg-[#333] hover:opacity-90 h-10 text-white"
               style={{ width: "calc(100%/3 - 10px)" }}
               icon={<GithubOutlined />}
             />
@@ -106,7 +104,7 @@ const LoginPage: React.FC = () => {
               />
             </Form.Item>
             
-            <div className="text-right mb-4">
+            <div className="mb-4 text-right">
               <Link className="text-blue-600 hover:text-blue-800" to="/forgot-password">
                 Quên mật khẩu?
               </Link>
