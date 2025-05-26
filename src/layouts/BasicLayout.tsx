@@ -91,7 +91,7 @@ export default function AppLayout() {
           style={{ display: "flex", alignItems: "center", width: "150px" }}
           className="flex items-center bg-[#001529] w-[150px]"
         >
-          <h1 className="text-white text-3xl">stack PTIT</h1>
+          <h1 className="font-bold text-white text-3xl">stack PTIT</h1>
         </Link>
         <Menu
           theme="dark"
@@ -189,14 +189,14 @@ export default function AppLayout() {
               <Button
                 type="primary"
                 style={{ marginLeft: "8px" }}
-                onClick={() => history.push("/login")}
+                onClick={() => history.push("/auth/login")}
               >
                 Log In
               </Button>
               <Button
                 type="default"
                 style={{ marginLeft: "8px" }}
-                onClick={() => history.push("/register")}
+                onClick={() => history.push("/auth/register")}
               >
                 Sign Up
               </Button>

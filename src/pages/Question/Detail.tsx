@@ -151,7 +151,7 @@ const QuestionDetail: React.FC = () => {
   const handleSubmitAnswer = async () => {
     if (!user) {
       message.warning('Vui lòng đăng nhập để trả lời');
-      history.push('/login');
+      history.push('/auth/login');
       return;
     }
 
@@ -201,7 +201,7 @@ const QuestionDetail: React.FC = () => {
   const handleSubmitComment = async (answerId: number, values: any) => {
     if (!user) {
       message.warning('Vui lòng đăng nhập để bình luận');
-      history.push('/login');
+      history.push('auth/login');
       return;
     }
 
@@ -252,7 +252,7 @@ const QuestionDetail: React.FC = () => {
   // Hiển thị thông báo nếu không tìm thấy câu hỏi
   if (!question) {
     return (
-      <div className="text-center py-20">
+      <div className="py-20 text-center">
         <Title level={3}>Không tìm thấy câu hỏi này</Title>
         <Button type="primary" onClick={() => history.push('/questions')}>
           Quay lại danh sách câu hỏi
@@ -274,17 +274,17 @@ const QuestionDetail: React.FC = () => {
       {/* Tiêu đề và thông tin câu hỏi */}
       <div className="mb-6">
         <Title level={2}>{question.title}</Title>
-        <div className="flex items-center text-sm text-gray-500 mb-4">
+        <div className="flex items-center mb-4 text-gray-500 text-sm">
           <div className="flex items-center mr-4">
-            <EyeOutlined className="mr-1" /> 
+            <EyeOutlined className="mr-1" />
             {question.viewCount} lượt xem
           </div>
           <div className="flex items-center mr-4">
-            <MessageOutlined className="mr-1" /> 
+            <MessageOutlined className="mr-1" />
             {question.answerCount} trả lời
           </div>
           <div className="flex items-center">
-            <ClockCircleOutlined className="mr-1" /> 
+            <ClockCircleOutlined className="mr-1" />
             {question.createdAt}
           </div>
         </div>
@@ -293,23 +293,23 @@ const QuestionDetail: React.FC = () => {
       {/* Nội dung câu hỏi */}
       <div className="flex">
         {/* Cột voting bên trái */}
-        <div className="voting flex flex-col items-center mr-4 w-[50px]">
+        <div className="flex flex-col items-center mr-4 w-[50px] voting">
           <Tooltip title="Bình chọn tích cực">
-            <Button 
-              type="text" 
-              icon={<ArrowUpOutlined />} 
-              onClick={() => handleVote('up')} 
+            <Button
+              type="text"
+              icon={<ArrowUpOutlined />}
+              onClick={() => handleVote("up")}
               className="vote-button"
             />
           </Tooltip>
-          <div className="vote-count text-center text-lg font-bold my-1">
+          <div className="my-1 font-bold text-lg text-center vote-count">
             {question.voteCount}
           </div>
           <Tooltip title="Bình chọn tiêu cực">
-            <Button 
-              type="text" 
-              icon={<ArrowDownOutlined />} 
-              onClick={() => handleVote('down')} 
+            <Button
+              type="text"
+              icon={<ArrowDownOutlined />}
+              onClick={() => handleVote("down")}
               className="vote-button"
             />
           </Tooltip>
@@ -319,12 +319,12 @@ const QuestionDetail: React.FC = () => {
         <div className="flex-1">
           <Card className="mb-6">
             <div className="content-wrapper">
-              <div 
-                className="question-content" 
+              <div
+                className="question-content"
                 dangerouslySetInnerHTML={{ __html: question.content }}
               />
             </div>
-            
+
             <Space className="mt-4" size={[0, 8]} wrap>
               {question.tags.map((tag) => (
                 <Tag color="blue" key={tag}>
@@ -332,10 +332,10 @@ const QuestionDetail: React.FC = () => {
                 </Tag>
               ))}
             </Space>
-            
+
             <div className="flex justify-end mt-4">
               <div className="bg-blue-50 p-3 rounded-md">
-                <div className="text-sm text-gray-500">
+                <div className="text-gray-500 text-sm">
                   Đã hỏi vào {question.createdAt}
                 </div>
                 <div className="flex items-center mt-2">
@@ -347,75 +347,75 @@ const QuestionDetail: React.FC = () => {
               </div>
             </div>
           </Card>
-          
+
           {/* Phần câu trả lời */}
-          <div className="answers mt-8">
-            <Title level={4}>
-              {question.answerCount} Câu trả lời
-            </Title>
-            
+          <div className="mt-8 answers">
+            <Title level={4}>{question.answerCount} Câu trả lời</Title>
+
             {sortedAnswers.length > 0 ? (
               <div className="answer-list">
                 {sortedAnswers.map((answer) => (
                   <Card key={answer.id} className="mb-4 answer-card">
                     <div className="flex">
                       {/* Voting column */}
-                      <div className="voting flex flex-col items-center mr-4 w-[50px]">
+                      <div className="flex flex-col items-center mr-4 w-[50px] voting">
                         <Tooltip title="Bình chọn tích cực">
-                          <Button 
-                            type="text" 
-                            icon={<ArrowUpOutlined />} 
-                            onClick={() => handleVoteAnswer(answer.id, 'up')} 
+                          <Button
+                            type="text"
+                            icon={<ArrowUpOutlined />}
+                            onClick={() => handleVoteAnswer(answer.id, "up")}
                             className="vote-button"
                           />
                         </Tooltip>
-                        <div className="vote-count text-center text-lg font-bold my-1">
+                        <div className="my-1 font-bold text-lg text-center vote-count">
                           {answer.voteCount}
                         </div>
                         <Tooltip title="Bình chọn tiêu cực">
-                          <Button 
-                            type="text" 
-                            icon={<ArrowDownOutlined />} 
-                            onClick={() => handleVoteAnswer(answer.id, 'down')} 
+                          <Button
+                            type="text"
+                            icon={<ArrowDownOutlined />}
+                            onClick={() => handleVoteAnswer(answer.id, "down")}
                             className="vote-button"
                           />
                         </Tooltip>
                         {answer.isAccepted && (
                           <Tooltip title="Câu trả lời được chấp nhận">
-                            <CheckCircleFilled className="text-green-500 text-2xl mt-2" />
+                            <CheckCircleFilled className="mt-2 text-green-500 text-2xl" />
                           </Tooltip>
                         )}
-                        {!answer.isAccepted && user && question.user.id === user.id && (
-                          <Tooltip title="Chấp nhận câu trả lời này">
-                            <Button 
-                              type="text" 
-                              icon={<CheckCircleFilled />} 
-                              onClick={() => handleAcceptAnswer(answer.id)}
-                              className="mt-2"
-                            />
-                          </Tooltip>
-                        )}
+                        {!answer.isAccepted &&
+                          user &&
+                          question.user.id === user.id && (
+                            <Tooltip title="Chấp nhận câu trả lời này">
+                              <Button
+                                type="text"
+                                icon={<CheckCircleFilled />}
+                                onClick={() => handleAcceptAnswer(answer.id)}
+                                className="mt-2"
+                              />
+                            </Tooltip>
+                          )}
                       </div>
 
                       {/* Answer content */}
                       <div className="flex-1">
-                        <div 
-                          className="answer-content" 
+                        <div
+                          className="answer-content"
                           dangerouslySetInnerHTML={{ __html: answer.content }}
                         />
-                        
+
                         <div className="flex justify-between items-center mt-4">
                           <div>
-                            <Button 
-                              type="text" 
-                              icon={<CommentOutlined />} 
+                            <Button
+                              type="text"
+                              icon={<CommentOutlined />}
                               onClick={() => toggleCommentForm(answer.id)}
                             >
                               Thêm bình luận
                             </Button>
                           </div>
                           <div className="bg-blue-50 p-3 rounded-md">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-gray-500 text-sm">
                               Đã trả lời vào {answer.createdAt}
                             </div>
                             <div className="flex items-center mt-2">
@@ -426,35 +426,40 @@ const QuestionDetail: React.FC = () => {
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Comment form */}
                         {commentForms[answer.id] && (
                           <div className="mt-4">
                             <Form
                               layout="vertical"
-                              onFinish={(values) => handleSubmitComment(answer.id, values)}
+                              onFinish={(values) =>
+                                handleSubmitComment(answer.id, values)
+                              }
                             >
                               <Form.Item
                                 name="content"
                                 rules={[
-                                  { required: true, message: 'Vui lòng nhập nội dung bình luận' }
+                                  {
+                                    required: true,
+                                    message: "Vui lòng nhập nội dung bình luận",
+                                  },
                                 ]}
                               >
-                                <TextArea 
+                                <TextArea
                                   rows={2}
                                   placeholder="Nhập bình luận của bạn..."
                                   maxLength={500}
                                 />
                               </Form.Item>
                               <Form.Item>
-                                <Button 
-                                  type="primary" 
-                                  htmlType="submit" 
+                                <Button
+                                  type="primary"
+                                  htmlType="submit"
                                   loading={submittingComments[answer.id]}
                                 >
                                   Thêm bình luận
                                 </Button>
-                                <Button 
+                                <Button
                                   className="ml-2"
                                   onClick={() => toggleCommentForm(answer.id)}
                                 >
@@ -464,22 +469,31 @@ const QuestionDetail: React.FC = () => {
                             </Form>
                           </div>
                         )}
-                        
+
                         {/* Comments */}
                         {answer.comments && answer.comments.length > 0 && (
-                          <div className="comments mt-4 bg-gray-50 p-4 rounded-md">
+                          <div className="bg-gray-50 mt-4 p-4 rounded-md comments">
                             <List
                               itemLayout="horizontal"
                               dataSource={answer.comments}
-                              renderItem={comment => (
+                              renderItem={(comment) => (
                                 <List.Item>
                                   <List.Item.Meta
-                                    avatar={<Avatar src={comment.user.avatar} />}
-                                    title={<Text strong>{comment.user.name}</Text>}
+                                    avatar={
+                                      <Avatar src={comment.user.avatar} />
+                                    }
+                                    title={
+                                      <Text strong>{comment.user.name}</Text>
+                                    }
                                     description={
                                       <>
                                         <p>{comment.content}</p>
-                                        <Text type="secondary" className="text-xs">{comment.createdAt}</Text>
+                                        <Text
+                                          type="secondary"
+                                          className="text-xs"
+                                        >
+                                          {comment.createdAt}
+                                        </Text>
                                       </>
                                     }
                                   />
@@ -495,51 +509,73 @@ const QuestionDetail: React.FC = () => {
               </div>
             ) : (
               <Card>
-                <div className="text-center py-6">
-                  <Text type="secondary">Chưa có câu trả lời cho câu hỏi này</Text>
+                <div className="py-6 text-center">
+                  <Text type="secondary">
+                    Chưa có câu trả lời cho câu hỏi này
+                  </Text>
                 </div>
               </Card>
             )}
-            
+
             {/* Answer form with TinyMCE */}
             <div className="mt-6">
               <Card title="Câu trả lời của bạn">
                 {user ? (
                   <div>
                     <Editor
-                      apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46" // Thay thế bằng API key thực tế nếu cần
-                      onInit={(evt: any, editor: any) => editorRef.current = editor}
+                      apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46" 
+                      onInit={(evt: any, editor: any) =>
+                        (editorRef.current = editor)
+                      }
                       initialValue=""
                       init={{
                         height: 300,
                         menubar: true,
                         plugins: [
-                          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                          'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                          'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'codesample'
+                          "advlist",
+                          "autolink",
+                          "lists",
+                          "link",
+                          "image",
+                          "charmap",
+                          "preview",
+                          "anchor",
+                          "searchreplace",
+                          "visualblocks",
+                          "code",
+                          "fullscreen",
+                          "insertdatetime",
+                          "media",
+                          "table",
+                          "code",
+                          "help",
+                          "wordcount",
+                          "codesample",
                         ],
-                        toolbar: 'undo redo | blocks | ' +
-                          'bold italic forecolor | alignleft aligncenter ' +
-                          'alignright alignjustify | bullist numlist outdent indent | ' +
-                          'removeformat | codesample | help',
-                        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                        toolbar:
+                          "undo redo | blocks | " +
+                          "bold italic forecolor | alignleft aligncenter " +
+                          "alignright alignjustify | bullist numlist outdent indent | " +
+                          "removeformat | codesample | help",
+                        content_style:
+                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
                         codesample_languages: [
-                          { text: 'HTML/XML', value: 'markup' },
-                          { text: 'JavaScript', value: 'javascript' },
-                          { text: 'CSS', value: 'css' },
-                          { text: 'PHP', value: 'php' },
-                          { text: 'Ruby', value: 'ruby' },
-                          { text: 'Python', value: 'python' },
-                          { text: 'Java', value: 'java' },
-                          { text: 'C', value: 'c' },
-                          { text: 'C#', value: 'csharp' },
-                          { text: 'C++', value: 'cpp' }
-                        ]
+                          { text: "HTML/XML", value: "markup" },
+                          { text: "JavaScript", value: "javascript" },
+                          { text: "CSS", value: "css" },
+                          { text: "PHP", value: "php" },
+                          { text: "Ruby", value: "ruby" },
+                          { text: "Python", value: "python" },
+                          { text: "Java", value: "java" },
+                          { text: "C", value: "c" },
+                          { text: "C#", value: "csharp" },
+                          { text: "C++", value: "cpp" },
+                        ],
                       }}
                     />
                     <div className="mt-4">
-                      <Button 
-                        type="primary" 
+                      <Button
+                        type="primary"
                         onClick={handleSubmitAnswer}
                         loading={isSubmittingAnswer}
                       >
@@ -548,9 +584,13 @@ const QuestionDetail: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-4">
+                  <div className="py-4 text-center">
                     <Text type="secondary">
-                      Vui lòng <a onClick={() => history.push('/login')}>đăng nhập</a> để trả lời câu hỏi này
+                      Vui lòng{" "}
+                      <a onClick={() => history.push("/auth/login")}>
+                        đăng nhập
+                      </a>{" "}
+                      để trả lời câu hỏi này
                     </Text>
                   </div>
                 )}
@@ -559,7 +599,7 @@ const QuestionDetail: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       <style>
         {`
           .question-content img, .answer-content img {

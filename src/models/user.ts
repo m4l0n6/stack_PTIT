@@ -5,7 +5,6 @@ import { message } from "antd";
 export default () => {
   const [user, setUser] = useState<any>(null);
 
-  // Function to load user from localStorage
   const loadUserFromStorage = useCallback(() => {
     const userStr = localStorage.getItem("user");
     if (userStr) {

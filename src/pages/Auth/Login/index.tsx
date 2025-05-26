@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Card, Layout, Divider, message } from "antd";
+import { Form, Input, Button, Card, Divider, message } from "antd";
 import {
   GoogleOutlined,
   FacebookOutlined,
@@ -8,8 +8,6 @@ import {
 import { Link, useModel } from "umi";
 import { login } from "@/services/auth";
 import { history } from "umi";
-
-const { Header, Content } = Layout;
 
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -24,7 +22,7 @@ const LoginPage: React.FC = () => {
         setUser(res.data.user);
         message.success("Đăng nhập thành công");
         if (res.data.user.role === "admin") {
-          history.push("/admin");
+          history.push("/dashboard");
         } else {
           history.push("/");
         }
@@ -37,13 +35,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Layout className="bg-gray-50 min-h-screen">
-      <Header className="flex items-center bg-white shadow-sm">
-        <Link to="/" className="flex items-center">
-          <h1 className="font-bold text-blue-700 text-3xl">stack PTIT</h1>
-        </Link>
-      </Header>
-      <Content className="flex justify-center items-center p-6">
+    
         <Card 
           title="Đăng nhập vào Stack PTIT"
           className="shadow-md w-full max-w-md login-card"
@@ -124,12 +116,10 @@ const LoginPage: React.FC = () => {
             </Form.Item>
             
             <div className="text-center">
-              Chưa có tài khoản? <Link className="text-blue-600 hover:text-blue-800" to="/register">Đăng ký ngay</Link>
+              Chưa có tài khoản? <Link className="text-blue-600 hover:text-blue-800" to="/auth/register">Đăng ký ngay</Link>
             </div>
           </Form>
         </Card>
-      </Content>
-    </Layout>
   );
 };
 

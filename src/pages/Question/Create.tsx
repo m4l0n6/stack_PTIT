@@ -15,7 +15,7 @@ const QuestionCreatePage = () => {
   const onFinish = async (values: any) => {
     if (!user) {
       message.error('Bạn cần đăng nhập để đặt câu hỏi');
-      history.push('/login');
+      history.push('/auth/login');
       return;
     }
 

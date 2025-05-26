@@ -41,7 +41,7 @@ const userMenu: MenuProps["items"] = [
     <Layout className="min-h-screen">
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="flex justify-center items-center p-4">
-          <h1 className="text-white text-2xl">stack PTIT</h1>
+          <h1 className="font-bold text-white text-2xl">stack PTIT</h1>
         </div>
         <Menu
           theme="dark"
@@ -51,7 +51,7 @@ const userMenu: MenuProps["items"] = [
             {
               key: "1",
               icon: <BarChartOutlined />,
-              label: <Link to="/admin/dashboard">Bảng điều kiển</Link>,
+              label: <Link to="/dashboard">Bảng điều kiển</Link>,
             },
             {
               key: "2",
@@ -61,7 +61,7 @@ const userMenu: MenuProps["items"] = [
             {
               key: "3",
               icon: <UploadOutlined />,
-              label: "Câu hỏi",
+              label: "Bài viết",
             },
           ]}
         />

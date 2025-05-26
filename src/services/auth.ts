@@ -15,7 +15,7 @@ interface AuthResponse {
 }
 
 export function login(data: { email: string; password: string }): Promise<AuthResponse> {
-  return request("/api/login", {
+  return request("/api/login", {  
     method: "POST",
     data,
     errorHandler: (error) => {

@@ -1,6 +1,7 @@
 import { history, useModel } from "umi";
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "umi";
+import { message } from "antd";
 
 export default (props: any) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,7 +13,7 @@ export default (props: any) => {
     const token = localStorage.getItem("token");
     
     if (!token) {
-      history.push("/login");
+      history.push("/auth/login");
     } else if (userData) {
       setIsAuthenticated(true);
     } else {

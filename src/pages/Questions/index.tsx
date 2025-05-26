@@ -66,9 +66,6 @@ const QuestionPage = () => {
           <Button type="primary">+ Đặt câu hỏi</Button>
         </Link>
       </div>
-      <div>
-        <h3 className="mb-4">Số lượng câu hỏi: {total}</h3>
-      </div>
       <div className="flex gap-2 mb-4">
         <div>
           <p>Sắp xếp theo</p>
@@ -107,7 +104,7 @@ const QuestionPage = () => {
             <Question key={question.id} question={question} />
           ))}
           
-          <div className="mt-4 flex justify-center">
+          <div className="flex justify-center mt-4">
             <Pagination
               current={page}
               pageSize={pageSize}

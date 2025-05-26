@@ -3,12 +3,18 @@ import { defineConfig } from "umi";
 export default defineConfig({
   routes: [
     {
-      path: "/login",
-      component: "@/pages/Auth/Login/index",
-    },
-    {
-      path: "/register",
-      component: "@/pages/Auth/Register/index",
+      path: "/auth",
+      component: "@/layouts/AuthLayout",
+      routes: [
+        {
+          path: "/auth/login",
+          component: "@/pages/Auth/Login/index",
+        },
+        {
+          path: "/auth/register",
+          component: "@/pages/Auth/Register/index",
+        },
+      ],
     },
     {
       path: "/",
@@ -26,12 +32,10 @@ export default defineConfig({
         { path: "profile", component: "@/pages/Profile/index" },
       ],
     },
-    { 
-      path: "admin",
+    {
+      path: "dashboard",
       component: "@/layouts/AdminLayout",
-      routes: [
-        { path: "Dashboard", component: "@/pages/Admin/Dashboard" },
-      ],
+      routes: [{ path: "dashboard", component: "@/pages/Admin/Dashboard" }],
       wrappers: ["@/wrappers/auth"],
     },
     {

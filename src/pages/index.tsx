@@ -1,4 +1,3 @@
-import yayJpg from '../assets/yay.jpg';
 import { Button } from 'antd';
 import { useModel } from 'umi';
 
@@ -9,7 +8,7 @@ export default function HomePage() {
       {user ? (
         <div>
           <h1 className="mb-4 text-3xl">
-            Hello <strong>{user.name}</strong>
+            Xin chào <strong>{user.name}</strong> !
           </h1>
           <Button type="primary" onClick={() => window.open("/ask")}>
             Ask a question
@@ -20,7 +19,7 @@ export default function HomePage() {
           <h1 className="text-3xl">Welcome to Stack PTIT</h1>
           <Button
             type="primary"
-            onClick={() => window.open("/login")}
+            onClick={() => window.open("/auth/login")}
             className="mt-4"
           >
             Log In

@@ -1,17 +1,12 @@
-import { Form, Input, Button, Card, Layout, Divider, message, Checkbox } from "antd";
+import { Form, Input, Button, Card, Divider, message, Checkbox } from "antd";
 import React, { useState } from "react";
 import {
-  UserOutlined,
-  LockOutlined,
   GoogleOutlined,
   FacebookOutlined,
   GithubOutlined,
-  MailOutlined,
 } from "@ant-design/icons";
 import { Link, useModel, history } from "umi";
 import { register } from "@/services/auth";
-
-const { Header, Content } = Layout;
 
 const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
@@ -52,34 +47,28 @@ const RegisterPage = () => {
   };
 
   return (
-    <Layout className="min-h-screen bg-gray-50">
-      <Header className="flex items-center bg-white shadow-sm">
-        <Link to="/" className="flex items-center">
-          <h1 className="text-blue-700 text-3xl font-bold">stack PTIT</h1>
-        </Link>
-      </Header>
-      <Content className="flex justify-center items-center p-6">
+
         <Card 
           title="Đăng ký tài khoản mới"
-          className="w-full max-w-md register-card shadow-md"
+          className="shadow-md w-full max-w-md register-card"
           headStyle={{ fontSize: "20px", textAlign: "center", fontWeight: "bold" }}
         >
           <div className="flex gap-2 mb-4">
             <Button
               type="default"
-              className="flex justify-center items-center bg-[#db4437] h-10 text-white hover:opacity-90"
+              className="flex justify-center items-center bg-[#db4437] hover:opacity-90 h-10 text-white"
               style={{ width: "calc(100%/3 - 10px)" }}
               icon={<GoogleOutlined />}
             />
             <Button
               type="default"
-              className="flex justify-center items-center bg-[#3b5998] h-10 text-white hover:opacity-90"
+              className="flex justify-center items-center bg-[#3b5998] hover:opacity-90 h-10 text-white"
               style={{ width: "calc(100%/3 - 10px)" }}
               icon={<FacebookOutlined />}
             />
             <Button
               type="default"
-              className="flex justify-center items-center bg-[#333] h-10 text-white hover:opacity-90" 
+              className="flex justify-center items-center bg-[#333] hover:opacity-90 h-10 text-white" 
               style={{ width: "calc(100%/3 - 10px)" }}
               icon={<GithubOutlined />}
             />
@@ -176,7 +165,7 @@ const RegisterPage = () => {
                 type="primary"
                 htmlType="submit"
                 loading={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 w-full"
                 size="large"
               >
                 Đăng ký
@@ -184,12 +173,10 @@ const RegisterPage = () => {
             </Form.Item>
             
             <div className="text-center">
-              Đã có tài khoản? <Link className="text-blue-600 hover:text-blue-800" to="/login">Đăng nhập</Link>
+              Đã có tài khoản? <Link className="text-blue-600 hover:text-blue-800" to="/auth/login">Đăng nhập</Link>
             </div>
           </Form>
         </Card>
-      </Content>
-    </Layout>
   );
 };
 

@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tùy chỉnh cuộn */
+::-webkit-scrollbar {
+    width: 6px; /* Scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888; /* Scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Hover effect */
+}
+
+
+/* Tùy chỉnh  */
 .login-card .ant-card-head-title{
     font-size: 24px;
     font-weight: bold;
