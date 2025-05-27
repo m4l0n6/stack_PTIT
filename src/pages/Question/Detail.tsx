@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useModel, history } from 'umi';
+import { useParams, useModel, history, Link } from 'umi';
 import { 
   getQuestionDetail, 
   voteQuestion, 
@@ -337,12 +337,13 @@ const QuestionDetail: React.FC = () => {
               <div className="bg-blue-50 p-3 rounded-md">
                 <div className="text-gray-500 text-sm">
                   Đã hỏi vào {question.createdAt}
-                </div>
-                <div className="flex items-center mt-2">
+                </div>                <div className="flex items-center mt-2">
                   <Avatar src={question.user.avatar} />
-                  <Text strong className="ml-2">
-                    {question.user.name}
-                  </Text>
+                  <Link to={`/users/${question.user.id}/${question.user.name.replace(/\s+/g, '-')}`}>
+                    <Text strong className="ml-2 hover:text-[#1890ff]">
+                      {question.user.name}
+                    </Text>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -417,12 +418,13 @@ const QuestionDetail: React.FC = () => {
                           <div className="bg-blue-50 p-3 rounded-md">
                             <div className="text-gray-500 text-sm">
                               Đã trả lời vào {answer.createdAt}
-                            </div>
-                            <div className="flex items-center mt-2">
+                            </div>                            <div className="flex items-center mt-2">
                               <Avatar src={answer.user.avatar} />
-                              <Text strong className="ml-2">
-                                {answer.user.name}
-                              </Text>
+                              <Link to={`/users/${answer.user.id}/${answer.user.name.replace(/\s+/g, '-')}`}>
+                                <Text strong className="ml-2 hover:text-[#1890ff]">
+                                  {answer.user.name}
+                                </Text>
+                              </Link>
                             </div>
                           </div>
                         </div>
@@ -481,9 +483,10 @@ const QuestionDetail: React.FC = () => {
                                   <List.Item.Meta
                                     avatar={
                                       <Avatar src={comment.user.avatar} />
-                                    }
-                                    title={
-                                      <Text strong>{comment.user.name}</Text>
+                                    }                                    title={
+                                      <Link to={`/users/${comment.user.id}/${comment.user.name.replace(/\s+/g, '-')}`}>
+                                        <Text strong className="hover:text-[#1890ff]">{comment.user.name}</Text>
+                                      </Link>
                                     }
                                     description={
                                       <>

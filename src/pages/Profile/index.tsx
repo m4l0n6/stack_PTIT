@@ -1,5 +1,5 @@
-import { useModel } from "umi";
-import { Image, Tabs, Button } from "antd";
+import { useModel, Link } from "umi";
+import { Image, Tabs, Button, Skeleton } from "antd";
 import {
   UserOutlined,
   ClockCircleOutlined,
@@ -21,15 +21,14 @@ const items: TabsProps["items"] = [
     key: "2",
     label: "Hoạt động",
     children: <Activity />,
-  },
-  {
+  },  {
     key: "3",
-    label: "Lưu trữ",
+    label: <Link to="saves">Lưu trữ</Link>,
     children: <Saves />,
   },
   {
     key: "4",
-    label: "Cài đặt",
+    label: <Link to="edit">Cài đặt</Link>,
     children: <Setting />,
   },
 ];
@@ -84,7 +83,9 @@ const ProfilePage = () => {
           <Tabs defaultActiveKey="1" items={items} />
         </div>
       ) : (
-        <div className="text-3xl">Loading...</div>
+        <div className="flex justify-center items-center h-screen">
+          <Skeleton active />
+        </div>
       )}
     </div>
   );

@@ -10,7 +10,7 @@ import {
 import { Button, Layout, Menu, theme, Dropdown, Avatar } from "antd";
 import type { MenuProps } from "antd";
 import { Outlet, Link } from "umi";
-import { useModel } from "umi";
+import { useModel, history } from "umi";
 
 const { Header, Sider, Content } = Layout;
 
@@ -23,11 +23,13 @@ const AdminLayout: React.FC = () => {
 const { user, handleLogout } = useModel("user");
 
 const userMenu: MenuProps["items"] = [
-  {
-    key: "profile",
+  {    key: "profile",
     icon: <UserOutlined />,
-    label: "Hồ sơ",
-    // onClick: () => history.push("/profile"),
+    label: "Hồ sơ",    onClick: () => {
+      const userData = JSON.parse(localStorage.getItem("user") || "{}");
+      const formattedName = userData.name ? userData.name.replace(/\s+/g, '-') : '';
+      history.push(`/users/${userData.id}/${formattedName}`);
+    },
   },
   {
     key: "logout",
@@ -42,8 +44,7 @@ const userMenu: MenuProps["items"] = [
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="flex justify-center items-center p-4">
           <h1 className="font-bold text-white text-2xl">stack PTIT</h1>
-        </div>
-        <Menu
+        </div>        <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["1"]}
@@ -56,12 +57,12 @@ const userMenu: MenuProps["items"] = [
             {
               key: "2",
               icon: <UserOutlined/>,
-              label: "Người dùng",
+              label: <Link to="/dashboard/users">Người dùng</Link>,
             },
             {
               key: "3",
               icon: <UploadOutlined />,
-              label: "Bài viết",
+              label: <Link to="/dashboard/questions">Câu hỏi</Link>,
             },
           ]}
         />

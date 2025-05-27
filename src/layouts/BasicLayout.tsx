@@ -67,13 +67,14 @@ export default function AppLayout() {
   useEffect(() => {
     loadUserFromStorage();
   }, [loadUserFromStorage]);
-
   const userMenu: MenuProps['items'] = [
-    {
-      key: 'profile',
+    {      key: 'profile',
       icon: <UserOutlined />,
-      label: 'Hồ sơ',
-      onClick: () => history.push('/profile'),
+      label: 'Hồ sơ',      onClick: () => {
+        const userData = JSON.parse(localStorage.getItem("user") || "{}");
+        const formattedName = userData.name ? userData.name.replace(/\s+/g, '-') : '';
+        history.push(`/users/${userData.id}/${formattedName}`);
+      },
     },
     {
       key: 'logout',

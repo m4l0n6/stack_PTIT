@@ -64,10 +64,8 @@ const QuestionCard: React.FC<QuestionProps> = ({ question }) => {
                 {tag}
               </Tag>
             ))}
-          </Space>
-
-          <div className="flex justify-between items-center text-sm">
-            <Link to={`/users/${question.user.id}`} className="hover:opacity-80">
+          </Space>          <div className="flex justify-between items-center text-sm">
+            <Link to={`/users/${question.user.id}/${question.user.name.replace(/\s+/g, '-')}`} className="hover:opacity-80">
               <Space>
                 <Avatar src={question.user.avatar} size="small" />
                 <Text type="secondary" className="hover:text-[#1890ff]">
