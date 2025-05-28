@@ -1,11 +1,14 @@
 import React from 'react';
+import { Card, Statistic, Row, Col } from 'antd';
+import { ArrowUpOutlined } from '@ant-design/icons';
+import RecentPosts from '@/pages/Admin/Questions';
 
 const Dashboard: React.FC = () => {
     return (
         <div className="p-4">
             <h1 className="mb-4 font-bold text-2xl">Bảng điều khiển</h1>
             <p>Chào mừng đến với bảng điều khiển quản trị viên. Tại đây, bạn có thể quản lý người dùng, câu hỏi và các cài đặt khác.</p>
-    
+            
         </div>
     );
 }
