@@ -1,5 +1,7 @@
 import request from "umi-request";
-import { Question, Answer, Comment } from "./typing";
+import { Question } from "./typing";
+import { Answer } from "../Answers/typing";
+import { Comment } from "../Comments/typing";
 
 interface APIResponse<T> {
   success: boolean;
@@ -42,6 +44,7 @@ export async function getQuestions(params?: {
 
 // Lấy chi tiết câu hỏi
 export async function getQuestionDetail(id: number): Promise<APIResponse<Question>> {
+  console.log("Calling API for question ID:", id); // Log để debug
   return request(`/api/questions/${id}`, {
     method: "GET",
   });
@@ -125,4 +128,4 @@ export async function searchQuestions(params: {
     method: "GET",
     params,
   });
-} 
+}

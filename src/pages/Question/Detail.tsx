@@ -8,7 +8,9 @@ import {
   createAnswer,
   createComment
 } from '@/services/Questions';
-import { Question, Answer, Comment } from '@/services/Questions/typing';
+import { Question } from '@/services/Questions/typing';
+import { Comment } from '@/services/Comments/typing';
+import { Answer } from '@/services/Answers/typing';
 import { Editor } from '@tinymce/tinymce-react';
 import { 
   Card, 
@@ -102,7 +104,7 @@ const QuestionDetail: React.FC = () => {
       if (result?.success) {
         // Cập nhật câu trả lời trong state
         if (question && question.answers) {
-          const updatedAnswers = question.answers.map(a => 
+          const updatedAnswers = question.answers.map((a: Answer) => 
             a.id === answerId ? result.data : a
           );
           setQuestion({...question, answers: updatedAnswers});
@@ -131,11 +133,11 @@ const QuestionDetail: React.FC = () => {
       if (result?.success) {
         // Cập nhật tất cả câu trả lời trong state
         if (question && question.answers) {
-          const updatedAnswers = question.answers.map(a => {
+          const updatedAnswers = question.answers.map((a: Answer) => {
             if (a.id === answerId) {
-              return {...a, isAccepted: true};
+              return {...a, is_accepted: true};
             }
-            return {...a, isAccepted: false};
+            return {...a, is_accepted: false};
           });
           setQuestion({...question, answers: updatedAnswers});
         }
@@ -174,7 +176,7 @@ const QuestionDetail: React.FC = () => {
             setQuestion({
               ...question, 
               answers: newAnswers,
-              answerCount: (question.answerCount || 0) + 1
+              answer_count: (question.answer_count || 0) + 1
             });
           }
           // Reset editor
@@ -219,7 +221,7 @@ const QuestionDetail: React.FC = () => {
               return {
                 ...a, 
                 comments,
-                commentCount: (a.commentCount || 0) + 1
+                comment_count: (a.comment_count || 0) + 1
               };
             }
             return a;
@@ -264,9 +266,9 @@ const QuestionDetail: React.FC = () => {
   // Sắp xếp câu trả lời để hiển thị câu được chấp nhận đầu tiên
   const sortedAnswers = question.answers ? 
     [...question.answers].sort((a, b) => {
-      if (a.isAccepted) return -1;
-      if (b.isAccepted) return 1;
-      return b.voteCount - a.voteCount;
+      if (a.is_accepted) return -1;
+      if (b.is_accepted) return 1;
+      return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes);
     }) : [];
 
   return (
@@ -277,15 +279,15 @@ const QuestionDetail: React.FC = () => {
         <div className="flex items-center mb-4 text-gray-500 text-sm">
           <div className="flex items-center mr-4">
             <EyeOutlined className="mr-1" />
-            {question.viewCount} lượt xem
+            {question.views} lượt xem
           </div>
           <div className="flex items-center mr-4">
             <MessageOutlined className="mr-1" />
-            {question.answerCount} trả lời
+            {question.answer_count} trả lời
           </div>
           <div className="flex items-center">
             <ClockCircleOutlined className="mr-1" />
-            {question.createdAt}
+            {question.created_at}
           </div>
         </div>
       </div>
@@ -303,7 +305,7 @@ const QuestionDetail: React.FC = () => {
             />
           </Tooltip>
           <div className="my-1 font-bold text-lg text-center vote-count">
-            {question.voteCount}
+            {question.upvotes - question.downvotes}
           </div>
           <Tooltip title="Bình chọn tiêu cực">
             <Button
@@ -323,12 +325,10 @@ const QuestionDetail: React.FC = () => {
                 className="question-content"
                 dangerouslySetInnerHTML={{ __html: question.content }}
               />
-            </div>
-
-            <Space className="mt-4" size={[0, 8]} wrap>
-              {question.tags.map((tag) => (
-                <Tag color="blue" key={tag}>
-                  {tag}
+            </div>            <Space className="mt-4" size={[0, 8]} wrap>
+              {question.tags && question.tags.map((tag) => (
+                <Tag color="blue" key={tag.id}>
+                  {tag.name} {tag.count !== undefined && <span className="text-xs">({tag.count})</span>}
                 </Tag>
               ))}
             </Space>
@@ -336,12 +336,13 @@ const QuestionDetail: React.FC = () => {
             <div className="flex justify-end mt-4">
               <div className="bg-blue-50 p-3 rounded-md">
                 <div className="text-gray-500 text-sm">
-                  Đã hỏi vào {question.createdAt}
-                </div>                <div className="flex items-center mt-2">
-                  <Avatar src={question.user.avatar} />
-                  <Link to={`/users/${question.user.id}/${question.user.name.replace(/\s+/g, '-')}`}>
+                  Đã hỏi vào {question.created_at}
+                </div>                
+                <div className="flex items-center mt-2">
+                  <Avatar src={question.user?.avatar} />
+                  <Link to={`/users/${question.user?.id}/${question.user?.username.replace(/\s+/g, '-')}`}>
                     <Text strong className="ml-2 hover:text-[#1890ff]">
-                      {question.user.name}
+                      {question.user?.username}
                     </Text>
                   </Link>
                 </div>
@@ -351,7 +352,7 @@ const QuestionDetail: React.FC = () => {
 
           {/* Phần câu trả lời */}
           <div className="mt-8 answers">
-            <Title level={4}>{question.answerCount} Câu trả lời</Title>
+            <Title level={4}>{question.answer_count} Câu trả lời</Title>
 
             {sortedAnswers.length > 0 ? (
               <div className="answer-list">
@@ -369,7 +370,7 @@ const QuestionDetail: React.FC = () => {
                           />
                         </Tooltip>
                         <div className="my-1 font-bold text-lg text-center vote-count">
-                          {answer.voteCount}
+                          {answer.upvotes - answer.downvotes}
                         </div>
                         <Tooltip title="Bình chọn tiêu cực">
                           <Button
@@ -379,14 +380,14 @@ const QuestionDetail: React.FC = () => {
                             className="vote-button"
                           />
                         </Tooltip>
-                        {answer.isAccepted && (
+                        {answer.is_accepted && (
                           <Tooltip title="Câu trả lời được chấp nhận">
                             <CheckCircleFilled className="mt-2 text-green-500 text-2xl" />
                           </Tooltip>
                         )}
-                        {!answer.isAccepted &&
+                        {!answer.is_accepted &&
                           user &&
-                          question.user.id === user.id && (
+                          question.user?.id === user.id && (
                             <Tooltip title="Chấp nhận câu trả lời này">
                               <Button
                                 type="text"
@@ -417,12 +418,13 @@ const QuestionDetail: React.FC = () => {
                           </div>
                           <div className="bg-blue-50 p-3 rounded-md">
                             <div className="text-gray-500 text-sm">
-                              Đã trả lời vào {answer.createdAt}
-                            </div>                            <div className="flex items-center mt-2">
-                              <Avatar src={answer.user.avatar} />
-                              <Link to={`/users/${answer.user.id}/${answer.user.name.replace(/\s+/g, '-')}`}>
+                              Đã trả lời vào {answer.created_at}
+                            </div>                            
+                            <div className="flex items-center mt-2">
+                              <Avatar src={answer.user?.avatar} />
+                              <Link to={`/users/${answer.user?.id}/${answer.user?.username.replace(/\s+/g, '-')}`}>
                                 <Text strong className="ml-2 hover:text-[#1890ff]">
-                                  {answer.user.name}
+                                  {answer.user?.username}
                                 </Text>
                               </Link>
                             </div>
@@ -478,14 +480,15 @@ const QuestionDetail: React.FC = () => {
                             <List
                               itemLayout="horizontal"
                               dataSource={answer.comments}
-                              renderItem={(comment) => (
+                              renderItem={(comment: Comment) => (
                                 <List.Item>
                                   <List.Item.Meta
                                     avatar={
-                                      <Avatar src={comment.user.avatar} />
-                                    }                                    title={
-                                      <Link to={`/users/${comment.user.id}/${comment.user.name.replace(/\s+/g, '-')}`}>
-                                        <Text strong className="hover:text-[#1890ff]">{comment.user.name}</Text>
+                                      <Avatar src={comment.user?.avatar} />
+                                    }
+                                    title={
+                                      <Link to={`/users/${comment.user?.id}/${comment.user?.username.replace(/\s+/g, '-')}`}>
+                                        <Text strong className="hover:text-[#1890ff]">{comment.user?.username}</Text>
                                       </Link>
                                     }
                                     description={
@@ -495,7 +498,7 @@ const QuestionDetail: React.FC = () => {
                                           type="secondary"
                                           className="text-xs"
                                         >
-                                          {comment.createdAt}
+                                          {comment.created_at}
                                         </Text>
                                       </>
                                     }
@@ -643,4 +646,4 @@ const QuestionDetail: React.FC = () => {
   );
 };
 
-export default QuestionDetail; 
+export default QuestionDetail;

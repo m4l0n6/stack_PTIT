@@ -1,42 +1,23 @@
+import { User } from '../Users/typing';
+import { Tag } from '../Tags/typing';
+import { Answer } from '../Answers/typing';
+
 export interface Question {
   id: number;
+  user_id: number;
   title: string;
   content: string;
-  tags: string[];
-  user: {
-    id: number;
-    name: string;
-    avatar: string;
-  };
-  createdAt: string;
-  voteCount: number;
-  answerCount: number;
-  viewCount: number;
+  created_at: string;
+  updated_at?: string;
+  views: number;
+  upvotes: number;
+  downvotes: number;
+  
+  // Các trường quan hệ (không lưu trong DB, chỉ trả về từ API)
+  user?: User;
+  tags?: Tag[];
+  answer_count?: number;
+  
+  // Thêm trường answers khi trả về từ API chi tiết câu hỏi
   answers?: Answer[];
-}
-
-export interface Answer {
-  id: number;
-  content: string;
-  user: {
-    id: number;
-    name: string;
-    avatar: string;
-  };
-  createdAt: string;
-  voteCount: number;
-  isAccepted: boolean;
-  commentCount: number;
-  comments?: Comment[];
-}
-
-export interface Comment {
-  id: number;
-  content: string;
-  user: {
-    id: number;
-    name: string;
-    avatar: string;
-  };
-  createdAt: string;
 }

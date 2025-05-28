@@ -29,8 +29,7 @@ const RegisterPage = () => {
       const res = await register({
         email: values.email,
         password: values.password,
-        name: values.username,
-        role: "student" // Default role
+        username: values.username,
       });
       
       if (res.success) {

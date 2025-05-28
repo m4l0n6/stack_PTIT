@@ -45,7 +45,7 @@ export default () => {
     history.push("/");
   };
 
-  // Function to set user data in both state and localStorage
+
   const setUserData = (userData: any) => {
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));

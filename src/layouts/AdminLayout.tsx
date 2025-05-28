@@ -44,7 +44,8 @@ const userMenu: MenuProps["items"] = [
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="flex justify-center items-center p-4">
           <h1 className="font-bold text-white text-2xl">stack PTIT</h1>
-        </div>        <Menu
+        </div>        
+        <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["1"]}
@@ -95,7 +96,7 @@ const userMenu: MenuProps["items"] = [
                 icon={<UserOutlined />}
                 src={user.avatar}
               />
-              <span className="ml-2">{user.name}</span>
+              <span className="ml-2">{user.username}</span>
             </div>
           </Dropdown>
         </Header>

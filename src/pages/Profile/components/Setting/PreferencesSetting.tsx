@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Divider, Row, Col, Flex, Form } from 'antd';
+import { Card, Divider, Row, Col, Flex, Form, Radio } from 'antd';
 
 const PreferencesSetting: React.FC = () => {
     return (
@@ -9,32 +9,18 @@ const PreferencesSetting: React.FC = () => {
             <Card title="Chủ đề" className="mb-4">
                 <Form layout="vertical">
                     <Form.Item label="Chọn chủ đề">
-                        <Row gutter={16}>
-                            <Col span={8}>
-                                <div className="bg-white shadow hover:shadow-lg p-4 rounded transition-shadow">
-                                    <Flex className="h-full">
-                                        <span className="text-center">Sáng</span>
-                                    </Flex>
+                        <Radio.Group defaultValue="light">
+                            <Radio value="light">
+                                <div className="bg-white shadow p-4 rounded-lg">
+                                    <p className="text-gray-800">Chủ đề sáng</p>
                                 </div>
-                            </Col>
-                            <Col span={8}>
-                                <div className="bg-gray-800 shadow hover:shadow-lg p-4 rounded text-white transition-shadow">
-                                    <Flex className="h-full">
-                                        <span className="text-center">Tối</span>
-                                    </Flex>
+                            </Radio>
+                            <Radio value="dark">
+                                <div className="bg-gray-800 shadow p-4 rounded-lg text-white">
+                                    <p className="text-white">Chủ đề tối</p>
                                 </div>
-                            </Col>
-                        </Row>
-                    </Form.Item>
-
-                    <Form.Item label="Ngôn ngữ">
-                      
-                    </Form.Item>
-
-                    <Form.Item>
-                        <button type="submit" className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white transition-colors">
-                            Lưu cài đặt
-                        </button>
+                            </Radio>
+                        </Radio.Group>
                     </Form.Item>
                 </Form>
                 

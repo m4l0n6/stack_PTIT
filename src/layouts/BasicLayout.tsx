@@ -72,7 +72,7 @@ export default function AppLayout() {
       icon: <UserOutlined />,
       label: 'Hồ sơ',      onClick: () => {
         const userData = JSON.parse(localStorage.getItem("user") || "{}");
-        const formattedName = userData.name ? userData.name.replace(/\s+/g, '-') : '';
+        const formattedName = userData.username ? userData.username.replace(/\s+/g, '-') : '';
         history.push(`/users/${userData.id}/${formattedName}`);
       },
     },
@@ -180,8 +180,8 @@ export default function AppLayout() {
                     style={{ backgroundColor: "#1677ff" }}
                     icon={<UserOutlined />}
                     src={user.avatar}
-                  />
-                  <span className="ml-2 text-white">{user.name}</span>
+                  />G
+                  <span className="text-white">{user.username}</span>
                 </div>
               </Dropdown>
             </div>

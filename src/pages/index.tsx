@@ -8,7 +8,7 @@ export default function HomePage() {
       {user ? (
         <div>
           <h1 className="mb-4 text-3xl">
-            Xin chào <strong>{user.name}</strong> !
+            Xin chào <strong>{user.username}</strong> !
           </h1>
           <Button type="primary" onClick={() => window.open("/ask")}>
             Ask a question

@@ -1,80 +1,84 @@
-import { Avatar, Card, Space, Tag, Typography, Tooltip } from "antd";
-import { Link } from "umi";
 import React from "react";
+import { Card, Avatar, Space, Tag, Typography, Divider } from "antd";
+import { Link } from "umi";
+import {
+  EyeOutlined,
+  MessageOutlined,
+  ClockCircleOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+} from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Title } = Typography;
 
-interface QuestionProps {
+interface QuestionCardProps {
   question: Question;
 }
 
-const QuestionCard: React.FC<QuestionProps> = ({ question }) => {
+const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   return (
-    <Card
-      className="mb-3 rounded-lg"
-      bordered={true}
-      bodyStyle={{ padding: 8 }}
-      hoverable
-    >
+    <Card className="mb-4 overflow-hidden">
       <div className="flex">
-        {/* Stats column */}
-        <div className="flex flex-col items-center min-m-w-[70px] mr-4">
-          <Tooltip title="Số người bình chọn">
-            <div className={`vote-count positive`}>
-              <span>{question.voteCount}</span>
-              <small>bình chọn</small>
+        {/* Vote column */}
+        <div className="flex flex-col items-center mr-4 w-16 min-w-[4rem]">
+          <div className="flex flex-col items-center">
+            <div className="font-semibold text-lg">
+              {question.upvotes - question.downvotes}
             </div>
-          </Tooltip>
-
-          <Tooltip title="Số lượng câu trả lời">
-            <div className={`answer-count`}>
-              <span>{question.answerCount}</span>
-              <small>trả lời</small>
+            <div className="text-gray-500 text-xs">votes</div>
+          </div>
+          <div className="flex flex-col items-center mt-2">
+            <div className="font-semibold text-lg">
+              {question.answer_count || 0}
             </div>
-          </Tooltip>
-
-          <Tooltip title="Lượt xem">
-            <div className="view-count">
-              <span>{question.viewCount}</span>
-              <small>lượt xem</small>
-            </div>
-          </Tooltip>
+            <div className="text-gray-500 text-xs">answers</div>
+          </div>
+          <div className="flex flex-col items-center mt-2">
+            <div className="font-semibold text-lg">{question.views}</div>
+            <div className="text-gray-500 text-xs">views</div>
+          </div>
         </div>
 
-        {/* Content column */}
-        <div className="flex-1">
-          <Link to={`/question/${question.id}`}>
-            <Title
-              level={4}
-              className="mt-0 mb-2 hover:text-[#1890ff]"
-              ellipsis={{ rows: 1, expandable: false }}
-            >
+        {/* Main content */}
+        <div className="flex-1">         
+           <Title level={5} className="mb-2">
+            <Link to={`/question/${question.id}`} className="hover:opacity-80">
               {question.title}
-            </Title>
-          </Link>
+            </Link>
+          </Title>
 
-          <Paragraph className="mb-3" ellipsis={{ rows: 2 }}>
-            {question.content}
-          </Paragraph>
-
-          <Space className="mb-3" size={[0, 8]} wrap>
-            {question.tags.map((tag) => (
-              <Tag color="blue" className="mb-2" key={tag}>
-                {tag}
+          <div className="mb-3 text-gray-500 text-sm line-clamp-2">
+            {question.content.replace(/<[^>]+>/g, "").substring(0, 200)}
+            {question.content.length > 200 && "..."}
+          </div>          {/* Tags */}
+          <Space size={[0, 8]} wrap className="mb-3">
+            {question.tags?.map((tag) => (
+              <Tag color="blue" key={tag.id}>
+                {tag.name} {tag.count !== undefined && <span className="text-xs">({tag.count})</span>}
               </Tag>
             ))}
-          </Space>          <div className="flex justify-between items-center text-sm">
-            <Link to={`/users/${question.user.id}/${question.user.name.replace(/\s+/g, '-')}`} className="hover:opacity-80">
+          </Space>
+
+          <div className="flex justify-between items-center text-sm">
+            {/* Sử dụng optional chaining và kiểm tra username */}
+            <Link
+              to={`/users/${question.user?.id}/${(
+                question.user?.username || ""
+              ).replace(/\s+/g, "-")}`}
+              className="hover:opacity-80"
+            >
               <Space>
-                <Avatar src={question.user.avatar} size="small" />
+                <Avatar src={question.user?.avatar} size="small" />
                 <Text type="secondary" className="hover:text-[#1890ff]">
-                  {question.user.name}
+                  {question.user?.username}
                 </Text>
               </Space>
             </Link>
-            <Text type="secondary" className="post-date">
-              {question.createdAt}
+
+            <Text type="secondary">
+              <ClockCircleOutlined className="mr-1" />
+              {question.created_at}
             </Text>
           </div>
         </div>
