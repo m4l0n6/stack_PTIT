@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { history } from "umi";
 import { message } from "antd";
+import { User } from "@/services/Users/typing";
 
 export default () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User>();
 
   const loadUserFromStorage = useCallback(() => {
     const userStr = localStorage.getItem("user");
@@ -40,7 +41,7 @@ export default () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(null);
+    setUser(undefined);
     message.success("Đăng xuất thành công");
     history.push("/");
   };

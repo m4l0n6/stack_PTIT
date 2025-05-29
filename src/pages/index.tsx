@@ -7,12 +7,9 @@ export default function HomePage() {
     <div>
       {user ? (
         <div>
-          <h1 className="mb-4 text-3xl">
-            Xin chào <strong>{user.username}</strong> !
+          <h1 className="mb-4 font-bold text-3xl">
+            Chào mừng quay trở lại, {user.username} !
           </h1>
-          <Button type="primary" onClick={() => window.open("/ask")}>
-            Ask a question
-          </Button>
         </div>
       ) : (
         <div className="flex flex-col items-center">

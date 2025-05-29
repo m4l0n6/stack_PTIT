@@ -10,7 +10,7 @@ const settingMenu: MenuProps["items"] = [
     key: "grp1",
     label: <p className="font-bold text-black">Cài đặt tài khoản</p>,
     type: "group",
-  children: [
+    children: [
       { key: "1", label: 
         <Link to="edit">Thông tin tài khoản</Link>
        },

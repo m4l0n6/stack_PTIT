@@ -8,7 +8,7 @@ const users: User[] = [
     password: "123456", // Trường này sẽ không được trả về từ API
     created_at: "2023-09-01",
     reputation: 100,
-    avatar: "https://placehold.co/150",
+    avatar: "https://placehold.co/150?text=S",
     role: "student" // Thêm trường role để quản lý phân quyền
   },
   {

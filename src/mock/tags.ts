@@ -12,6 +12,10 @@ export const tags: Tag[] = [
   { id: 8, name: "umijs", description: "UmiJS is an extensible enterprise-level React application framework" },
   { id: 9, name: "authentication", description: "Authentication is the process of verifying who a user is" },
   { id: 10, name: "typescript", description: "TypeScript is a superset of JavaScript that adds static types" },
+  { id: 11, name: "graphql", description: "GraphQL is a query language for APIs and a runtime for executing those queries with your existing data" },
+  { id: 12, name: "docker", description: "Docker is a set of platform as a service products that use OS-level virtualization to deliver software in packages called containers" },
+  { id: 13, name: "kubernetes", description: "Kubernetes is an open-source system for automating the deployment, scaling, and management of containerized applications" },
+  { id: 14, name: "microservices", description: "Microservices is an architectural style that structures an application as a collection of loosely coupled services" },
 ];
 
 // Bảng liên kết giữa questions và tags
@@ -48,26 +52,7 @@ export default {
     });
   },
   
-  // API lấy chi tiết một tag
-  'GET /api/tags/:id': (req: any, res: any) => {
-    const id = parseInt(req.params.id, 10);
-    const tag = tags.find(t => t.id === id);
-    
-    if (tag) {
-      const count = question_tags.filter(qt => qt.tag_id === id).length;
-      res.send({
-        success: true,
-        data: {...tag, count},
-      });
-    } else {
-      res.status(404).send({
-        success: false,
-        message: 'Không tìm thấy tag',
-      });
-    }
-  },
-  
-  // API tìm kiếm tags
+  // API tìm kiếm tags (đặt trước route có param)
   'GET /api/tags/search': (req: any, res: any) => {
     const { query = {} } = parse(req.url || '', true);
     const { keyword } = query;
@@ -92,5 +77,24 @@ export default {
       success: true,
       data: tagsWithCount,
     });
-  }
+  },
+  
+  // API lấy chi tiết một tag (đặt sau route cố định)
+  'GET /api/tags/:id': (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const tag = tags.find(t => t.id === id);
+    
+    if (tag) {
+      const count = question_tags.filter(qt => qt.tag_id === id).length;
+      res.send({
+        success: true,
+        data: {...tag, count},
+      });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: 'Không tìm thấy tag',
+      });
+    }
+  },
 };

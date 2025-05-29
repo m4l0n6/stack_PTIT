@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Card, Divider, Space, Upload, Input, Select, Row, Col, Button } from "antd";
-import { Editor } from "@tinymce/tinymce-react";
+import TinyEditor from "@/components/TinyEditor";
 
 const ProfileSetting: React.FC = () => {
+    const editorRef = useRef<any>(null);
     return (
       <>
         <h1 className="mb-4 font-bold text-2xl">Chỉnh sửa hồ sơ</h1>
@@ -44,22 +45,10 @@ const ProfileSetting: React.FC = () => {
 
             <div>
               <h1 className="mb-2 font-bold">Giới thiệu bản thân</h1>
-              <Editor
-                apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46"
-                init={{
-                  height: 200,
-                  menubar: false,
-                  plugins: [
-                    "advlist autolink lists link image charmap print preview anchor",
-                    "searchreplace visualblocks code fullscreen",
-                    "insertdatetime media table paste code help wordcount",
-                  ],
-                  toolbar:
-                    "formatselect | bold italic backcolor | \
-                  alignleft aligncenter alignright alignjustify | \
-                  bullist numlist outdent indent | removeformat | help",
+              <TinyEditor
+                onEditorInit={(editor) => {
+                  editorRef.current = editor;
                 }}
-                className="w-full"
               />
             </div>
           </Space>

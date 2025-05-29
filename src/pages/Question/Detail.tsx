@@ -11,7 +11,7 @@ import {
 import { Question } from '@/services/Questions/typing';
 import { Comment } from '@/services/Comments/typing';
 import { Answer } from '@/services/Answers/typing';
-import { Editor } from '@tinymce/tinymce-react';
+import TinyEditor from '@/components/TinyEditor';
 import { 
   Card, 
   Typography, 
@@ -325,22 +325,29 @@ const QuestionDetail: React.FC = () => {
                 className="question-content"
                 dangerouslySetInnerHTML={{ __html: question.content }}
               />
-            </div>            <Space className="mt-4" size={[0, 8]} wrap>
-              {question.tags && question.tags.map((tag) => (
-                <Tag color="blue" key={tag.id}>
-                  {tag.name} {tag.count !== undefined && <span className="text-xs">({tag.count})</span>}
-                </Tag>
-              ))}
+            </div>
+            <Space className="mt-4" size={[0, 8]} wrap>
+              {question.tags &&
+                question.tags.map((tag) => (
+                  <Tag color="blue" key={tag.id}>
+                    {tag.name}{" "}
+                    {tag.count !== undefined && (
+                      <span className="text-xs">({tag.count})</span>
+                    )}
+                  </Tag>
+                ))}
             </Space>
 
             <div className="flex justify-end mt-4">
               <div className="bg-blue-50 p-3 rounded-md">
                 <div className="text-gray-500 text-sm">
                   Đã hỏi vào {question.created_at}
-                </div>                
+                </div>
                 <div className="flex items-center mt-2">
                   <Avatar src={question.user?.avatar} />
-                  <Link to={`/users/${question.user?.id}/${question.user?.username.replace(/\s+/g, '-')}`}>
+                  <Link
+                    to={`/users/${question.user?.id}/${question.user?.username.replace(/\s+/g, "-")}`}
+                  >
                     <Text strong className="ml-2 hover:text-[#1890ff]">
                       {question.user?.username}
                     </Text>
@@ -419,11 +426,16 @@ const QuestionDetail: React.FC = () => {
                           <div className="bg-blue-50 p-3 rounded-md">
                             <div className="text-gray-500 text-sm">
                               Đã trả lời vào {answer.created_at}
-                            </div>                            
+                            </div>
                             <div className="flex items-center mt-2">
                               <Avatar src={answer.user?.avatar} />
-                              <Link to={`/users/${answer.user?.id}/${answer.user?.username.replace(/\s+/g, '-')}`}>
-                                <Text strong className="ml-2 hover:text-[#1890ff]">
+                              <Link
+                                to={`/users/${answer.user?.id}/${answer.user?.username.replace(/\s+/g, "-")}`}
+                              >
+                                <Text
+                                  strong
+                                  className="ml-2 hover:text-[#1890ff]"
+                                >
                                   {answer.user?.username}
                                 </Text>
                               </Link>
@@ -487,8 +499,15 @@ const QuestionDetail: React.FC = () => {
                                       <Avatar src={comment.user?.avatar} />
                                     }
                                     title={
-                                      <Link to={`/users/${comment.user?.id}/${comment.user?.username.replace(/\s+/g, '-')}`}>
-                                        <Text strong className="hover:text-[#1890ff]">{comment.user?.username}</Text>
+                                      <Link
+                                        to={`/users/${comment.user?.id}/${comment.user?.username.replace(/\s+/g, "-")}`}
+                                      >
+                                        <Text
+                                          strong
+                                          className="hover:text-[#1890ff]"
+                                        >
+                                          {comment.user?.username}
+                                        </Text>
                                       </Link>
                                     }
                                     description={
@@ -528,55 +547,9 @@ const QuestionDetail: React.FC = () => {
               <Card title="Câu trả lời của bạn">
                 {user ? (
                   <div>
-                    <Editor
-                      apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46" 
-                      onInit={(evt: any, editor: any) =>
-                        (editorRef.current = editor)
-                      }
-                      initialValue=""
-                      init={{
-                        height: 300,
-                        menubar: true,
-                        plugins: [
-                          "advlist",
-                          "autolink",
-                          "lists",
-                          "link",
-                          "image",
-                          "charmap",
-                          "preview",
-                          "anchor",
-                          "searchreplace",
-                          "visualblocks",
-                          "code",
-                          "fullscreen",
-                          "insertdatetime",
-                          "media",
-                          "table",
-                          "code",
-                          "help",
-                          "wordcount",
-                          "codesample",
-                        ],
-                        toolbar:
-                          "undo redo | blocks | " +
-                          "bold italic forecolor | alignleft aligncenter " +
-                          "alignright alignjustify | bullist numlist outdent indent | " +
-                          "removeformat | codesample | help",
-                        content_style:
-                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                        codesample_languages: [
-                          { text: "HTML/XML", value: "markup" },
-                          { text: "JavaScript", value: "javascript" },
-                          { text: "CSS", value: "css" },
-                          { text: "PHP", value: "php" },
-                          { text: "Ruby", value: "ruby" },
-                          { text: "Python", value: "python" },
-                          { text: "Java", value: "java" },
-                          { text: "C", value: "c" },
-                          { text: "C#", value: "csharp" },
-                          { text: "C++", value: "cpp" },
-                        ],
+                    <TinyEditor
+                      onEditorInit={(editor) => {
+                        editorRef.current = editor;
                       }}
                     />
                     <div className="mt-4">

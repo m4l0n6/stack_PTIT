@@ -63,7 +63,7 @@ const ProfilePage = () => {
                 <h2 className="text-2xl">UDU mãi đỉnh</h2>
                 <p>
                   <UserOutlined />
-                  {handleRole(user.role)}
+                  {handleRole(user.role ?? "")}
                 </p>
                 <div className="flex gap-4">
                   <p className="text-gray-500">
@@ -74,11 +74,14 @@ const ProfilePage = () => {
                   </p>
                 </div>
               </div>
-              <Button type="primary" className="mr-4">
-                Chỉnh sửa hồ sơ
-              </Button>
+              <Link to="/profile/edit">
+                <Button type="primary" className="mr-4">
+                  Chỉnh sửa hồ sơ
+                </Button>
+              </Link>
             </div>
           </div>
+          
           <Tabs defaultActiveKey="1" items={items} />
         </div>
       ) : (

@@ -2,11 +2,7 @@ import React from "react";
 import { Card, Avatar, Space, Tag, Typography, Divider } from "antd";
 import { Link } from "umi";
 import {
-  EyeOutlined,
-  MessageOutlined,
   ClockCircleOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
 } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 
@@ -26,17 +22,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
             <div className="font-semibold text-lg">
               {question.upvotes - question.downvotes}
             </div>
-            <div className="text-gray-500 text-xs">votes</div>
+            <div className="text-gray-500 text-xs">bình chọn</div>
           </div>
           <div className="flex flex-col items-center mt-2">
             <div className="font-semibold text-lg">
               {question.answer_count || 0}
             </div>
-            <div className="text-gray-500 text-xs">answers</div>
+            <div className="text-gray-500 text-xs">câu trả lời</div>
           </div>
           <div className="flex flex-col items-center mt-2">
             <div className="font-semibold text-lg">{question.views}</div>
-            <div className="text-gray-500 text-xs">views</div>
+            <div className="text-gray-500 text-xs">lượt xem</div>
           </div>
         </div>
 

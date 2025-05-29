@@ -21,12 +21,12 @@ const TagCard: React.FC<{ tag: Tag }> = ({ tag }) => {
           {tag.description}
         </Text>
         <Text strong style={{ color: '#000', marginBottom: 4 }}>
-          {tag.count} questions
+          {(tag.count ?? 0)} questions
         </Text>
         <Text style={{ color: '#000' }}>
-          {tag.count > 0 && (
+          {(tag.count ?? 0) > 0 && (
             <>
-              ({Math.floor(Math.random() * 40)} asked today, {tag.count} this week)
+              ({tag.count} asked today, {tag.count} this week)
             </>
           )}
         </Text>

@@ -11,6 +11,7 @@ import { Button, Layout, Menu, theme, Dropdown, Avatar } from "antd";
 import type { MenuProps } from "antd";
 import { Outlet, Link } from "umi";
 import { useModel, history } from "umi";
+import Notification from "@/components/Notification";
 
 const { Header, Sider, Content } = Layout;
 
@@ -44,7 +45,7 @@ const userMenu: MenuProps["items"] = [
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="flex justify-center items-center p-4">
           <h1 className="font-bold text-white text-2xl">stack PTIT</h1>
-        </div>        
+        </div>
         <Menu
           theme="dark"
           mode="inline"
@@ -57,7 +58,7 @@ const userMenu: MenuProps["items"] = [
             },
             {
               key: "2",
-              icon: <UserOutlined/>,
+              icon: <UserOutlined />,
               label: <Link to="/dashboard/users">Người dùng</Link>,
             },
             {
@@ -89,16 +90,19 @@ const userMenu: MenuProps["items"] = [
               height: 64,
             }}
           />
-          <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-            <div className="flex items-center ml-4 cursor-pointer">
-              <Avatar
-                style={{ backgroundColor: "#1677ff" }}
-                icon={<UserOutlined />}
-                src={user.avatar}
-              />
-              <span className="ml-2">{user.username}</span>
-            </div>
-          </Dropdown>
+          <div className="flex items-center">
+            <Notification numberOfNotifications={10} bellColor={"#1677ff"} />
+            <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+              <div className="flex items-center ml-4 cursor-pointer">
+                <Avatar
+                  style={{ backgroundColor: "#1677ff" }}
+                  icon={<UserOutlined />}
+                  src={user?.avatar}
+                />
+                <span className="ml-2">{user?.username}</span>
+              </div>
+            </Dropdown>
+          </div>
         </Header>
         <Content
           style={{

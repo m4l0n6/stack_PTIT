@@ -81,7 +81,7 @@ const AccountSetting: React.FC = () => {
                 Bạn có chắc chắn muốn xóa tài khoản của mình không? Hành động
                 này không thể hoàn tác.
               </p>
-              <h1>Nhập tên tài khoản để xác nhận</h1>
+              <h1>Nhập <strong>{user.username}</strong> để xác nhận</h1>
               <Input
                 placeholder=""
                 className="w-1/2"
