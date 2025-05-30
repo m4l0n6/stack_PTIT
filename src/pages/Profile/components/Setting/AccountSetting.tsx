@@ -13,7 +13,7 @@ const AccountSetting: React.FC = () => {
           <Space direction="vertical" className="w-full">
             <div>
               <h1 className="mb-2 font-bold">Email</h1>
-              <Input placeholder={`${user.email}`} className="w-1/2" disabled />
+              <Input placeholder={`${user?.email}`} className="w-1/2" disabled />
             </div>
             <div>
               <h1 className="mb-2 font-bold">Mật khẩu hiện tại</h1>
@@ -75,13 +75,13 @@ const AccountSetting: React.FC = () => {
                   Xóa tài khoản
                 </Button>,
               ]}
-              onCancel={() => setVisible(false)}
+              onCancel={() => setVisible(false)}  
             >
               <p>
                 Bạn có chắc chắn muốn xóa tài khoản của mình không? Hành động
                 này không thể hoàn tác.
               </p>
-              <h1>Nhập <strong>{user.username}</strong> để xác nhận</h1>
+              <h1>Nhập <strong>{user?.username}</strong> để xác nhận</h1>
               <Input
                 placeholder=""
                 className="w-1/2"

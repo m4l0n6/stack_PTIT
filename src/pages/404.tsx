@@ -7,8 +7,8 @@ const NotFound: React.FC = () => {
     <Result
       status="404"
       title="404"
-      subTitle="Sorry, the page you visited does not exist."
-      extra={<Button type="primary" onClick={() => history.push('/')}>Back Home</Button>}
+      subTitle="Xin lỗi, trang bạn đang tìm kiếm không tồn tại."
+      extra={<Button type="primary" onClick={() => history.push('/')}>Quay lại Trang Chủ</Button>}
     />
   );
 };

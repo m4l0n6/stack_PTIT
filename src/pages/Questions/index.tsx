@@ -5,7 +5,7 @@ import { Link } from "umi";
 import { useModel } from "umi";
 
 const QuestionPage: React.FC = () => {
-  const { questions, total, page, pageSize, handleFilterChange, handlePageChange, handleSortChange, sort, filter, loading } = useModel('question');
+  const { questions, total, page, pageSize, handleFilterChange, handlePageChange, handleSortChange, sort, filter, loading } = useModel('Question.question');
 
   return (
     <div>

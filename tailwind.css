@@ -20,7 +20,7 @@
 }
 
 
-/* Tùy chỉnh  */
+/* Auth: start  */
 .login-card .ant-card-head-title{
     font-size: 24px;
     font-weight: bold;
@@ -32,8 +32,9 @@
     font-weight: bold;
     padding: 10px;
 }
+/* Auth: end  */
 
-/* Question */
+/* Question: start */
 .vote-count, .answer-count, .view-count {
     display: flex;
     flex-direction: column;
@@ -63,3 +64,39 @@
 .ant-popover-content .ant-popover-inner{
     padding: 0px;
 }
+/* Question: end */
+
+/* Question detail: start */
+.question-content img, .answer-content img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .question-content pre, .answer-content pre {
+    background-color: #f6f8fa;
+    border-radius: 3px;
+    padding: 16px;
+    overflow: auto;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 85%;
+  }
+  
+  .question-content code, .answer-content code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+  }
+  
+  .question-content pre code, .answer-content pre code {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    overflow: visible;
+  }
+/* Question detail: end */
