@@ -12,6 +12,9 @@
     "@ant-design/charts": "^2.3.0",
     "@tinymce/tinymce-react": "^6.1.0",
     "antd": "^5.25.3",
+    "chart.js": "^4.4.9",
+    "lucide-react": "^0.511.0",
+    "react-chartjs-2": "^5.3.0",
     "umi": "^4.4.11",
     "umi-request": "^1.4.0"
   },
