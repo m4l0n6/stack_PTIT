@@ -1,5 +1,6 @@
-import { Card, List, Tag } from "antd";
+import { Card, List, Tag, Row, Col } from "antd";
 import React from "react";
+
 
 const Activity: React.FC = () => {
   return (
@@ -8,8 +9,8 @@ const Activity: React.FC = () => {
         <List>
           {Array.from({ length: 3 }, (_, index) => (
             <List.Item key={index} className="hover:bg-[#f5f5f5]">
-              <div className="bg-green-500 mr-2 rounded-lg w-12 h-8 text-white text-center">
-                5
+              <div className="flex justify-center items-center bg-green-500 mr-2 rounded-lg w-12 h-8 text-white">
+                <div>5</div>
               </div>
               <List.Item.Meta title={<a href="#">Câu trả lời {index + 1}</a>} />
               <div>31/08/2005</div>
@@ -22,8 +23,8 @@ const Activity: React.FC = () => {
         <List>
           {Array.from({ length: 3 }, (_, index) => (
             <List.Item key={index} className="hover:bg-[#f5f5f5]">
-              <div className="bg-green-500 mr-2 rounded-lg w-12 h-8 text-white text-center">
-                5
+              <div className="flex justify-center items-center bg-green-500 mr-2 rounded-lg w-12 h-8 text-white">
+                <div>5</div>
               </div>
               <List.Item.Meta title={<a href="#">Câu trả lời {index + 1}</a>} />
               <div>31/08/2005</div>

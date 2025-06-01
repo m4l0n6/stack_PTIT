@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, Outlet, history, useModel } from "umi";
 import {
   LaptopOutlined,
@@ -9,7 +9,7 @@ import {
   BellOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Breadcrumb, Layout, Menu, theme, Input, Button, Avatar, Dropdown, Tooltip, Popover, Tabs, List, Badge, Divider } from "antd";
+import { Layout, Menu, theme, Input, Button, Avatar, Dropdown, } from "antd";
 import Notification from "@/components/Notification";
 
 const { Header, Content, Sider, Footer } = Layout;
@@ -48,8 +48,6 @@ const sider: MenuProps["items"] = [
   },
 ];
 
-
-
 export default function AppLayout() {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -82,9 +80,9 @@ export default function AppLayout() {
   
   return (
     <Layout className="min-h-screen">
-      <Header className="flex items-center">
+      <Header className="z-10 fixed flex items-center w-full">
         <Link
-          to="/ "
+          to="/"
           style={{ display: "flex", alignItems: "center", width: "150px" }}
           className="flex items-center bg-[#001529] w-[150px]"
         >
@@ -98,7 +96,7 @@ export default function AppLayout() {
           className="flex-1 min-w-0"
         />
         <Search
-          placeholder="Search"
+          placeholder="Tìm kiếm câu hỏi, từ khóa..."
           allowClear
           enterButton
           size="large"
@@ -112,10 +110,10 @@ export default function AppLayout() {
               <Dropdown menu={{ items: userMenu }} placement="bottomRight">
                 <div className="flex items-center ml-4 cursor-pointer">
                   <Avatar
-                    style={{ backgroundColor: "#1677ff" }}
                     icon={<UserOutlined />}
                     src={user.avatar}
-                  />G
+                    className="bg-[#1677ff] mr-2 text-white"
+                  />
                   <span className="text-white">{user.username}</span>
                 </div>
               </Dropdown>
@@ -140,36 +138,39 @@ export default function AppLayout() {
           )}
         </div>
       </Header>
-      <Layout>
-        <Sider width={200} style={{ background: colorBgContainer }}>
+      <Layout style={{ marginTop: 64 }}>
+        <Sider 
+          width={200} 
+          style={{ 
+            background: colorBgContainer,
+            overflow: 'auto',
+            height: '100vh',
+            position: 'fixed',
+            left: 0,
+            top: 64,
+            bottom: 0,
+          }}
+        >
           <Menu
             mode="inline"
             defaultSelectedKeys={["1"]}
             defaultOpenKeys={["sub1"]}
-            style={{ height: "100%", borderRight: 0, paddingTop: "16px  " }}
+            style={{ height: "100%", borderRight: 0, paddingTop: "16px" }}
             items={sider}
           />
         </Sider>
-        <Layout style={{ padding: "0 16px" }}>
+        <Layout style={{ marginLeft: 200, padding: "0 16px" }}>
           <Content
             style={{
-              padding: 24,
-              margin: 0,
-              minHeight: 280,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
+            className="m-0 p-6 min-h-[calc(100vh-64px-69px)] overflow-y-auto"
           >
             <Outlet />
           </Content>
           <Footer style={{ textAlign: "center" }}>stack PTIT ©2025</Footer>
         </Layout>
-        {/* <Sider
-          width={200}
-          style={{ background: colorBgContainer, padding: "16px" }}
-        >
-          <h2>Quy định</h2>
-        </Sider> */}
       </Layout>
     </Layout>
   );

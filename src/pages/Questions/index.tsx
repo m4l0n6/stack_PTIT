@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Button, Select, Pagination, Spin, Empty } from "antd";
+import React from "react";
+import { Button, Select, Pagination, Spin, Empty, Typography } from "antd";
 import Question from "./components/QuestionCard";
 import { Link } from "umi";
 import { useModel } from "umi";
+
+const { Title } = Typography;
 
 const QuestionPage: React.FC = () => {
   const { questions, total, page, pageSize, handleFilterChange, handlePageChange, handleSortChange, sort, filter, loading } = useModel('Question.question');
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1 className="mb-2 font-bold text-3xl">Câu hỏi từ cộng đồng</h1>
+    <div>      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Title level={2}>Danh sách câu hỏi</Title>
         <Link to="/ask">
           <Button type="primary">+ Đặt câu hỏi</Button>
         </Link>

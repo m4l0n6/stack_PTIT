@@ -6,5 +6,5 @@ export interface User {
   created_at: string;
   reputation: number;
   avatar?: string; // thêm cho UI
-  role?: string;
+  role: string;
 }

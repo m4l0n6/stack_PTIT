@@ -1,5 +1,7 @@
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
 import { useModel } from 'umi';
+
+const { Title } = Typography;
 
 export default function HomePage() {
   const { user } = useModel('user');
@@ -7,9 +9,8 @@ export default function HomePage() {
     <div>
       {user ? (
         <div>
-          <h1 className="mb-4 font-bold text-3xl">
-            Chào mừng quay trở lại, {user.username} !
-          </h1>
+          <Title level={2}>Chào mừng trở lại, {user.username}!</Title>
+          <p className="text-lg">Khám phá câu câu hỏi mà bạn yêu thích</p>
         </div>
       ) : (
         <div className="flex flex-col items-center">

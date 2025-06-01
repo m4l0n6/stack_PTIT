@@ -15,40 +15,65 @@ export default defineConfig({
           component: "@/pages/Auth/Register/index",
         },
       ],
-    },
-    {
+    },    {
       path: "/",
       component: "@/layouts/BasicLayout",
       routes: [
         { path: "/", component: "@/pages/index" },
         { path: "questions", component: "@/pages/Questions/index" },
-        { path: "question/:id", component: "@/pages/Question/Detail" },        
-        { path: "tags", component: "@/pages/Tags/index" },        
+        { path: "question/:id", component: "@/pages/Question/Detail" },
+        { path: "tags", component: "@/pages/Tags/index" },
         {
           path: "ask",
           component: "@/pages/Question/Create",
-          wrappers: ["@/wrappers/auth"],
+          wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
+          allowedRoles: ["teacher", "student"],
+        },        {
+          path: "users/:id/:name",
+          component: "@/pages/Profile/index",
+          wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
+          allowedRoles: ["teacher", "student"],
+          routes: [
+            { path: "saves", component: "@/pages/Profile/components/Saves" },
+            {
+              path: "edit",
+              component: "@/pages/Profile/components/Setting/ProfileSetting",
+            },
+            {
+              path: "account",
+              component: "@/pages/Profile/components/Setting/AccountSetting",
+            },
+            {
+              path: "preferences",
+              component:
+                "@/pages/Profile/components/Setting/PreferencesSetting",
+            },
+          ],
         },
-        { path: "users/:id/:name", component: "@/pages/Profile/index", routes: [
-          { path: "saves", component: "@/pages/Profile/components/Saves" },
-          { path: "edit", component: "@/pages/Profile/components/Setting/ProfileSetting" },
-          { path: "account", component: "@/pages/Profile/components/Setting/AccountSetting" },
-          { path: "preferences", component: "@/pages/Profile/components/Setting/PreferencesSetting" },
-        ]},
       ],
-    },    {
+    },
+    {
       path: "dashboard",
       component: "@/layouts/AdminLayout",
       routes: [
-        { path: "", component: "@/pages/Admin/Dashboard"},
-        { path: "users", component: "@/pages/Admin/Users"},
-        { path: "questions", component: "@/pages/Admin/Questions"},
+        { path: "", component: "@/pages/Admin/Dashboard" },
+        { path: "users", component: "@/pages/Admin/Users" },
+        {
+          path: "questions",
+          component: "@/pages/Admin/Questions",
+          allowedRoles: ["admin"],
+        },
       ],
-      wrappers: ["@/wrappers/auth"],
+      wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
+      allowedRoles: ["admin"],
     },
     {
       path: "*",
       component: "@/pages/404",
+    },
+    {
+      path: "/403",
+      component: "@/pages/403",
     },
   ],
 

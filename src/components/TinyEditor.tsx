@@ -25,10 +25,10 @@ const TinyEditor: React.FC<TinyEditorProps> = ({ onEditorInit }) => {
           <Spin size="large" tip="Đang tải trình soạn thảo..." />
         </div>
       )}
-      <div className={loading ? 'hidden' : 'block'}>
+      <div className={loading ? "hidden" : "block"}>
         <Editor
           onInit={handleInit}
-          apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46"
+          apiKey="e4p9kddqclxlp0gg550qc9cl9unby7d5qnypw940hurkkl5n"
           init={{
             height: 200,
             menubar: false,

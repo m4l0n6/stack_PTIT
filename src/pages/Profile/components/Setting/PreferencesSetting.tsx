@@ -20,11 +20,6 @@ const PreferencesSetting: React.FC = () => {
                     <p className="text-white">Chủ đề tối</p>
                   </div>
                 </Radio>
-                <Radio value="system">
-                    <div className="bg-gray-200 shadow p-4 rounded-lg">
-                        <p className="text-gray-800">Chủ đề theo hệ thống</p>
-                    </div>
-                </Radio>
               </Radio.Group>
             </Form.Item>
           </Form>

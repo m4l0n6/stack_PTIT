@@ -37,13 +37,29 @@ export default () => {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [loadUserFromStorage]);
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(undefined);
     message.success("Đăng xuất thành công");
-    history.push("/");
+    history.push("/auth/login");
+  };
+  
+  // Hàm điều hướng dựa trên vai trò người dùng
+  const redirectBasedOnRole = (userData: User) => {
+    if (!userData) return;
+    
+    switch (userData.role) {
+      case 'admin':
+        history.push('/dashboard');
+        break;
+      case 'teacher':
+      case 'student':
+        history.push('/');
+        break;
+      default:
+        history.push('/');
+    }
   };
 
 
@@ -53,11 +69,11 @@ export default () => {
     }
     setUser(userData);
   };
-
   return {
     user,
     setUser: setUserData,
     handleLogout,
     loadUserFromStorage,
+    redirectBasedOnRole,
   };
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -24,9 +24,11 @@ const AdminLayout: React.FC = () => {
 const { user, handleLogout } = useModel("user");
 
 const userMenu: MenuProps["items"] = [
-  {    key: "profile",
+  {    
+    key: "profile",
     icon: <UserOutlined />,
-    label: "Hồ sơ",    onClick: () => {
+    label: "Hồ sơ",   
+    onClick: () => {
       const userData = JSON.parse(localStorage.getItem("user") || "{}");
       const formattedName = userData.name ? userData.name.replace(/\s+/g, '-') : '';
       history.push(`/users/${userData.id}/${formattedName}`);
@@ -39,6 +41,13 @@ const userMenu: MenuProps["items"] = [
     onClick: handleLogout,
   },
 ];
+
+  useEffect(() => {
+    // Kiểm tra quyền truy cập khi component mount
+    if (!user || user.role !== "admin") {
+      history.push("/403");
+    }
+  }, [user]);
 
   return (
     <Layout className="min-h-screen">

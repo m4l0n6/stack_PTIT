@@ -9,22 +9,26 @@ import { Link, useModel } from "umi";
 import { login } from "@/services/auth";
 import { history } from "umi";
 
-const LoginPage: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const { setUser } = useModel('user');
-
+const LoginPage: React.FC = () => {  const [loading, setLoading] = useState(false);
+  const { setUser, redirectBasedOnRole } = useModel('user');
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
       const res = await login(values);
       if (res.success) {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         setUser(res.data.user);
         message.success("Đăng nhập thành công");
-        if (res.data.user.role === "admin") {
-          history.push("/dashboard");
+        
+        // Kiểm tra nếu có URL chuyển hướng sau đăng nhập
+        const redirectUrl = localStorage.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+          localStorage.removeItem('redirectAfterLogin');
+          history.push(redirectUrl);
         } else {
-          history.push("/");
+          // Nếu không có, sử dụng hàm từ model để điều hướng dựa trên vai trò
+          redirectBasedOnRole(res.data.user);
         }
       }
     } catch (err: any) {
