@@ -1,10 +1,14 @@
 import { Button, Typography } from 'antd';
 import { useModel } from 'umi';
+import ModalTagFollow from '@/components/ModalTagFollow';
+import { useModal } from '@/hooks/useModal';
 
 const { Title } = Typography;
 
 export default function HomePage() {
   const { user } = useModel('user');
+  const { visble, setVisible } = useModal();
+  
   return (
     <div>
       {user ? (
@@ -15,13 +19,20 @@ export default function HomePage() {
       ) : (
         <div className="flex flex-col items-center">
           <h1 className="text-3xl">Welcome to Stack PTIT</h1>
+          <p className="mb-4 text-lg">Nơi bạn có thể đặt câu hỏi và tìm kiếm câu trả lời</p>
           <Button
             type="primary"
-            onClick={() => window.open("/auth/login")}
-            className="mt-4"
+            onClick={() => {
+              setVisible(true);
+            }}
+            className="mb-4"
           >
-            Log In
+            Thiết lập thẻ theo dõi
           </Button>
+          <ModalTagFollow 
+            visible={visble} 
+            setVisible={setVisible} 
+          />
         </div>
       )}
     </div>

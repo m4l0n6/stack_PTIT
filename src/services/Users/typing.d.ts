@@ -6,5 +6,7 @@ export interface User {
   created_at: string;
   reputation: number;
   avatar?: string; // thêm cho UI
+  title?: string; // thêm cho UI
+  bio?: string; // thêm cho UI
   role: string;
 }

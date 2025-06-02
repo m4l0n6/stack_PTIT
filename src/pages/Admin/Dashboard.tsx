@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Maximize2, MoreHorizontal } from 'lucide-react';
 import { Card, Row, Col, Statistic, Button } from 'antd';
-import { UserOutlined, FileTextOutlined, CommentOutlined, EyeOutlined } from '@ant-design/icons';
-import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import { UserOutlined, FileTextOutlined, CommentOutlined, EyeOutlined, ArrowLeftOutlined, ExpandOutlined, ExpandAltOutlined } from '@ant-design/icons';
+import { Bar } from '@ant-design/plots';
 
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('posts');
@@ -21,58 +9,48 @@ const AdminDashboard: React.FC = () => {
   // Tạo mảng nhãn cho 5 ngày gần nhất (27/05/2025 - 31/05/2025)
   const labels = ['27/05/2025', '28/05/2025', '29/05/2025', '30/05/2025', '31/05/2025'];
 
-  // Dữ liệu giả lập cho thống kê người dùng (đăng nhập trong 5 ngày gần nhất)
-  const userChartData = {
-    labels,
-    datasets: [
-      {
-        label: 'Số sinh viên đăng nhập',
-        data: [120, 130, 140, 145, 150],
-        backgroundColor: '#FF9800',
-        borderColor: '#F57C00',
-        borderWidth: 1,
-      },
-      {
-        label: 'Số giảng viên đăng nhập',
-        data: [15, 18, 17, 19, 20],
-        backgroundColor: '#2196F3',
-        borderColor: '#1976D2',
-        borderWidth: 1,
-      },
-    ],
-  };
+  // Dữ liệu cho thống kê người dùng
+  const userChartData = [
+    ...labels.map((date, idx) => ({
+      type: 'Số sinh viên đăng nhập',
+      date,
+      value: [120, 130, 140, 145, 150][idx],
+    })),
+    ...labels.map((date, idx) => ({
+      type: 'Số giảng viên đăng nhập',
+      date,
+      value: [15, 18, 17, 19, 20][idx],
+    })),
+  ];
 
-  // Dữ liệu giả lập cho thống kê bài viết (hoàn thành và đăng trong 5 ngày gần nhất)
-  const postChartData = {
-    labels,
-    datasets: [
-      {
-        label: 'Bài viết hoàn thành',
-        data: [25, 28, 30, 32, 30],
-        backgroundColor: '#4CAF50',
-        borderColor: '#388E3C',
-        borderWidth: 1,
-      },
-      {
-        label: 'Bài viết được đăng',
-        data: [40, 45, 48, 50, 50],
-        backgroundColor: '#FF4D4F',
-        borderColor: '#F5222D',
-        borderWidth: 1,
-      },
-    ],
-  };
+  // Dữ liệu cho thống kê bài viết
+  const postChartData = [
+    ...labels.map((date, idx) => ({
+      type: 'Bài viết hoàn thành',
+      date,
+      value: [25, 28, 30, 32, 30][idx],
+    })),
+    ...labels.map((date, idx) => ({
+      type: 'Bài viết được đăng',
+      date,
+      value: [40, 45, 48, 50, 50][idx],
+    })),
+  ];
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' as const },
-      title: { display: true, text: 'Thống kê 5 ngày gần nhất (27/05/2025 - 31/05/2025)' },
-    },
-    scales: {
-      y: { beginAtZero: true, title: { display: true, text: 'Số lượng' } },
-      x: { title: { display: true, text: 'Ngày' } },
-    },
+  const chartConfig = {
+    data: activeTab === 'posts' ? postChartData : userChartData,
+    xField: 'value',
+    yField: 'date',
+    seriesField: 'type',
+    isStack: false,
+    legend: { position: 'top' },
+    color: activeTab === 'posts'
+      ? ['#4CAF50', '#FF4D4F']
+      : ['#FF9800', '#2196F3'],
+    label: { position: 'right' as const },
+    xAxis: { title: { text: 'Số lượng' } },
+    yAxis: { title: { text: 'Ngày' } },
+    height: 350,
   };
 
   return (
@@ -80,20 +58,20 @@ const AdminDashboard: React.FC = () => {
       {/* Tiêu đề */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center space-x-4">
-          <button className="hover:bg-gray-200 p-2 rounded-lg transition-colors">
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
-          </button>
+          <Button className="hover:bg-gray-200 p-2 rounded-lg transition-colors">
+            <ArrowLeftOutlined className="w-5 h-5 text-gray-600" />
+          </Button>
           <div className="flex items-center space-x-2">
             <h1 className="font-semibold text-gray-800 text-xl">Bảng Điều Khiển Quản Trị</h1>
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <button className="hover:bg-gray-200 p-2 rounded-lg transition-colors">
-            <Maximize2 className="w-4 h-4 text-gray-600" />
-          </button>
-          <button className="hover:bg-gray-200 p-2 rounded-lg transition-colors">
-            <MoreHorizontal className="w-4 h-4 text-gray-600" />
-          </button>
+          <Button className="hover:bg-gray-200 p-2 rounded-lg transition-colors">
+            <ExpandAltOutlined className="w-4 h-4 text-gray-600" />
+          </Button>
+          <Button className="hover:bg-gray-200 p-2 rounded-lg transition-colors">
+            <ExpandOutlined className="w-4 h-4 text-gray-600" />
+          </Button>
         </div>
       </div>
 
@@ -168,10 +146,7 @@ const AdminDashboard: React.FC = () => {
                 </Button>
               </div>
             </div>
-            <Bar
-              data={activeTab === 'posts' ? postChartData : userChartData}
-              options={chartOptions}
-            />
+            <Bar {...chartConfig} />
           </div>
         </div>
       </div>

@@ -1,7 +1,10 @@
 import { Image, Statistic, Row, Col, List } from "antd";
 import React from "react";
+import { useModel } from "umi";
 
 const Profile: React.FC = () => {
+  const { user } = useModel("user");
+
   return (
     <div className="flex">
       <div className="mr-4 w-1/4">
@@ -9,7 +12,7 @@ const Profile: React.FC = () => {
         <div className="mb-2 p-4 border rounded-lg">
           <Row gutter={16}>
             <Col span={12}>
-              <Statistic title="Danh tiếng" value={100} />
+              <Statistic title="Danh tiếng" value={user?.reputation} />
             </Col>
             <Col span={12}>
               <Statistic title="Tìm kiếm" value={100} />
@@ -28,9 +31,7 @@ const Profile: React.FC = () => {
         <div className="mb-4">
           <h1 className="mb-2 text-2xl">Giới thiệu về tôi</h1>
           <p className="mb-2 p-4 border rounded-lg">
-            Không gì là không thể nếu bạn có đủ đam mê và quyết tâm. Hãy luôn
-            học hỏi và không ngừng phát triển bản thân. Tôi tin rằng mỗi người
-            đều có thể tạo ra sự khác biệt trong thế giới này.
+            {user?.bio || "Chưa có thông tin giới thiệu"}
           </p>
         </div>
 

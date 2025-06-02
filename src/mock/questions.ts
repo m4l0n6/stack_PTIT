@@ -1,18 +1,21 @@
 import { Question } from '@/services/Questions/typing';
 import { Answer } from '@/services/Answers/typing';
 import { Comment } from '@/services/Comments/typing';
-import { Tag } from '@/services/Tags/typing';
-import users from './users';
+
 import { tags, question_tags } from './tags';
 import { Vote } from '@/services/Votes/typing';
 import { parse } from 'url';
 
+import users from "./users";
+import answers from './answers';
+import comments from './comments';
+import votes from './votes';
 
 // Dữ liệu mẫu cho questions
 const questions: Question[] = [
   {
     id: 1,
-    user_id: 1,
+    user_id: 4,
     title: "Làm thế nào để tạo một REST API với Node.js?",
     content: "Tôi đang học về phát triển web và muốn tạo một REST API đơn giản bằng Node.js. Có thể cho tôi hướng dẫn chi tiết về cách thực hiện không?",
     created_at: "2023-10-01",
@@ -52,90 +55,6 @@ const questions: Question[] = [
     tags: [tags[7], tags[8], tags[4], tags[9]],
     answer_count: 0
   },
-];
-
-// Dữ liệu mẫu cho answers
-const answers: Answer[] = [
-  {
-    id: 1,
-    question_id: 1,
-    user_id: 2,
-    content: "Để tạo một REST API với Node.js, bạn có thể sử dụng Express.js - một framework phổ biến và dễ sử dụng. Đây là các bước cơ bản:\n\n1. Cài đặt Node.js và npm\n2. Tạo thư mục dự án và khởi tạo package.json: `npm init -y`\n3. Cài đặt Express: `npm install express`\n4. Tạo file index.js với nội dung sau:\n\n```javascript\nconst express = require('express');\nconst app = express();\nconst port = 3000;\n\napp.use(express.json());\n\napp.get('/api/items', (req, res) => {\n  res.json([{ id: 1, name: 'Item 1' }, { id: 2, name: 'Item 2' }]);\n});\n\napp.post('/api/items', (req, res) => {\n  const newItem = req.body;\n  // Xử lý lưu dữ liệu vào database\n  res.status(201).json(newItem);\n});\n\napp.listen(port, () => {\n  console.log(`API running at http://localhost:${port}`);\n});\n```\n\n5. Chạy server: `node index.js`\n\nĐể API chuyên nghiệp hơn, bạn nên thêm các middleware như cors, helmet để bảo mật, và mongoose hoặc sequelize để kết nối database.",
-    created_at: "2023-10-02",
-    updated_at: "2023-10-02",
-    upvotes: 7,
-    downvotes: 0,
-    is_accepted: true,
-    user: users[1],
-    comment_count: 2
-  },
-  {
-    id: 2,
-    question_id: 1,
-    user_id: 3,
-    content: "Ngoài Express.js mà giảng viên đã đề cập, bạn cũng có thể thử NestJS - một framework Node.js hiện đại được xây dựng trên Express và sử dụng TypeScript.\n\nNestJS cung cấp kiến trúc ứng dụng module, dependency injection và nhiều tính năng cao cấp khác. Nó rất phù hợp cho các API lớn và phức tạp.\n\nĐây là một ví dụ đơn giản với NestJS:\n\n```typescript\n// items.controller.ts\nimport { Controller, Get, Post, Body } from '@nestjs/common';\n\n@Controller('items')\nexport class ItemsController {\n  @Get()\n  findAll() {\n    return [{ id: 1, name: 'Item 1' }, { id: 2, name: 'Item 2' }];\n  }\n\n  @Post()\n  create(@Body() createItemDto) {\n    return createItemDto;\n  }\n}\n```\n\nNestJS có learning curve cao hơn Express nhưng lại mang lại cấu trúc và tính bảo trì tốt hơn cho dự án lớn.",
-    created_at: "2023-10-03",
-    updated_at: "2023-10-03",
-    upvotes: 5,
-    downvotes: 0,
-    is_accepted: false,
-    user: users[2],
-    comment_count: 1
-  },
-  {
-    id: 3,
-    question_id: 2,
-    user_id: 3,
-    content: "Tối ưu hóa hiệu suất React là một chủ đề rộng lớn, nhưng đây là một số kỹ thuật phổ biến:\n\n1. **Code-splitting với React.lazy và Suspense**: Chia nhỏ bundle để tải theo nhu cầu\n2. **Virtualization**: Sử dụng thư viện như react-window hoặc react-virtualized để render một số lượng lớn mục mà không ảnh hưởng đến hiệu suất\n3. **useMemo cho tính toán phức tạp**: Tránh tính toán lại những giá trị phức tạp mỗi lần render\n4. **Debounce và throttle cho các sự kiện thường xuyên**: Như scroll, resize, input search\n5. **Web Workers**: Di chuyển xử lý nặng ra khỏi main thread\n6. **Profiling**: Sử dụng React Profiler và Chrome Performance tab để tìm bottleneck\n\nNếu bạn đề cập cụ thể hơn về vấn đề, tôi có thể cho lời khuyên chi tiết hơn.",
-    created_at: "2023-10-06",
-    updated_at: "2023-10-06",
-    upvotes: 12,
-    downvotes: 0,
-    is_accepted: true,
-    user: users[2],
-    comment_count: 0
-  }
-];
-
-// Dữ liệu mẫu cho comments
-const comments: Comment[] = [
-  {
-    id: 1,
-    user_id: 1,
-    content: "Rất hữu ích, cảm ơn thầy!",
-    created_at: "2023-10-02",
-    answer_id: 1,
-    user: users[0]
-  },
-  {
-    id: 2,
-    user_id: 3,
-    content: "Bạn có thể thêm dotenv để quản lý biến môi trường nữa nhé",
-    created_at: "2023-10-03",
-    answer_id: 1,
-    user: users[2]
-  },
-  {
-    id: 3,
-    user_id: 1,
-    content: "NestJS có vẻ phức tạp hơn cho người mới bắt đầu, nhưng cảm ơn về gợi ý này!",
-    created_at: "2023-10-04",
-    answer_id: 2,
-    user: users[0]
-  }
-];
-
-// Dữ liệu mẫu cho votes
-const votes: Vote[] = [
-  // Votes cho question 1
-  { id: 1, user_id: 2, vote_type: 1, question_id: 1 },
-  { id: 2, user_id: 3, vote_type: 1, question_id: 1 },
-  // ... thêm votes khác
-  
-  // Votes cho answer 1
-  { id: 10, user_id: 1, vote_type: 1, answer_id: 1 },
-  { id: 11, user_id: 3, vote_type: 1, answer_id: 1 },
-  // ... thêm votes khác
 ];
 
 // Biến đếm cho ID mới
@@ -282,6 +201,14 @@ export default {
       });
     }
     
+    // Kiểm tra vai trò - chỉ cho phép student và teacher đặt câu hỏi
+    if (user.role === 'admin') {
+      return res.status(403).send({
+        success: false,
+        message: 'Quản trị viên không có quyền đặt câu hỏi',
+      });
+    }
+    
     // Tạo câu hỏi mới
     const now = new Date().toISOString();
     const newQuestion: Question = {
@@ -294,54 +221,23 @@ export default {
       views: 0,
       upvotes: 0,
       downvotes: 0,
-      answer_count: 0,
-      user: user
+      answer_count: 0
     };
     
     questions.push(newQuestion);
-      // Xử lý tags
-    const questionTags: Tag[] = [];
-    if (tagNames && tagNames.length > 0) {      tagNames.forEach((tagName: string) => {
-        // Tìm tag đã tồn tại hoặc tạo mới
-        let tag = tags.find(t => t.name === tagName);
-        let tagToUse: Tag;
-        
-        if (!tag) {
-          tagToUse = {
-            id: tags.length + 1,
-            name: tagName,
-            count: 1
-          };
-          tags.push(tagToUse);
-        } else {
-          // Cập nhật count nếu tag đã tồn tại
-          const tagCount = question_tags.filter(qt => qt.tag_id === tag.id).length + 1;
-          tagToUse = { ...tag, count: tagCount };
-          // Update the tag in the tags array
-          const tagIndex = tags.findIndex(t => t.id === tag.id);
-          if (tagIndex !== -1) {
-            tags[tagIndex] = tagToUse;
-          }
-        }
-        
-        // Thêm liên kết question_tag
-        question_tags.push({
-          question_id: newQuestion.id,
-          tag_id: tagToUse.id
-        });
-        
-        questionTags.push(tagToUse);
-      });
-    }
     
-    const responseQuestion = {
-      ...newQuestion,
-      tags: questionTags
-    };
+    // Xử lý tags
+    if (tagNames && Array.isArray(tagNames)) {
+      // Xử lý tags...
+    }
     
     res.send({
       success: true,
-      data: responseQuestion,
+      data: {
+        ...newQuestion,
+        user,
+        tags: tagNames || []
+      }
     });
   },
   
@@ -462,6 +358,14 @@ export default {
       return res.status(404).send({
         success: false,
         message: 'Không tìm thấy câu hỏi hoặc người dùng',
+      });
+    }
+    
+    // Kiểm tra vai trò - chỉ cho phép student và teacher trả lời
+    if (user.role === 'admin') {
+      return res.status(403).send({
+        success: false,
+        message: 'Quản trị viên không có quyền trả lời câu hỏi',
       });
     }
     
@@ -681,6 +585,14 @@ export default {
       });
     }
     
+    // Kiểm tra vai trò - chỉ cho phép student và teacher bình luận
+    if (user.role === 'admin') {
+      return res.status(403).send({
+        success: false,
+        message: 'Quản trị viên không có quyền bình luận câu trả lời',
+      });
+    }
+    
     // Tạo bình luận mới
     const now = new Date().toISOString();
     const newComment: Comment = {
@@ -700,7 +612,10 @@ export default {
     
     res.send({
       success: true,
-      data: newComment,
+      data: {
+        ...newComment,
+        user
+      }
     });
   },
   
