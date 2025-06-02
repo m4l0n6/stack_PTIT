@@ -29,6 +29,17 @@ interface SearchResponse<T> {
   message?: string;
 }
 
+interface PaginatedResponseWithData<T> {
+  success: boolean;
+  data: {
+    questions: T[];
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+  message?: string;
+}
+
 // Lấy danh sách câu hỏi
 export async function getQuestions(params?: {
   page?: number;
@@ -125,6 +136,20 @@ export async function searchQuestions(params: {
   tag?: string;
 }): Promise<SearchResponse<Question>> {
   return request("/api/questions/search", {
+    method: "GET",
+    params,
+  });
+}
+
+// Lấy câu hỏi theo tag
+export async function getQuestionsByTag(params: {
+  tag: string;
+  page?: number;
+  pageSize?: number;
+  sort?: string;
+  filter?: string;
+}): Promise<PaginatedResponseWithData<Question>> {
+  return request("/api/questions/tagged", {
     method: "GET",
     params,
   });
