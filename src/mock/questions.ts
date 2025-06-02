@@ -145,6 +145,138 @@ let nextCommentId = comments.length + 1;
 let nextVoteId = votes.length + 1;
 
 export default {
+  // API lấy câu hỏi theo tag (đặt trước search để tránh conflict)
+  'GET /api/questions/tagged': (req: any, res: any) => {
+    const { query = {} } = parse(req.url || '', true);
+    const { tag, sort, filter, page = '1', pageSize = '10' } = query;
+    
+    if (!tag) {
+      return res.status(400).send({
+        success: false,
+        message: 'Tên tag là bắt buộc',
+      });
+    }
+    
+    // Tìm tag theo tên
+    const targetTag = tags.find(t => t.name.toLowerCase() === (tag as string).toLowerCase());
+    
+    if (!targetTag) {
+      return res.send({
+        success: true,
+        data: {
+          questions: [],
+          total: 0,
+          page: 1,
+          pageSize: 10,
+        },
+      });
+    }
+    
+    // Lấy tất cả question_id có tag này
+    const questionIds = question_tags
+      .filter(qt => qt.tag_id === targetTag.id)
+      .map(qt => qt.question_id);
+    
+    // Lấy các câu hỏi tương ứng
+    let result = questions
+      .filter(q => questionIds.includes(q.id))
+      .map(question => {
+        return {
+          ...question,
+          user: users.find(u => u.id === question.user_id),
+          tags: tags.filter(t => question_tags.some(qt => qt.question_id === question.id && qt.tag_id === t.id))
+            .map(t => {
+              const count = question_tags.filter(qt => qt.tag_id === t.id).length;
+              return { ...t, count };
+            })
+        };
+      });
+    
+    // Sắp xếp câu hỏi
+    if (sort === 'newest') {
+      result.sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA;
+      });
+    } else if (sort === 'popular') {
+      result.sort((a, b) => ((b.upvotes - b.downvotes) - (a.upvotes - a.downvotes)));
+    } else if (sort === 'votes') {
+      result.sort((a, b) => (b.upvotes - a.upvotes));
+    } else if (sort === 'unanswered') {
+      result = result.filter(q => q.answer_count === 0);
+    }
+    
+    // Lọc câu hỏi
+    if (filter === 'no answer') {
+      result = result.filter(q => q.answer_count === 0);
+    } else if (filter === 'answered') {
+      result = result.filter(q => (q.answer_count ?? 0) > 0);
+    } else if (filter === 'accepted') {
+      const acceptedQuestionIds = answers
+        .filter(a => a.is_accepted)
+        .map(a => a.question_id);
+      result = result.filter(q => acceptedQuestionIds.includes(q.id));
+    }
+    
+    // Phân trang
+    const pageNumber = parseInt(page as string, 10);
+    const pageSizeNumber = parseInt(pageSize as string, 10);
+    const startIndex = (pageNumber - 1) * pageSizeNumber;
+    const endIndex = pageNumber * pageSizeNumber;
+    const paginatedResult = result.slice(startIndex, endIndex);
+    
+    res.send({
+      success: true,
+      data: {
+        questions: paginatedResult,
+        total: result.length,
+        page: pageNumber,
+        pageSize: pageSizeNumber,
+      },
+    });
+  },
+  
+  // API tìm kiếm câu hỏi
+  'GET /api/questions/search': (req: any, res: any) => {
+    const { query = {} } = parse(req.url || '', true);
+    const { keyword, tag } = query;
+      let result = [...questions].map(question => {
+      return {
+        ...question,
+        user: users.find(u => u.id === question.user_id),
+        tags: tags.filter(t => question_tags.some(qt => qt.question_id === question.id && qt.tag_id === t.id))
+          .map(t => {
+            // Calculate the count for each tag
+            const count = question_tags.filter(qt => qt.tag_id === t.id).length;
+            return { ...t, count };
+          })
+      };
+    });
+    
+    if (keyword) {
+      const searchKeyword = (keyword as string).toLowerCase();
+      result = result.filter(q => 
+        q.title.toLowerCase().includes(searchKeyword) || 
+        q.content.toLowerCase().includes(searchKeyword)
+      );
+    }
+    
+    if (tag) {
+      result = result.filter(q => 
+        q.tags?.some(t => t.name.toLowerCase() === (tag as string).toLowerCase())
+      );
+    }
+    
+    res.send({
+      success: true,
+      data: {
+        list: result,
+        total: result.length,
+      },
+    });
+  },
+  
   // API lấy danh sách câu hỏi
   'GET /api/questions': (req: any, res: any) => {
     const { query = {} } = parse(req.url || '', true);
@@ -701,46 +833,6 @@ export default {
     res.send({
       success: true,
       data: newComment,
-    });
-  },
-  
-  // API tìm kiếm câu hỏi
-  'GET /api/questions/search': (req: any, res: any) => {
-    const { query = {} } = parse(req.url || '', true);
-    const { keyword, tag } = query;
-      let result = [...questions].map(question => {
-      return {
-        ...question,
-        user: users.find(u => u.id === question.user_id),
-        tags: tags.filter(t => question_tags.some(qt => qt.question_id === question.id && qt.tag_id === t.id))
-          .map(t => {
-            // Calculate the count for each tag
-            const count = question_tags.filter(qt => qt.tag_id === t.id).length;
-            return { ...t, count };
-          })
-      };
-    });
-    
-    if (keyword) {
-      const searchKeyword = (keyword as string).toLowerCase();
-      result = result.filter(q => 
-        q.title.toLowerCase().includes(searchKeyword) || 
-        q.content.toLowerCase().includes(searchKeyword)
-      );
-    }
-    
-    if (tag) {
-      result = result.filter(q => 
-        q.tags?.some(t => t.name.toLowerCase() === (tag as string).toLowerCase())
-      );
-    }
-    
-    res.send({
-      success: true,
-      data: {
-        list: result,
-        total: result.length,
-      },
     });
   }
 };
