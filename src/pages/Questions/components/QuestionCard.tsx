@@ -50,9 +50,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           </div>          {/* Tags */}
           <Space size={[0, 8]} wrap className="mb-3">
             {question.tags?.map((tag) => (
-              <Tag color="blue" key={tag.id}>
-                {tag.name} {tag.count !== undefined && <span className="text-xs">({tag.count})</span>}
-              </Tag>
+
+              <Link to={`/questions/tagged/${tag.name}`} key={tag.id}>
+                <Tag color="blue" key={tag.id}>
+                  {tag.name}
+                </Tag>
+              </Link>
             ))}
           </Space>
 

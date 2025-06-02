@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Select, Pagination, Spin, Empty, Typography, Tag } from "antd";
-import Question from "./components/QuestionCard";
-import { Link, useParams } from "umi";
+import { Button, Select, Pagination, Spin, Empty, Typography, Tag as AntdTag } from "antd";
+import Question from "./QuestionCard";
+import { Link, useParams, useModel } from "umi";
 import { getQuestionsByTag } from "@/services/Questions";
 import { Question as QuestionType } from "@/services/Questions/typing";
 
@@ -16,6 +16,9 @@ const TaggedQuestions: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [sort, setSort] = useState("newest");
   const [filter, setFilter] = useState("all");
+  const { tags, loading: tagsLoading } = useModel('tag');
+  
+  const currentTag = tags.find(t => t.name === tagname);
 
   const fetchQuestions = async () => {
     setLoading(true);
@@ -62,21 +65,18 @@ const TaggedQuestions: React.FC = () => {
   return (
     <div>
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
-            <Title level={2} className="m-0">
-              Câu hỏi được gắn thẻ
-            </Title>
-            <Tag color="blue" className="text-base px-3 py-1">
+            <Title level={2} className="m-0 font-bold">
               {tagname}
-            </Tag>
+            </Title>
           </div>
           <Link to="/ask">
             <Button type="primary">+ Đặt câu hỏi</Button>
           </Link>
         </div>
         <Text type="secondary" className="text-base">
-          Hiển thị tất cả các câu hỏi có gắn thẻ "{tagname}"
+          {currentTag?.description || "Không có mô tả cho thẻ này."}
         </Text>
       </div>
 
@@ -149,4 +149,4 @@ const TaggedQuestions: React.FC = () => {
   );
 };
 
-export default TaggedQuestions; 
+export default TaggedQuestions;

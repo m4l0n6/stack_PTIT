@@ -10,7 +10,8 @@ const QuestionPage: React.FC = () => {
   const { questions, total, page, pageSize, handleFilterChange, handlePageChange, handleSortChange, sort, filter, loading } = useModel('Question.question');
 
   return (
-    <div>      <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div>      
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Title level={2}>Danh sách câu hỏi</Title>
         <Link to="/ask">
           <Button type="primary">+ Đặt câu hỏi</Button>

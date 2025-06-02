@@ -21,7 +21,7 @@ export default defineConfig({
       routes: [
         { path: "/", component: "@/pages/index" },
         { path: "questions", component: "@/pages/Questions/index" },
-        { path: "questions/tagged/:tagname", component: "@/pages/Questions/TaggedQuestions" },
+        { path: "questions/tagged/:tagname", component: "@/pages/Questions/components/TaggedQuestions" },
         { path: "question/:id", component: "@/pages/Question/Detail" },
         { path: "tags", component: "@/pages/Tags/index" },
         {
