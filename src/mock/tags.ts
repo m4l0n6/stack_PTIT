@@ -36,6 +36,21 @@ export const question_tags = [
   { question_id: 3, tag_id: 10 }, // typescript
 ];
 
+// Bảng liên kết giữa users và tags (tag follows)
+export const user_tag_follows = [
+  { user_id: 1, tag_id: 5 }, // student 1 follows react
+  { user_id: 1, tag_id: 10 }, // student 1 follows typescript
+  { user_id: 1, tag_id: 2 }, // student 1 follows javascript
+  
+  { user_id: 2, tag_id: 1 }, // teacher follows nodejs
+  { user_id: 2, tag_id: 4 }, // teacher follows backend
+  { user_id: 2, tag_id: 3 }, // teacher follows restapi
+  
+  { user_id: 4, tag_id: 7 }, // student 2 follows frontend
+  { user_id: 4, tag_id: 5 }, // student 2 follows react
+  { user_id: 4, tag_id: 6 }, // student 2 follows performance
+];
+
 // Mặc định export API endpoints
 export default {
   // API lấy danh sách tags
@@ -96,5 +111,91 @@ export default {
         message: 'Không tìm thấy tag',
       });
     }
+  },
+
+  // API lấy tags theo dõi của user hiện tại
+  'GET /api/user/tag-follows': (req: any, res: any) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token || !token.startsWith('mock-token-')) {
+      return res.status(401).send({
+        success: false,
+        message: 'Bạn cần đăng nhập để xem tags theo dõi',
+      });
+    }
+    
+    const userId = parseInt(token.replace('mock-token-', ''), 10);
+    
+    // Lấy danh sách tag_id mà user đang theo dõi
+    const userTagIds = user_tag_follows
+      .filter(utf => utf.user_id === userId)
+      .map(utf => utf.tag_id);
+    
+    // Lấy thông tin chi tiết của các tag
+    const followedTags = tags
+      .filter(tag => userTagIds.includes(tag.id))
+      .map(tag => {
+        const count = question_tags.filter(qt => qt.tag_id === tag.id).length;
+        return {...tag, count};
+      });
+    
+    res.send({
+      success: true,
+      data: followedTags,
+    });
+  },
+
+  // API cập nhật danh sách tags theo dõi của user
+  'POST /api/user/tag-follows': (req: any, res: any) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    const { tagIds } = req.body; // Mảng chứa các id của tags muốn follow
+    
+    if (!token || !token.startsWith('mock-token-')) {
+      return res.status(401).send({
+        success: false,
+        message: 'Bạn cần đăng nhập để cập nhật tags theo dõi',
+      });
+    }
+    
+    if (!Array.isArray(tagIds)) {
+      return res.status(400).send({
+        success: false,
+        message: 'Dữ liệu không hợp lệ',
+      });
+    }
+    
+    const userId = parseInt(token.replace('mock-token-', ''), 10);
+    
+    // Xóa tất cả tag follows hiện tại của user này
+    const userFollowsIndex = user_tag_follows.findIndex(utf => utf.user_id === userId);
+    while (userFollowsIndex !== -1) {
+      user_tag_follows.splice(userFollowsIndex, 1);
+      const nextIndex = user_tag_follows.findIndex(utf => utf.user_id === userId);
+      if (nextIndex === -1) break;
+    }
+    
+    // Thêm các tag follows mới
+    tagIds.forEach(tagId => {
+      if (tags.some(t => t.id === tagId)) {
+        user_tag_follows.push({
+          user_id: userId,
+          tag_id: tagId,
+        });
+      }
+    });
+    
+    // Lấy thông tin chi tiết của các tag đã cập nhật
+    const updatedFollows = tags
+      .filter(tag => tagIds.includes(tag.id))
+      .map(tag => {
+        const count = question_tags.filter(qt => qt.tag_id === tag.id).length;
+        return {...tag, count};
+      });
+    
+    res.send({
+      success: true,
+      data: updatedFollows,
+      message: 'Đã cập nhật danh sách tags theo dõi',
+    });
   },
 };

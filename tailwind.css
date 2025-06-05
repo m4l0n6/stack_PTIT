@@ -100,3 +100,14 @@
     overflow: visible;
   }
 /* Question detail: end */
+
+/* Header search: start */
+.search-hint-popover .ant-popover-inner {
+  padding: 0;
+}
+
+.search-hint-popover .ant-popover-arrow {
+  display: none;
+}
+
+/* Header search: end */

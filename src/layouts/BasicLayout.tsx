@@ -2,33 +2,15 @@ import { useEffect } from "react";
 import { Link, Outlet, history, useModel } from "umi";
 import {
   LaptopOutlined,
-  UserOutlined,
   HomeOutlined,
   TagsOutlined,
-  LogoutOutlined,
-  BellOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Layout, Menu, theme, Input, Button, Avatar, Dropdown, } from "antd";
-import Notification from "@/components/Notification";
+import { Layout, Menu, theme } from "antd";
+import HeaderBasicLauyout from "./components/BasicLayout/Header";
 
-const { Header, Content, Sider, Footer } = Layout;
-const { Search } = Input;
+const { Content, Sider, Footer } = Layout;
 
-const header: MenuProps["items"] = [
-  {
-    key: "1",
-    label: "About",
-  },
-  {
-    key: "2",
-    label:"Docs",
-  },
-  {
-    key: "3",
-    label: "PTIT",
-  },
-];
 
 const sider: MenuProps["items"] = [
   {
@@ -53,91 +35,9 @@ export default function AppLayout() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const { user, handleLogout, loadUserFromStorage } = useModel('user');
-
-  useEffect(() => {
-    loadUserFromStorage();
-  }, [loadUserFromStorage]);
-
-  const userMenu: MenuProps['items'] = [
-    {      
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: 'Hồ sơ',      
-      onClick: () => {
-        const userData = JSON.parse(localStorage.getItem("user") || "{}");
-        const formattedName = userData.username ? userData.username.replace(/\s+/g, '-') : '';
-        history.push(`/users/${userData.id}/${formattedName}`);
-      },
-    },
-    {
-      key: 'logout',
-      icon: <LogoutOutlined className="text-red-500"/>,
-      label: <p className="text-red-500">Đăng xuất</p>,
-      onClick: handleLogout,
-    },
-  ];
-  
   return (
     <Layout className="min-h-screen">
-      <Header className="z-10 fixed flex items-center w-full">
-        <Link
-          to="/"
-          style={{ display: "flex", alignItems: "center", width: "150px" }}
-          className="flex items-center bg-[#001529] w-[150px]"
-        >
-          <h1 className="font-bold text-white text-3xl">stack PTIT</h1>
-        </Link>
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={["1"]}
-          items={header}
-          className="flex-1 min-w-0"
-        />
-        <Search
-          placeholder="Tìm kiếm câu hỏi, từ khóa..."
-          allowClear
-          enterButton
-          size="large"
-          style={{ width: "50%", marginLeft: "16px" }}
-          onSearch={(value) => console.log(value)}
-        />
-        <div>
-          {user ? (
-            <div className="flex items-center ml-4">
-              <Notification numberOfNotifications={10} />
-              <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-                <div className="flex items-center ml-4 cursor-pointer">
-                  <Avatar
-                    icon={<UserOutlined />}
-                    src={user.avatar}
-                    className="bg-[#1677ff] mr-2 text-white"
-                  />
-                  <span className="text-white">{user.username}</span>
-                </div>
-              </Dropdown>
-            </div>
-          ) : (
-            <>
-              <Button
-                type="primary"
-                style={{ marginLeft: "8px" }}
-                onClick={() => history.push("/auth/login")}
-              >
-                Log In
-              </Button>
-              <Button
-                type="default"
-                style={{ marginLeft: "8px" }}
-                onClick={() => history.push("/auth/register")}
-              >
-                Sign Up
-              </Button>
-            </>
-          )}
-        </div>
-      </Header>
+      <HeaderBasicLauyout />
       <Layout style={{ marginTop: 64 }}>
         <Sider 
           width={200} 

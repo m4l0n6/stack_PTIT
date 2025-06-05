@@ -28,3 +28,18 @@ export async function searchTags(keyword: string): Promise<APIResponse<Tag[]>> {
     params: { keyword },
   });
 }
+
+// Lấy danh sách tags theo dõi của user hiện tại
+export async function getUserTagFollows(): Promise<APIResponse<Tag[]>> {
+  return request("/api/user/tag-follows", {
+    method: "GET",
+  });
+}
+
+// Cập nhật danh sách tags theo dõi của user hiện tại
+export async function updateUserTagFollows(tagIds: number[]): Promise<APIResponse<Tag[]>> {
+  return request("/api/user/tag-follows", {
+    method: "POST",
+    data: { tagIds },
+  });
+}
