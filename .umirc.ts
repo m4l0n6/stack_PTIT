@@ -15,13 +15,17 @@ export default defineConfig({
           component: "@/pages/Auth/Register/index",
         },
       ],
-    },    {
+    },
+    {
       path: "/",
       component: "@/layouts/BasicLayout",
       routes: [
         { path: "/", component: "@/pages/index" },
         { path: "questions", component: "@/pages/Questions/index" },
-        { path: "questions/tagged/:tagname", component: "@/pages/Questions/components/TaggedQuestions" },
+        {
+          path: "questions/tagged/:tagname",
+          component: "@/pages/Questions/components/TaggedQuestions",
+        },
         { path: "question/:id", component: "@/pages/Question/Detail" },
         { path: "tags", component: "@/pages/Tags/index" },
         {
@@ -29,25 +33,49 @@ export default defineConfig({
           component: "@/pages/Question/Create",
           wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
           allowedRoles: ["teacher", "student"],
-        },        {
+        },        // Hồ sơ công khai - không yêu cầu đăng nhập
+        {
           path: "users/:id/:name",
           component: "@/pages/Profile/index",
+        },        // Hồ sơ cá nhân - yêu cầu đăng nhập và role phù hợp
+        {
+          path: "user",
           wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
           allowedRoles: ["teacher", "student"],
           routes: [
-            { path: "saves", component: "@/pages/Profile/components/Saves" },
             {
-              path: "edit",
-              component: "@/pages/Profile/components/Setting/ProfileSetting",
+              path: "saves/:id",
+              component: "@/pages/Profile/components/Private/Saves",
+              wrappers: [
+                "@/wrappers/auth", 
+                "@/wrappers/roleAuth",
+                "@/wrappers/profileAuth",
+              ],
+              allowedRoles: ["teacher", "student"],
             },
             {
-              path: "account",
-              component: "@/pages/Profile/components/Setting/AccountSetting",
-            },
-            {
-              path: "preferences",
-              component:
-                "@/pages/Profile/components/Setting/PreferencesSetting",
+              path: "settings/:id",
+              component: "@/pages/Profile/components/Private/Setting",
+              wrappers: [
+                "@/wrappers/auth", 
+                "@/wrappers/roleAuth",
+                "@/wrappers/profileAuth",
+              ],
+              allowedRoles: ["teacher", "student"],
+              routes: [
+                {
+                  path: "profile",
+                  component: "@/pages/Profile/components/Private/Setting/ProfileSetting",
+                },
+                {
+                  path: "account",
+                  component: "@/pages/Profile/components/Private/Setting/AccountSetting",
+                },
+                {
+                  path: "preferences",
+                  component: "@/pages/Profile/components/Private/Setting/PreferencesSetting",
+                },
+              ]
             },
           ],
         },

@@ -1,4 +1,4 @@
-import users from './users'; // Thay đổi đường dẫn import
+import {users} from './users'; // Thay đổi đường dẫn import
 import { User } from "@/services/Users/typing";
 
 export default {

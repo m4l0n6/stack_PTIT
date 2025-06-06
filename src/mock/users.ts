@@ -1,17 +1,17 @@
-import { User } from '@/services/Users/typing';
+import { User } from "@/services/Users/typing";
 
-const users: User[] = [
+export const users: User[] = [
   {
     id: 1,
     username: "sinh vien 1",
     email: "sv1@ptit.edu.vn",
-    password: "123456", // Trường này sẽ không được trả về từ API
+    password: "123456",
     created_at: "5/5/2025",
     reputation: 123,
     avatar: "https://placehold.co/150?text=S",
     title: "Sinh viên 1",
     bio: "Đam mê công nghệ thông tin và học hỏi không ngừng.",
-    role: "student", // Thêm trường role để quản lý phân quyền
+    role: "student",
   },
   {
     id: 2,
@@ -49,4 +49,25 @@ const users: User[] = [
   },
 ];
 
-export default users
+// Export mặc định cho routes
+export default {
+  "GET /api/users/:id": (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const user = users.find((u) => u.id === id);
+
+    if (user) {
+      // Không trả về password
+      const { password: _, ...safeUser } = user;
+
+      res.send({
+        success: true,
+        data: safeUser,
+      });
+    } else {
+      res.status(404).send({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+  },
+};

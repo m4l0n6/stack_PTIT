@@ -6,7 +6,7 @@ import { tags, question_tags } from './tags';
 import { Vote } from '@/services/Votes/typing';
 import { parse } from 'url';
 
-import users from "./users";
+import {users} from "./users";
 import answers from './answers';
 import comments from './comments';
 import votes from './votes';

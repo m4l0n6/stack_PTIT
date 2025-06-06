@@ -1,4 +1,4 @@
-import users from './users';
+import {users} from './users';
 import { Comment } from '@/services/Comments/typing';
 
 const comments: Comment[] = [

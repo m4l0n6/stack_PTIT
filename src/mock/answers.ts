@@ -1,4 +1,4 @@
-import users from './users';
+import {users} from './users';
 import { Answer } from '@/services/Answers/typing';
 
 const answers: Answer[] = [

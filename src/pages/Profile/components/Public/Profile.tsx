@@ -1,9 +1,16 @@
+// src/pages/Profile/components/Profile.tsx
 import { Image, Statistic, Row, Col, List } from "antd";
 import React from "react";
-import { useModel } from "umi";
+import { User } from "@/services/Users/typing";
 
-const Profile: React.FC = () => {
-  const { user } = useModel("user");
+interface ProfileProps {
+  user?: User | null;
+}
+
+const Profile: React.FC<ProfileProps> = ({ user }) => {
+  if (!user) {
+    return <div>Không có thông tin người dùng</div>;
+  }
 
   return (
     <div className="flex">
@@ -12,7 +19,7 @@ const Profile: React.FC = () => {
         <div className="mb-2 p-4 border rounded-lg">
           <Row gutter={16}>
             <Col span={12}>
-              <Statistic title="Danh tiếng" value={user?.reputation} />
+              <Statistic title="Danh tiếng" value={user?.reputation || 0} />
             </Col>
             <Col span={12}>
               <Statistic title="Tìm kiếm" value={100} />
@@ -29,7 +36,7 @@ const Profile: React.FC = () => {
 
       <div className="w-3/4">
         <div className="mb-4">
-          <h1 className="mb-2 text-2xl">Giới thiệu về tôi</h1>
+          <h1 className="mb-2 text-2xl">Giới thiệu về {user.username}</h1>
           <p className="mb-2 p-4 border rounded-lg">
             {user?.bio || "Chưa có thông tin giới thiệu"}
           </p>
