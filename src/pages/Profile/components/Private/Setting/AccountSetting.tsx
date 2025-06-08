@@ -1,15 +1,14 @@
 // src/pages/Profile/components/Setting/AccountSetting.tsx
-import { Form, Input, Button, Card, message, Popconfirm } from "antd";
+import { Form, Input, Button, Card, message, Modal } from "antd";
 import { LockOutlined, } from "@ant-design/icons";
-import { useModel, Link, useParams } from "umi";
 import { useState } from "react";
+import { useModel } from "umi";
 
 const AccountSetting: React.FC = () => {
-  const { user } = useModel("user");
-  const params = useParams<{ id: string }>();
-  const [form] = Form.useForm();
   const [passwordForm] = Form.useForm();
+  const { user } = useModel("user");
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState<boolean>(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   const onFinishAccountInfo = async (values: any) => {
@@ -39,6 +38,8 @@ const AccountSetting: React.FC = () => {
     }
   };
 
+  
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -48,47 +49,6 @@ const AccountSetting: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Account Information */}
-        <Card title="Thông tin tài khoản">
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinishAccountInfo}
-            initialValues={{
-              email: user?.email,
-              username: user?.username,
-            }}
-          >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                { required: true, message: "Vui lòng nhập email!" },
-                { type: "email", message: "Email không hợp lệ!" },
-              ]}
-            >
-              <Input placeholder="Nhập email" disabled/>
-            </Form.Item>
-
-            <Form.Item
-              label="Tên đăng nhập"
-              name="username"
-              rules={[
-                { required: true, message: "Vui lòng nhập tên đăng nhập!" },
-                { min: 3, message: "Tên đăng nhập phải có ít nhất 3 ký tự!" },
-              ]}
-            >
-              <Input placeholder="Nhập tên đăng nhập" />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Cập nhật thông tin
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
-
         {/* Change Password */}
         <Card title="Đổi mật khẩu" extra={<LockOutlined />}>
           <Form
@@ -157,10 +117,40 @@ const AccountSetting: React.FC = () => {
               <strong>Xóa tài khoản:</strong> Hành động này không thể hoàn tác.
               Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.
             </p>
-            <Button danger>Xóa tài khoản</Button>
+            <Button
+              danger
+              onClick={() => {
+                setVisible(true);
+              }}
+            >
+              Xóa tài khoản
+            </Button>
           </div>
         </Card>
       </div>
+      <Modal
+        title="Xác nhận xóa tài khoản"
+        open={visible}
+        onOk={() => {
+          // Handle account deletion logic here
+          message.success("Tài khoản đã được xóa thành công!");
+        }}
+        onCancel={() => {
+          // Handle cancel logic here
+          setVisible(false);
+        }}
+        okText="Xóa"
+        cancelText="Hủy"
+      >
+        <p>
+          Bạn có chắc chắn muốn xóa tài khoản của mình không? Hành động này sẽ
+          xóa vĩnh viễn tất cả dữ liệu liên quan đến tài khoản của bạn.
+        </p>
+        <p>
+          Vui lòng nhập <strong>{user?.username}</strong>{" "} đẻ xác nhận: 
+        </p>
+        <Input />
+      </Modal>
     </div>
   );
 };

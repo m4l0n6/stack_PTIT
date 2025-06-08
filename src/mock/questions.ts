@@ -17,7 +17,8 @@ const questions: Question[] = [
     id: 1,
     user_id: 4,
     title: "Làm thế nào để tạo một REST API với Node.js?",
-    content: "Tôi đang học về phát triển web và muốn tạo một REST API đơn giản bằng Node.js. Có thể cho tôi hướng dẫn chi tiết về cách thực hiện không?",
+    content:
+      "Tôi đang học về phát triển web và muốn tạo một REST API đơn giản bằng Node.js. Có thể cho tôi hướng dẫn chi tiết về cách thực hiện không?",
     created_at: "2023-10-01",
     updated_at: "2023-10-01",
     views: 120,
@@ -25,13 +26,15 @@ const questions: Question[] = [
     downvotes: 0,
     user: users[2],
     tags: [tags[0], tags[1], tags[2], tags[3]],
-    answer_count: 2
+    answer_count: 2,
+    status: "closed",
   },
   {
     id: 2,
     user_id: 2,
     title: "Cách tối ưu hóa hiệu suất ứng dụng React",
-    content: "Ứng dụng React của tôi đang chạy khá chậm khi xử lý một lượng lớn dữ liệu. Tôi đã thử sử dụng React.memo và useCallback nhưng vẫn chưa đạt được hiệu quả như mong đợi. Có ai có kinh nghiệm tối ưu hóa React có thể chia sẻ một số kỹ thuật không?",
+    content:
+      "Ứng dụng React của tôi đang chạy khá chậm khi xử lý một lượng lớn dữ liệu. Tôi đã thử sử dụng React.memo và useCallback nhưng vẫn chưa đạt được hiệu quả như mong đợi. Có ai có kinh nghiệm tối ưu hóa React có thể chia sẻ một số kỹ thuật không?",
     created_at: "2023-10-05",
     updated_at: "2023-10-05",
     views: 200,
@@ -39,13 +42,15 @@ const questions: Question[] = [
     downvotes: 0,
     user: users[1],
     tags: [tags[4], tags[1], tags[5], tags[6]],
-    answer_count: 1
+    answer_count: 1,
+    status: "open",
   },
   {
     id: 3,
     user_id: 1,
     title: "Cách xử lý authentication trong ứng dụng UmiJS",
-    content: "Tôi đang xây dựng một ứng dụng với UmiJS và cần triển khai hệ thống xác thực người dùng. Tôi đã thử một vài cách nhưng vẫn gặp vấn đề với việc lưu trữ token và bảo vệ các route. Ai có kinh nghiệm với UmiJS có thể chia sẻ cách tiếp cận tốt nhất?",
+    content:
+      "Tôi đang xây dựng một ứng dụng với UmiJS và cần triển khai hệ thống xác thực người dùng. Tôi đã thử một vài cách nhưng vẫn gặp vấn đề với việc lưu trữ token và bảo vệ các route. Ai có kinh nghiệm với UmiJS có thể chia sẻ cách tiếp cận tốt nhất?",
     created_at: "2023-10-10",
     updated_at: "2023-10-10",
     views: 150,
@@ -53,7 +58,8 @@ const questions: Question[] = [
     downvotes: 0,
     user: users[0],
     tags: [tags[7], tags[8], tags[4], tags[9]],
-    answer_count: 0
+    answer_count: 0,
+    status: "open",
   },
 ];
 
@@ -201,7 +207,10 @@ export default {
     const { query = {} } = parse(req.url || '', true);
     const { sort, filter, page = '1', pageSize = '10' } = query;
     
-    let result = [...questions].map(question => {      // Đảm bảo mỗi câu hỏi có đầy đủ thông tin user và tags
+    let result = [...questions].map(question => {      
+      // Kiểm tra xem câu hỏi có câu trả lời nào được chấp nhận không
+      const hasAcceptedAnswer = answers.some(a => a.question_id === question.id && a.is_accepted);
+      
       const questionWithRelations = {
         ...question,
         user: users.find(u => u.id === question.user_id),
@@ -210,7 +219,8 @@ export default {
             // Calculate the count for each tag
             const count = question_tags.filter(qt => qt.tag_id === t.id).length;
             return { ...t, count };
-          })
+          }),
+        has_accepted_answer: hasAcceptedAnswer
       };
       return questionWithRelations;
     });
@@ -353,7 +363,8 @@ export default {
       views: 0,
       upvotes: 0,
       downvotes: 0,
-      answer_count: 0
+      answer_count: 0,
+      status: 'open',
     };
     
     questions.push(newQuestion);

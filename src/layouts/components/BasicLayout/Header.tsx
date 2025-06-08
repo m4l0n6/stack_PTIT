@@ -157,17 +157,17 @@ const HeaderBasicLauyout: React.FC = () => {
 
         {searchTemplates.map((category, categoryIndex) => (
           <div key={categoryIndex} className="mb-4">
-            <h4 className="text-blue-600 font-semibold mb-2">{category.category}</h4>
-            <div className="grid grid-cols-1 gap-1">
+            <h4 className="mb-2 font-semibold text-blue-600">{category.category}</h4>
+            <div className="gap-1 grid grid-cols-1">
               {category.items.map((item, itemIndex) => (
                 <div
                   key={itemIndex}
-                  className="flex items-center justify-between p-2 bg-gray-50 hover:bg-blue-50 cursor-pointer rounded transition-colors"
+                  className="flex justify-between items-center bg-gray-50 hover:bg-blue-50 p-2 rounded transition-colors cursor-pointer"
                   onClick={() => handleTemplateClick(item.text)}
                 >
                   <div className="flex-1">
-                    <code className="bg-white px-2 py-1 rounded text-blue-600 font-medium mr-3">{item.text}</code>
-                    <span className="text-sm text-gray-600">{item.description}</span>
+                    <code className="bg-white mr-3 px-2 py-1 rounded font-medium text-blue-600">{item.text}</code>
+                    <span className="text-gray-600 text-sm">{item.description}</span>
                   </div>
                   <Button
                     type="link"
@@ -188,9 +188,9 @@ const HeaderBasicLauyout: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-blue-50 p-3 rounded-lg mb-4">
-        <h4 className="font-semibold mb-2">💡 Cú pháp tìm kiếm nâng cao</h4>
-        <div className="text-sm space-y-1">
+      <div className="bg-blue-50 mb-4 p-3 rounded-lg">
+        <h4 className="mb-2 font-semibold">💡 Cú pháp tìm kiếm nâng cao</h4>
+        <div className="space-y-1 text-sm">
           <div>
             <code className="bg-white px-1">[tag]</code> - Tìm theo tag
           </div>
@@ -221,10 +221,10 @@ const HeaderBasicLauyout: React.FC = () => {
             dataSource={suggestions}
             renderItem={(item: any) => (
               <List.Item
-                className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+                className="hover:bg-gray-50 px-2 py-1 rounded cursor-pointer"
                 onClick={() => handleSearch(item.text)}
               >
-                <div className="flex items-center justify-between w-full">
+                <div className="flex justify-between items-center w-full">
                   <div className="flex items-center">
                     {item.type === "tag" ? (
                       <TagOutlined className="mr-2 text-blue-500" />

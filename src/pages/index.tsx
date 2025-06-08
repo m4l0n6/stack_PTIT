@@ -6,6 +6,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import ModalTagFollow from "@/components/Modal/ModalTagFollow";
 import ModalChooseRole from "@/components/Modal/ModalChooseRole";
 import ModalChooseTheme from "@/components/Modal/ModalChooseTheme";
+import ModalThemeSetting from '@/components/Modal/ModalThemeSetting';
 
 const { Title } = Typography;
 
@@ -98,7 +99,7 @@ export default function HomePage() {
             setVisible={setTagModalVisible}
           />
 
-          <ModalChooseTheme
+          <ModalThemeSetting
             visible={themeModalVisible}
             setVisible={setThemeModalVisible}
           />

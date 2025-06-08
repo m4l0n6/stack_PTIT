@@ -1,88 +1,136 @@
 import React from "react";
-import { Card, Avatar, Space, Tag, Typography, Divider } from "antd";
+import { Card, Tag, Avatar, Typography, Space } from "antd";
 import { Link } from "umi";
-import {
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+import { CheckCircleFilled, LockOutlined } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 
-const { Text, Title } = Typography;
+const { Title, Text } = Typography;
 
 interface QuestionCardProps {
   question: Question;
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
+  // Xác định trạng thái của câu hỏi
+  const isClosed = question.status === "closed";
+
   return (
-    <Card className="mb-4 overflow-hidden">
-      <div className="flex">
-        {/* Vote column */}
-        <div className="flex flex-col items-center mr-4 w-16 min-w-[4rem]">
-          <div className="flex flex-col items-center">
-            <div className="font-semibold text-lg">
-              {question.upvotes - question.downvotes}
-            </div>
-            <div className="text-gray-500 text-xs">bình chọn</div>
+    <div
+      className={`bg-white p-4 rounded-lg shadow-sm mb-4 flex relative
+      ${isClosed ? "opacity-40" : ""}`}
+    >
+      {/* Badge trạng thái closed nếu câu hỏi đã đóng */}
+      {isClosed && (
+        <div className="top-2 right-2 absolute flex items-center bg-gray-500 px-2 py-1 rounded-md text-white text-xs">
+          <LockOutlined className="mr-1" />
+          Đã đóng
+        </div>
+      )}
+
+      {/* Stats column */}
+      <div className="flex flex-col items-center mr-4 w-16 min-w-[4rem]">
+        <div className="flex flex-col items-center">
+          <div className="font-semibold text-lg">
+            {question.upvotes - question.downvotes}
           </div>
-          <div className="flex flex-col items-center mt-2">
-            <div className="font-semibold text-lg">
-              {question.answer_count || 0}
-            </div>
-            <div className="text-gray-500 text-xs">câu trả lời</div>
-          </div>
-          <div className="flex flex-col items-center mt-2">
-            <div className="font-semibold text-lg">{question.views}</div>
-            <div className="text-gray-500 text-xs">lượt xem</div>
-          </div>
+          <div className="text-gray-500 text-xs">bình chọn</div>
         </div>
 
-        {/* Main content */}
-        <div className="flex-1">         
-           <Title level={5} className="mb-2">
-            <Link to={`/question/${question.id}`} className="hover:opacity-80">
+        <div
+          className={`flex flex-col items-center mt-2 rounded-lg
+          ${
+            question.has_accepted_answer
+              ? "bg-green-100 border-[1px] border-green-500 p-1"
+              : (question.answer_count ?? 0) > 0
+              ? "border-[1px] border-green-300 p-1"
+              : "border-none"
+          }`}
+        >
+          <div className="flex items-center">
+            {question.has_accepted_answer && (
+              <CheckCircleFilled className="mr-1 text-green-500" />
+            )}
+            {question.answer_count || 0}
+          </div>
+          <div className="text-gray-500 text-xs">câu trả lời</div>
+        </div>
+
+        <div className="flex flex-col items-center mt-2">
+          <div className="font-semibold text-lg">{question.views}</div>
+          <div className="text-gray-500 text-xs">lượt xem</div>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1">
+        <Title level={5} className="mb-2">
+          {isClosed ? (
+            <Text className="text-gray-600 cursor-not-allowed">
               {question.title}
-            </Link>
-          </Title>
+            </Text>
+          ) : (
+            <Link
+            to={`/question/${question.id}`}
+            className={`hover:opacity-80 ${
+              isClosed ? "text-gray-600" : ""
+            }`}
+          >
+            {question.title}
+          </Link>
+          )}
+          
+        </Title>
 
-          <div className="mb-3 text-gray-500 text-sm line-clamp-2">
-            {question.content.replace(/<[^>]+>/g, "").substring(0, 200)}
-            {question.content.length > 200 && "..."}
-          </div>          {/* Tags */}
-          <Space size={[0, 8]} wrap className="mb-3">
-            {question.tags?.map((tag) => (
+        <div className="mb-3 text-gray-500 text-sm line-clamp-2">
+          {question.content.replace(/<[^>]+>/g, "").substring(0, 200)}
+          {question.content.length > 200 && "..."}
+        </div>
 
+        {/* Tags */}
+        <Space size={[0, 8]} wrap className="mb-3">
+          {question.tags?.map((tag) =>
+            isClosed ? (
+              <Tag color="default" key={tag.id} className="cursor-not-allowed">
+                {tag.name}  
+              </Tag>
+            ) : (
               <Link to={`/questions/tagged/${tag.name}`} key={tag.id}>
-                <Tag color="blue" key={tag.id}>
+                <Tag color="blue">
                   {tag.name}
                 </Tag>
               </Link>
-            ))}
-          </Space>
+            )
+          )}
+        </Space>
 
-          <div className="flex justify-between items-center text-sm">
-            {/* Sử dụng optional chaining và kiểm tra username */}
+        <div className="flex justify-between items-center mb-2 text-sm">
+          { isClosed ? (
+            <span className="text-gray-600 cursor-not-allowed">
+              {question.user?.username}
+            </span>
+          ) : (
             <Link
-              to={`/users/${question.user?.id}/${(
-                question.user?.username || ""
-              ).replace(/\s+/g, "-")}`}
-              className="hover:opacity-80"
-            >
-              <Space>
-                <Avatar src={question.user?.avatar} size="small" />
-                <Text type="secondary" className="hover:text-[#1890ff]">
-                  {question.user?.username}
-                </Text>
-              </Space>
-            </Link>
-
-            <Text type="secondary">
-              <ClockCircleOutlined className="mr-1" />
-              {question.created_at}
-            </Text>
+            to={`/users/${question.user?.id}/${question.user?.username?.replace(
+              /\s+/g,
+              "-"
+            )}`}
+            className="hover:text-blue-500"
+          >
+            <Avatar
+              src={question.user?.avatar}
+              size="small"
+              className="mr-1"
+            />
+            <span>{question.user?.username}</span>
+          </Link>
+          )}
+          
+          <div className="text-gray-500">
+            Đăng vào {question.created_at}
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

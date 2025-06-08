@@ -12,11 +12,13 @@ export interface Question {
   views: number;
   upvotes: number;
   downvotes: number;
+  status: 'open' | 'closed';
   
   // Các trường quan hệ (không lưu trong DB, chỉ trả về từ API)
   user?: User;
   tags?: Tag[];
   answer_count?: number;
+  has_accepted_answer?: boolean;
   
   // Thêm trường answers khi trả về từ API chi tiết câu hỏi
   answers?: Answer[];
