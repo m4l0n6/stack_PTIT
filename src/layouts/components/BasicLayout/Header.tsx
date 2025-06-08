@@ -9,12 +9,17 @@ import {
   Dropdown,
   Popover,
   Divider,
+  List,
+  Typography,
+  Tag,
+  AutoComplete,
 } from "antd";
-import { LogoutOutlined, SearchOutlined } from "@ant-design/icons";
+import { LogoutOutlined, SearchOutlined, TagOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { UserOutlined } from "@ant-design/icons";
 import { useModel } from "umi";
 import type { MenuProps } from "antd";
 import Notification from "@/components/Notification";
+import { getSearchSuggestions } from "@/services/Search";
 
 const { Header } = Layout;
 const { Search } = Input;
@@ -34,126 +39,290 @@ const header: MenuProps["items"] = [
   },
 ];
 
+const { Text } = Typography;
 
 const HeaderBasicLauyout: React.FC = () => {
-    const { user, handleLogout, loadUserFromStorage } = useModel('user');
-    const [searchVisible, setSearchVisible] = useState(false);
-    
-    useEffect(() => {
-      loadUserFromStorage();
-    }, [loadUserFromStorage]);
+  const { user, handleLogout, loadUserFromStorage } = useModel("user");
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-    const userMenu: MenuProps['items'] = [
-        {      
-          key: 'profile',
-          icon: <UserOutlined />,
-          label: 'Hồ sơ',      
-          onClick: () => {
-            const userData = JSON.parse(localStorage.getItem("user") || "{}");
-            const formattedName = userData.username ? userData.username.replace(/\s+/g, '-') : '';
-            history.push(`/users/${userData.id}/${formattedName}`);
-          },
-        },
-        {
-          key: 'logout',
-          icon: <LogoutOutlined className="text-red-500"/>,
+  useEffect(() => {
+    loadUserFromStorage();
+  }, [loadUserFromStorage]);
 
-          label: <p className="text-red-500">Đăng xuất</p>,
-          onClick: handleLogout,
-        },
-      ];
+  const userMenu: MenuProps["items"] = [
+    {
+      key: "profile",
+      icon: <UserOutlined />,
+      label: "Hồ sơ",
+      onClick: () => {
+        const userData = JSON.parse(localStorage.getItem("user") || "{}");
+        const formattedName = userData.username ? userData.username.replace(/\s+/g, "-") : "";
+        history.push(`/users/${userData.id}/${formattedName}`);
+      },
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined className="text-red-500" />,
 
+      label: <p className="text-red-500">Đăng xuất</p>,
+      onClick: handleLogout,
+    },
+  ];
 
-    // Search hint content
-    const searchHintContent = (
-      <div className="bg-white shadow-lg p-2 w-[700px]">
-        <h3 className="mb-2 font-bold">Gợi ý tìm kiếm</h3>
-        <ul className="pl-4 list-disc">
-          <li className="mb-1">Tìm kiếm câu hỏi theo từ khóa</li>
-          <li className="mb-1">Tìm kiếm theo thẻ (tag)</li>
-          <li className="mb-1">Tìm kiếm người dùng</li>
-          <li className="mb-1">Tìm kiếm câu trả lời</li>
-        </ul>
-      </div>
-    );
+  // Fetch suggestions when search value changes
+  const fetchSuggestions = async (keyword: string) => {
+    if (!keyword.trim()) {
+      setSuggestions([]);
+      return;
+    }
 
-    const handleSearch = (value: string) => {
-      console.log(value);
-      setSearchVisible(false);
-      history.push(`/search?q=${encodeURIComponent(value)}`);
-    };
+    setLoadingSuggestions(true);
+    try {
+      const response = await getSearchSuggestions(keyword);
+      if (response.success) {
+        setSuggestions(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
 
-    return (
-        <Header className="z-10 fixed flex items-center w-full">
-          <Link
-            to="/"
-            style={{ display: "flex", alignItems: "center", width: "150px" }}
-            className="flex items-center bg-[#001529] w-[150px]"
-          >
-            <h1 className="font-bold text-white text-3xl">stack PTIT</h1>
-          </Link>
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            defaultSelectedKeys={["1"]}
-            items={header}
-            className="flex-1 min-w-0"
-          />
-          <Popover
-            content={searchHintContent}
-            trigger="click"
-            open={searchVisible}
-            onOpenChange={setSearchVisible}
-            placement="bottom"
-            overlayClassName="search-hint-popover"
-          >
-            <Search
-              placeholder="Tìm kiếm câu hỏi, từ khóa..."
-              allowClear
-              enterButton
-              size="large"
-              style={{ width: "50%", marginLeft: "16px" }}
-              onSearch={handleSearch}
-              onClick={() => setSearchVisible(true)}
-            />
-          </Popover>
-          
-          <div>
-            {user ? (
-              <div className="flex items-center ml-4">
-                <Notification numberOfNotifications={10} />
-                <Dropdown menu={{ items: userMenu }} placement="bottomRight">
-                  <div className="flex items-center ml-4 cursor-pointer">
-                    <Avatar
-                      icon={<UserOutlined />}
-                      src={user.avatar}
-                      className="bg-[#1677ff] mr-2 text-white"
-                    />
-                    <span className="text-white">{user.username}</span>
+  // Search templates for quick access
+  const searchTemplates = [
+    {
+      category: "Tìm kiếm cơ bản",
+      items: [
+        { text: "React hooks", description: "Tìm câu hỏi về React hooks" },
+        { text: "JavaScript performance", description: "Tìm về hiệu suất JavaScript" },
+        { text: "CSS flexbox", description: "Tìm về CSS flexbox" },
+      ],
+    },
+    {
+      category: "Tìm theo tags",
+      items: [
+        { text: "[javascript]", description: "Chỉ câu hỏi có tag JavaScript" },
+        { text: "[react] [hooks]", description: "Câu hỏi có cả tag React và hooks" },
+        { text: "[css] responsive", description: "Tag CSS + từ khóa responsive" },
+      ],
+    },
+    {
+      category: "Tìm kiếm chính xác",
+      items: [
+        { text: '"REST API"', description: "Tìm chính xác cụm từ" },
+        { text: '"async await"', description: "Tìm về async/await" },
+        { text: '"best practices"', description: "Tìm về best practices" },
+      ],
+    },
+    {
+      category: "Lọc theo số lượng",
+      items: [
+        { text: "votes>=5", description: "Câu hỏi có từ 5 votes trở lên" },
+        { text: "answers>=2", description: "Câu hỏi có từ 2 câu trả lời" },
+        { text: "answers=0", description: "Câu hỏi chưa có câu trả lời" },
+      ],
+    },
+    {
+      category: "Tìm kiếm nâng cao",
+      items: [
+        { text: '[react] "optimization" votes>=3', description: "Kết hợp tag, cụm từ và votes" },
+        { text: "[javascript] performance answers>=1", description: "Tag JS + performance + có answers" },
+        { text: '"API design" comments>=1', description: "API design + có comments" },
+      ],
+    },
+    {
+      category: "Tìm kiếm theo người dùng",
+      items: [
+        { text: "user:1", description: "Tìm tất cả câu hỏi của user có ID 1" },
+        { text: "user:2 react", description: "Câu hỏi của user ID 2 về React" },
+        { text: "user:3 [javascript]", description: "Câu hỏi của user ID 3 có tag JavaScript" },
+      ],
+    },
+  ];
+
+  const handleTemplateClick = (template: string) => {
+    setSearchValue(template);
+    // Keep popover open so user can see the template filled
+  };
+
+  // Search hint content with suggestions and templates
+  const searchHintContent = (
+    <div className="bg-white shadow-lg p-4 w-[800px] max-h-[600px] overflow-y-auto">
+      <div className="mb-4">
+        <h3 className="mb-2 font-bold">🔍 Mẫu tìm kiếm - Click để thử</h3>
+
+        {searchTemplates.map((category, categoryIndex) => (
+          <div key={categoryIndex} className="mb-4">
+            <h4 className="text-blue-600 font-semibold mb-2">{category.category}</h4>
+            <div className="grid grid-cols-1 gap-1">
+              {category.items.map((item, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className="flex items-center justify-between p-2 bg-gray-50 hover:bg-blue-50 cursor-pointer rounded transition-colors"
+                  onClick={() => handleTemplateClick(item.text)}
+                >
+                  <div className="flex-1">
+                    <code className="bg-white px-2 py-1 rounded text-blue-600 font-medium mr-3">{item.text}</code>
+                    <span className="text-sm text-gray-600">{item.description}</span>
                   </div>
-                </Dropdown>
-              </div>
-            ) : (
-              <>
-                <Button
-                  type="primary"
-                  style={{ marginLeft: "8px" }}
-                  onClick={() => history.push("/auth/login")}
-                >
-                  Log In
-                </Button>
-                <Button
-                  type="default"
-                  style={{ marginLeft: "8px" }}
-                  onClick={() => history.push("/auth/register")}
-                >
-                  Sign Up
-                </Button>
-              </>
-            )}
+                  <Button
+                    type="link"
+                    size="small"
+                    className="text-blue-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSearch(item.text);
+                    }}
+                  >
+                    Tìm →
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {categoryIndex < searchTemplates.length - 1 && <Divider className="my-3" />}
           </div>
-        </Header>
-    )
-}
+        ))}
+      </div>
+
+      <div className="bg-blue-50 p-3 rounded-lg mb-4">
+        <h4 className="font-semibold mb-2">💡 Cú pháp tìm kiếm nâng cao</h4>
+        <div className="text-sm space-y-1">
+          <div>
+            <code className="bg-white px-1">[tag]</code> - Tìm theo tag
+          </div>
+          <div>
+            <code className="bg-white px-1">"phrase"</code> - Tìm chính xác cụm từ
+          </div>
+          <div>
+            <code className="bg-white px-1">votes{">"}=n</code> - Lọc theo votes ({">"}=, {"<"}=, {">"}, {"<"}, =)
+          </div>
+          <div>
+            <code className="bg-white px-1">answers{">"}=n</code> - Lọc theo số câu trả lời
+          </div>
+          <div>
+            <code className="bg-white px-1">comments{">"}=n</code> - Lọc theo số comments
+          </div>
+          <div>
+            <code className="bg-white px-1">user:id</code> - Tìm câu hỏi của người dùng có ID cụ thể
+          </div>
+        </div>
+      </div>
+
+      {suggestions.length > 0 && (
+        <div>
+          <Divider className="my-3" />
+          <h4 className="mb-2 font-semibold">📋 Gợi ý từ hệ thống</h4>
+          <List
+            size="small"
+            dataSource={suggestions}
+            renderItem={(item: any) => (
+              <List.Item
+                className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+                onClick={() => handleSearch(item.text)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    {item.type === "tag" ? (
+                      <TagOutlined className="mr-2 text-blue-500" />
+                    ) : item.type === "user" ? (
+                      <UserOutlined className="mr-2 text-purple-500" />
+                    ) : (
+                      <QuestionCircleOutlined className="mr-2 text-green-500" />
+                    )}
+                    <Text>{item.text}</Text>
+                    {item.description && (
+                      <Text type="secondary" className="ml-2">- {item.description}</Text>
+                    )}
+                  </div>
+                  <Tag color={item.type === "tag" ? "blue" : item.type === "user" ? "purple" : "green"}>{item.count}</Tag>
+                </div>
+              </List.Item>
+            )}
+          />
+        </div>
+      )}
+
+      {searchValue && suggestions.length === 0 && !loadingSuggestions && (
+        <div>
+          <Divider className="my-3" />
+          <Text type="secondary">Không có gợi ý từ hệ thống cho "{searchValue}"</Text>
+        </div>
+      )}
+    </div>
+  );
+
+  const handleSearch = (value: string) => {
+    setSearchVisible(false);
+    setSearchValue("");
+    setSuggestions([]);
+    history.push(`/search?q=${encodeURIComponent(value)}`);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value);
+    fetchSuggestions(value);
+  };
+
+  return (
+    <Header className="z-10 fixed flex items-center w-full">
+      <Link
+        to="/"
+        style={{ display: "flex", alignItems: "center", width: "150px" }}
+        className="flex items-center bg-[#001529] w-[150px]"
+      >
+        <h1 className="font-bold text-white text-3xl">stack PTIT</h1>
+      </Link>
+      <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["1"]} items={header} className="flex-1 min-w-0" />
+      <Popover
+        content={searchHintContent}
+        trigger="click"
+        open={searchVisible}
+        onOpenChange={setSearchVisible}
+        placement="bottom"
+        overlayClassName="search-hint-popover"
+      >
+        <Input.Search
+          placeholder="Tìm kiếm câu hỏi, từ khóa..."
+          allowClear
+          enterButton={<SearchOutlined />}
+          size="large"
+          style={{ width: "50%", marginLeft: "16px" }}
+          value={searchValue}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          onSearch={handleSearch}
+          onFocus={() => setSearchVisible(true)}
+          loading={loadingSuggestions}
+        />
+      </Popover>
+
+      <div>
+        {user ? (
+          <div className="flex items-center ml-4">
+            <Notification numberOfNotifications={10} />
+            <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+              <div className="flex items-center ml-4 cursor-pointer">
+                <Avatar icon={<UserOutlined />} src={user.avatar} className="bg-[#1677ff] mr-2 text-white" />
+                <span className="text-white">{user.username}</span>
+              </div>
+            </Dropdown>
+          </div>
+        ) : (
+          <>
+            <Button type="primary" style={{ marginLeft: "8px" }} onClick={() => history.push("/auth/login")}>
+              Log In
+            </Button>
+            <Button type="default" style={{ marginLeft: "8px" }} onClick={() => history.push("/auth/register")}>
+              Sign Up
+            </Button>
+          </>
+        )}
+      </div>
+    </Header>
+  );
+};
 
 export default HeaderBasicLauyout;

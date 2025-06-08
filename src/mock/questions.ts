@@ -749,5 +749,311 @@ export default {
         user
       }
     });
+  },
+
+  // API tìm kiếm nâng cao câu hỏi
+  'GET /api/questions/search/:queryString': (req: any, res: any) => {
+    const { query = {} } = parse(req.url || '', true);
+    const { page = '1', pageSize = '10' } = query;
+    const queryString = req.params.queryString || '';
+    
+    // Parse search query để extract các filters
+    const parseSearchQuery = (queryStr: string) => {
+      const filters: any = {
+        text: '',
+        tags: [],
+        answers: null,
+        votes: null,
+        comments: null,
+        user: null
+      };
+
+      // Extract quoted phrases
+      const quotedRegex = /"([^"]+)"/g;
+      let match;
+      const quotedPhrases = [];
+      while ((match = quotedRegex.exec(queryStr)) !== null) {
+        quotedPhrases.push(match[1]);
+      }
+      
+      // Extract tags [tag]
+      const tagRegex = /\[([^\]]+)\]/g;
+      while ((match = tagRegex.exec(queryStr)) !== null) {
+        filters.tags.push(match[1].toLowerCase());
+      }
+      
+      // Extract user filter: user:id
+      const userMatch = queryStr.match(/user:(\d+)/);
+      if (userMatch) {
+        filters.user = parseInt(userMatch[1]);
+      }
+      
+      // Extract answers filter with operators: answers>=2, answers=1, etc.
+      const answersMatches = queryStr.match(/answers(>=|<=|>|<|=)(\d+)/g);
+      if (answersMatches) {
+        answersMatches.forEach(match => {
+          const operatorMatch = match.match(/answers(>=|<=|>|<|=)(\d+)/);
+          if (operatorMatch) {
+            filters.answers = {
+              operator: operatorMatch[1],
+              value: parseInt(operatorMatch[2])
+            };
+          }
+        });
+      } else {
+        // Fallback to old format answers:n (default to >=)
+        const oldAnswersMatch = queryStr.match(/answers:(\d+)/);
+        if (oldAnswersMatch) {
+          filters.answers = {
+            operator: '>=',
+            value: parseInt(oldAnswersMatch[1])
+          };
+        }
+      }
+      
+      // Extract votes filter with operators: votes>=5, votes=3, etc.
+      const votesMatches = queryStr.match(/votes(>=|<=|>|<|=)(\d+)/g);
+      if (votesMatches) {
+        votesMatches.forEach(match => {
+          const operatorMatch = match.match(/votes(>=|<=|>|<|=)(\d+)/);
+          if (operatorMatch) {
+            filters.votes = {
+              operator: operatorMatch[1],
+              value: parseInt(operatorMatch[2])
+            };
+          }
+        });
+      } else {
+        // Fallback to old format votes:n (default to >=)
+        const oldVotesMatch = queryStr.match(/votes:(\d+)/);
+        if (oldVotesMatch) {
+          filters.votes = {
+            operator: '>=',
+            value: parseInt(oldVotesMatch[1])
+          };
+        }
+      }
+      
+      // Extract comments filter with operators: comments>=1, comments=0, etc.
+      const commentsMatches = queryStr.match(/comments(>=|<=|>|<|=)(\d+)/g);
+      if (commentsMatches) {
+        commentsMatches.forEach(match => {
+          const operatorMatch = match.match(/comments(>=|<=|>|<|=)(\d+)/);
+          if (operatorMatch) {
+            filters.comments = {
+              operator: operatorMatch[1],
+              value: parseInt(operatorMatch[2])
+            };
+          }
+        });
+      } else {
+        // Fallback to old format comments:n (default to >=)
+        const oldCommentsMatch = queryStr.match(/comments:(\d+)/);
+        if (oldCommentsMatch) {
+          filters.comments = {
+            operator: '>=',
+            value: parseInt(oldCommentsMatch[1])
+          };
+        }
+      }
+      
+      // Remove special syntax and get remaining text
+      let remainingText = queryStr
+        .replace(/"[^"]+"/g, '')
+        .replace(/\[[^\]]+\]/g, '')
+        .replace(/user:\d+/g, '')
+        .replace(/answers(>=|<=|>|<|=)\d+/g, '')
+        .replace(/votes(>=|<=|>|<|=)\d+/g, '')
+        .replace(/comments(>=|<=|>|<|=)\d+/g, '')
+        .replace(/answers:\d+/g, '')
+        .replace(/votes:\d+/g, '')
+        .replace(/comments:\d+/g, '')
+        .trim();
+        
+      // Add quoted phrases to text search
+      if (quotedPhrases.length > 0) {
+        remainingText += ' ' + quotedPhrases.join(' ');
+      }
+      
+      filters.text = remainingText.trim();
+      
+      return filters;
+    };
+    
+    let results = [...questions].map(question => {
+      // Get question tags
+      const questionTags = tags.filter(t => 
+        question_tags.some(qt => qt.question_id === question.id && qt.tag_id === t.id)
+      );
+      
+      // Get comment count for this question (comments are on answers, so we need to count through answers)
+      const questionAnswers = answers.filter(a => a.question_id === question.id);
+      const commentCount = comments.filter(c => 
+        questionAnswers.some(a => a.id === c.answer_id)
+      ).length;
+      
+      return {
+        ...question,
+        user: users.find(u => u.id === question.user_id),
+        tags: questionTags,
+        comment_count: commentCount,
+        vote_score: question.upvotes - question.downvotes
+      };
+    });
+    
+    if (queryString) {
+      const filters = parseSearchQuery(decodeURIComponent(queryString));
+      
+      // Filter by text (title and content)
+      if (filters.text) {
+        const searchText = filters.text.toLowerCase();
+        results = results.filter(question => 
+          question.title.toLowerCase().includes(searchText) ||
+          question.content.toLowerCase().includes(searchText)
+        );
+      }
+      
+      // Filter by tags
+      if (filters.tags.length > 0) {
+        results = results.filter(question =>
+          filters.tags.some((tagName: string) =>
+            question.tags.some(tag => tag.name.toLowerCase() === tagName)
+          )
+        );
+      }
+      
+      // Filter by user
+      if (filters.user !== null) {
+        results = results.filter(question => question.user_id === filters.user);
+      }
+      
+      // Filter by answers with operator
+      if (filters.answers !== null) {
+        const { operator, value } = filters.answers;
+        results = results.filter(question => {
+          const count = question.answer_count || 0;
+          switch (operator) {
+            case '>=': return count >= value;
+            case '<=': return count <= value;
+            case '>': return count > value;
+            case '<': return count < value;
+            case '=': return count === value;
+            default: return count >= value;
+          }
+        });
+      }
+      
+      // Filter by votes with operator
+      if (filters.votes !== null) {
+        const { operator, value } = filters.votes;
+        results = results.filter(question => {
+          const score = question.vote_score;
+          switch (operator) {
+            case '>=': return score >= value;
+            case '<=': return score <= value;
+            case '>': return score > value;
+            case '<': return score < value;
+            case '=': return score === value;
+            default: return score >= value;
+          }
+        });
+      }
+      
+      // Filter by comments with operator
+      if (filters.comments !== null) {
+        const { operator, value } = filters.comments;
+        results = results.filter(question => {
+          const count = question.comment_count;
+          switch (operator) {
+            case '>=': return count >= value;
+            case '<=': return count <= value;
+            case '>': return count > value;
+            case '<': return count < value;
+            case '=': return count === value;
+            default: return count >= value;
+          }
+        });
+      }
+    }
+    
+    // Pagination
+    const pageNumber = parseInt(page as string, 10);
+    const pageSizeNumber = parseInt(pageSize as string, 10);
+    const startIndex = (pageNumber - 1) * pageSizeNumber;
+    const endIndex = pageNumber * pageSizeNumber;
+    const paginatedResults = results.slice(startIndex, endIndex);
+    
+    res.send({
+      success: true,
+      data: {
+        questions: paginatedResults,
+        total: results.length,
+        page: pageNumber,
+        pageSize: pageSizeNumber,
+        filters: queryString ? parseSearchQuery(decodeURIComponent(queryString)) : null
+      },
+    });
+  },
+  
+  // API gợi ý tìm kiếm
+  'GET /api/questions/search/suggestions/:keyword': (req: any, res: any) => {
+    const keyword = req.params.keyword || '';
+    
+    const suggestions = [];
+    
+    if (keyword) {
+      const searchKeyword = decodeURIComponent(keyword).toLowerCase();
+      
+      // Gợi ý từ title của questions
+      const titleSuggestions = questions
+        .filter(q => q.title.toLowerCase().includes(searchKeyword))
+        .slice(0, 3)
+        .map(q => ({
+          type: 'question',
+          text: q.title,
+          count: 1
+        }));
+      
+      // Gợi ý tags
+      const tagSuggestions = tags
+        .filter(t => t.name.toLowerCase().includes(searchKeyword))
+        .slice(0, 5)
+        .map(t => ({
+          type: 'tag',
+          text: `[${t.name}]`,
+          count: question_tags.filter(qt => qt.tag_id === t.id).length
+        }));
+      
+      // Gợi ý users nếu keyword là số hoặc bắt đầu bằng "user:"
+      if (/^\d+$/.test(searchKeyword) || searchKeyword.startsWith('user:')) {
+        const userIdKeyword = searchKeyword.replace('user:', '');
+        const userSuggestions = users
+          .filter(user => {
+            if (/^\d+$/.test(userIdKeyword)) {
+              return user.id.toString().includes(userIdKeyword);
+            }
+            return user.username.toLowerCase().includes(userIdKeyword);
+          })
+          .slice(0, 3)
+          .map(user => {
+            const userQuestionCount = questions.filter(q => q.user_id === user.id).length;
+            return {
+              type: 'user',
+              text: `user:${user.id}`,
+              description: `Câu hỏi của ${user.username}`,
+              count: userQuestionCount
+            };
+          });
+        
+        suggestions.push(...userSuggestions);
+      }
+      
+      suggestions.push(...titleSuggestions, ...tagSuggestions);
+    }
+    
+    res.send({
+      success: true,
+      data: suggestions
+    });
   }
 };
