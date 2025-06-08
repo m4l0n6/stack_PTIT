@@ -1,5 +1,5 @@
 // src/pages/Profile/components/Setting/ProfileSetting.tsx
-import { Form, Input, Button, Upload, Avatar, message, Card } from "antd";
+import { Form, Input, Button, Upload, Avatar, message, Card, Select} from "antd";
 import {
   UploadOutlined,
   UserOutlined,
@@ -57,6 +57,7 @@ const ProfileSetting: React.FC = () => {
             email: user?.email,
             bio: user?.bio,
             title: user?.title,
+            role: user?.role,
           }}
         >
           {/* Avatar Section */}
@@ -88,10 +89,20 @@ const ProfileSetting: React.FC = () => {
             name="email"
             rules={[
               { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ!" },
             ]}
           >
             <Input placeholder="Nhập email" disabled />
+          </Form.Item>
+
+          <Form.Item
+            label="Vai trò"
+            name="role"
+            rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+          >
+            <Select placeholder="Chọn vai trò" style={{ width: 200 }}>
+              <Select.Option value="student">Sinh viên</Select.Option>
+              <Select.Option value="teacher">Giảng viên</Select.Option>
+            </Select>
           </Form.Item>
 
           <Form.Item label="Giới thiệu về bản thân" name="bio">

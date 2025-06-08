@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, Space, Tag, Avatar, Typography, Button } from "antd";
+import { Card, Space, Tag, Avatar, Typography, Button, message } from "antd";
 import { Link } from "umi";
-import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { ArrowUpOutlined, ArrowDownOutlined, SaveOutlined  } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 
 const { Text } = Typography;
@@ -34,6 +34,15 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           onClick={() => handleVote("down")}
           className="vote-button"
         />
+        <Button 
+          type="text"
+          icon={<SaveOutlined />}
+          className="vote-button"
+          style={{ marginTop: "10px" }}
+          onClick={() => message.info("Chức năng lưu câu hỏi chưa được triển khai")}
+        />
+
+        
       </div>
 
       {/* Nội dung câu hỏi bên phải */}

@@ -19,31 +19,12 @@ import {
 } from 'antd';
 import { SearchOutlined, MessageOutlined, HeartOutlined, CommentOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { searchQuestions } from '@/services/Search';
+import type { Question } from "@/services/Questions/typing";
+import QuestionCard from '../Questions/components/QuestionCard';
+
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
-
-interface Question {
-  id: number;
-  title: string;
-  content: string;
-  user: {
-    id: number;
-    username: string;
-    avatar?: string;
-  };
-  tags: Array<{
-    id: number;
-    name: string;
-  }>;
-  upvotes: number;
-  downvotes: number;
-  answer_count: number;
-  comment_count: number;
-  vote_score: number;
-  views: number;
-  created_at: string;
-}
 
 interface SearchFilters {
   text: string;
@@ -59,6 +40,10 @@ interface SearchCondition {
   type: 'text' | 'tag' | 'votes' | 'answers' | 'comments' | 'user';
   value: string | number;
   operator?: '>=' | '=' | 'contains' | '<=' | '<' | '>';
+}
+
+interface QuestionCardProps {
+  question: Question;
 }
 
 const SearchPage: React.FC = () => {
@@ -582,7 +567,7 @@ const SearchPage: React.FC = () => {
         </Space>
         
         {searchConditions.length === 0 && (
-          <div className="text-center py-8">
+          <div className="py-8 text-center">
             <Text type="secondary">Nhấn "Thêm điều kiện" để bắt đầu xây dựng tìm kiếm</Text>
           </div>
         )}
@@ -641,80 +626,9 @@ const SearchPage: React.FC = () => {
     );
   };
 
-  const renderQuestion = (question: Question) => (
-    <Card key={question.id} className="mb-4" hoverable>
-      <Row gutter={16}>
-        <Col span={4}>
-          <div className="text-center">
-            <div className="mb-2">
-              <Text strong className="text-lg">{question.vote_score}</Text>
-              <br />
-              <Text type="secondary">votes</Text>
-            </div>
-            <div className="mb-2">
-              <Text strong className="text-lg">{question.answer_count}</Text>
-              <br />
-              <Text type="secondary">answers</Text>
-            </div>
-            <div>
-              <Text strong className="text-lg">{question.views}</Text>
-              <br />
-              <Text type="secondary">views</Text>
-            </div>
-          </div>
-        </Col>
-        
-        <Col span={20}>
-          <Link to={`/question/${question.id}`}>
-            <Title level={4} className="mb-2 text-blue-600 hover:text-blue-800">
-              {question.title}
-            </Title>
-          </Link>
-          
-          <Paragraph ellipsis={{ rows: 2 }} className="mb-3">
-            {question.content}
-          </Paragraph>
-          
-          <div className="flex justify-between items-center">
-            <Space wrap>
-              {question.tags.map(tag => (
-                <Link key={tag.id} to={`/questions/tagged/${tag.name}`}>
-                  <Tag color="blue">{tag.name}</Tag>
-                </Link>
-              ))}
-            </Space>
-            
-            <div className="flex items-center space-x-4">
-              <Space>
-                <HeartOutlined />
-                <Text>{question.upvotes - question.downvotes}</Text>
-                <MessageOutlined />
-                <Text>{question.answer_count}</Text>
-                <CommentOutlined />
-                <Text>{question.comment_count}</Text>
-              </Space>
-              
-              <div className="text-right">
-                <Text type="secondary">
-                  được hỏi bởi{' '}
-                  <Link to={`/users/${question.user.id}/${question.user.username}`}>
-                    <Text strong>{question.user.username}</Text>
-                  </Link>
-                </Text>
-                <br />
-                <Text type="secondary" className="text-sm">
-                  {new Date(question.created_at).toLocaleDateString('vi-VN')}
-                </Text>
-              </div>
-            </div>
-          </div>
-        </Col>
-      </Row>
-    </Card>
-  );
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
+    <div className="mx-auto p-4 max-w-6xl">
       <Title level={2}>Tìm kiếm nâng cao</Title>
       
       {renderSearchConditionsBuilder()}
@@ -722,7 +636,7 @@ const SearchPage: React.FC = () => {
       {renderActiveFilters()}
       
       {loading ? (
-        <div className="text-center py-8">
+        <div className="py-8 text-center">
           <Spin size="large" />
         </div>
       ) : (
@@ -735,10 +649,11 @@ const SearchPage: React.FC = () => {
                 </Text>
               </div>
               
-              {questions.map(renderQuestion)}
+              {questions.map(question => (
+                <QuestionCard key={question.id} question={question} />))}
               
               {total > pageSize && (
-                <div className="text-center mt-6">
+                <div className="mt-6 text-center">
                   <Pagination
                     current={currentPage}
                     total={total}
@@ -766,9 +681,9 @@ const SearchPage: React.FC = () => {
               </Button>
             </Empty>
           ) : (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <Text type="secondary" className="text-lg">
-                ↑ Thêm điều kiện tìm kiếm để bắt đầu
+                Thêm điều kiện tìm kiếm để bắt đầu
               </Text>
             </div>
           )}

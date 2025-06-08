@@ -72,27 +72,6 @@ const PreferencesSetting: React.FC = () => {
                 <Radio.Button value="auto">Tự động</Radio.Button>
               </Radio.Group>
             </Form.Item>
-
-            <Form.Item label="Ngôn ngữ" name="language">
-              <Select style={{ width: 200 }}>
-                <Option value="vi">Tiếng Việt</Option>
-                <Option value="en">English</Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item label="Kích thước chữ" name="fontSize">
-              <Slider
-                min={12}
-                max={18}
-                marks={{
-                  12: "Nhỏ",
-                  14: "Vừa",
-                  16: "Lớn",
-                  18: "Rất lớn",
-                }}
-                step={1}
-              />
-            </Form.Item>
           </Form>
         </Card>
 
@@ -109,22 +88,14 @@ const PreferencesSetting: React.FC = () => {
           <Form.Item
             label="Thông báo email"
             name="emailNotifications"
-            valuePropName="checked"
+            valuePropName="checked" 
           >
-            <Switch />
-          </Form.Item>
+            <Switch onChange={() => message.info('chưa phát triển')} />
+          </Form.Item> 
 
           <Form.Item
             label="Thông báo khi có câu trả lời mới"
             name="answerNotifications"
-            valuePropName="checked"
-          >
-            <Switch />
-          </Form.Item>
-
-          <Form.Item
-            label="Thông báo khi được nhắc đến"
-            name="mentionNotifications"
             valuePropName="checked"
           >
             <Switch />
