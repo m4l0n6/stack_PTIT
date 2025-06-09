@@ -1,42 +1,18 @@
 import React, { useState } from "react";
-import { Table, Avatar, Button, Typography, Space, Card, Modal } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Avatar, Button, Typography, Space, Card, Modal, Tag, Tooltip } from "antd";
+import { EyeOutlined, DeleteOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
+import { users as mockUsers } from "@/mock/users";
 
 const { Title, Text } = Typography;
 
-interface User {
-  id: number;
-  name: string;
-  avatar: string;
-  email: string;
-}
-
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    avatar: "https://i.pravatar.cc/150?img=1",
-    email: "nguyenvana@example.com",
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    avatar: "https://i.pravatar.cc/150?img=2",
-    email: "tranthib@example.com",
-  },
-  {
-    id: 3,
-    name: "Lê Văn C",
-    avatar: "https://i.pravatar.cc/150?img=3",
-    email: "levanc@example.com",
-  },
-];
-
 const UserList: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [users, setUsers] = useState(
+    mockUsers.filter((u: any) => u.role !== 'admin').map((u: any) => ({ ...u, is_activate: typeof u.is_activate === 'boolean' ? u.is_activate : true }))
+  );
 
-  const openModal = (user: User) => {
+  const openModal = (user: any) => {
     setSelectedUser(user);
     setModalVisible(true);
   };
@@ -44,6 +20,28 @@ const UserList: React.FC = () => {
   const closeModal = () => {
     setModalVisible(false);
     setSelectedUser(null);
+  };
+
+  // Thêm hàm xóa user
+  const handleDeleteUser = (id: number) => {
+    // Xóa user khỏi danh sách hiển thị
+    const newUsers = users.filter((u: any) => u.id !== id);
+    // Nếu đang xem user bị xóa thì đóng modal
+    if (selectedUser && selectedUser.id === id) {
+      closeModal();
+    }
+    // Cập nhật lại danh sách users
+    setUsers(newUsers);
+  };
+
+  // Hàm khoá/mở khoá user
+  const handleToggleStatus = (id: number) => {
+    setUsers(prev => prev.map(u =>
+      u.id === id ? { ...u, is_activate: !u.is_activate } : u
+    ));
+    if (selectedUser && selectedUser.id === id) {
+      setSelectedUser((prev: any) => prev ? { ...prev, is_activate: !prev.is_activate } : prev);
+    }
   };
 
   const columns = [
@@ -55,8 +53,8 @@ const UserList: React.FC = () => {
     },
     {
       title: "Tên người dùng",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "username",
+      key: "username",
       render: (text: string) => <a style={{ color: "#1677ff" }}>{text}</a>,
     },
     {
@@ -71,24 +69,47 @@ const UserList: React.FC = () => {
       key: "email",
     },
     {
+      title: "Trạng thái",
+      dataIndex: "is_activate",
+      key: "is_activate",
+      width: 110,
+      render: (is_activate: boolean) => (
+        <Tag color={is_activate ? 'green' : 'red'} style={{ fontWeight: 600, fontSize: 14, padding: '2px 12px' }}>
+          {is_activate ? 'Hoạt động' : 'Đã khoá'}
+        </Tag>
+      ),
+    },
+    {
       title: "Hành động",
       key: "actions",
-      render: (_: any, record: User) => (
+      render: (_: any, record: any) => (
         <Space>
-          <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            size="small"
-            onClick={() => openModal(record)}
-          >
-            Xem
-          </Button>
-          <Button icon={<EditOutlined />} size="small">
-            Sửa
-          </Button>
-          <Button danger icon={<DeleteOutlined />} size="small">
-            Xóa
-          </Button>
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
+              size="small"
+              onClick={() => openModal(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Xoá tài khoản">
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              size="small"
+              onClick={() => handleDeleteUser(record.id)}
+            />
+          </Tooltip>
+          <Tooltip title={record.is_activate ? 'Khoá tài khoản' : 'Mở khoá tài khoản'}>
+            <Button
+              icon={record.is_activate ? <LockOutlined /> : <UnlockOutlined />}
+              type={record.is_activate ? 'default' : 'primary'}
+              danger={record.is_activate}
+              size="small"
+              onClick={() => handleToggleStatus(record.id)}
+              style={{ minWidth: 36 }}
+            />
+          </Tooltip>
         </Space>
       ),
     },
@@ -116,7 +137,7 @@ const UserList: React.FC = () => {
           </Title>
         </div>
         <Table
-          dataSource={mockUsers}
+          dataSource={users}
           columns={columns}
           rowKey="id"
           pagination={{ pageSize: 5 }}
@@ -130,80 +151,114 @@ const UserList: React.FC = () => {
         open={modalVisible}
         onCancel={closeModal}
         footer={null}
-        width={600}
+        width={700}
         style={{ top: 20 }}
         bodyStyle={{
-          background:
-            "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+          background: '#f7f8fa',
           padding: 0,
-          borderRadius: 12,
+          borderRadius: 16,
         }}
         centered
       >
         {selectedUser && (
-          <>
+          <div style={{ padding: 0, background: 'transparent' }}>
+            {/* Header */}
             <div
               style={{
-                background:
-                  "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                color: "white",
-                padding: "20px 40px",
-                borderRadius: "12px 12px 0 0",
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                fontWeight: "bold",
-                fontSize: 20,
-                justifyContent: "center",
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                padding: '18px 0 18px 0',
+                borderRadius: '16px 16px 0 0',
+                textAlign: 'center',
+                fontWeight: 700,
+                fontSize: 22,
+                letterSpacing: 1,
+                marginBottom: 0,
               }}
             >
-              <Avatar src={selectedUser.avatar} size={32} />
-              Thông tin người dùng
+             Thông tin người dùng
             </div>
 
-            <div
-              style={{
-                margin: 24,
-                backgroundColor: "white",
-                borderRadius: 12,
-                padding: 24,
-                boxShadow: "0 0 10px rgb(102 126 234 / 0.4)",
-                textAlign: "center",
-              }}
-            >
-              <Avatar
-                src={selectedUser.avatar}
-                size={120}
-                style={{
-                  border: "6px solid #667eea",
-                  boxShadow: "0 0 8px #667eea",
-                  marginBottom: 16,
-                }}
-              />
-
-              <Title level={3} style={{ color: "#1d39c4" }}>
-                {selectedUser.name}
-              </Title>
-
-              <Text
-                type="secondary"
-                style={{ fontSize: 16, marginBottom: 8, display: "block" }}
-              >
-                Email: {selectedUser.email}
-              </Text>
-
-              <Text
-                type="secondary"
-                style={{ fontSize: 16, marginBottom: 8, display: "block" }}
-              >
-                ID: {selectedUser.id}
-              </Text>
-
-              <Button type="primary" onClick={closeModal} style={{ marginTop: 20 }}>
-                Đóng
-              </Button>
+            {/* Main content */}
+            <div style={{ padding: 32, background: 'transparent' }}>
+              <div style={{
+                display: 'flex',
+                gap: 32,
+                marginBottom: 32,
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}>
+                {/* Avatar + Tên */}
+                <div style={{
+                  background: '#fff',
+                  borderRadius: 16,
+                  boxShadow: '0 2px 8px #e0e7ff',
+                  padding: 24,
+                  minWidth: 220,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Avatar
+                    src={selectedUser.avatar}
+                    size={80}
+                    style={{
+                      border: '3px solid #1890ff',
+                      marginBottom: 12,
+                      background: '#f0f5ff',
+                    }}
+                  />
+                  <Title level={4} style={{ color: '#1d39c4', margin: 0, marginBottom: 4, textAlign: 'center' }}>
+                    {selectedUser.username}
+                  </Title>
+                  {selectedUser.title && (
+                    <Text type="secondary" style={{ fontSize: 15, textAlign: 'center' }}>{selectedUser.title}</Text>
+                  )}
+                </div>
+                {/* Thông tin chi tiết */}
+                <div style={{
+                  background: '#fff',
+                  borderRadius: 16,
+                  boxShadow: '0 2px 8px #e0e7ff',
+                  padding: 24,
+                  minWidth: 260,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                }}>
+                  {Object.entries(selectedUser)
+                    .filter(([key]) => key !== 'avatar' && key !== 'username' && key !== 'title' && key !== 'password')
+                    .map(([key, value]) => (
+                      key === 'is_activate' ? (
+                        <div key={key} style={{ marginBottom: 14, display: 'flex', alignItems: 'center' }}>
+                          <Text strong style={{ minWidth: 120, color: '#595959', fontSize: 15 }}>Trạng thái:</Text>
+                          <Tag color={value ? 'green' : 'red'} style={{ marginLeft: 10, fontSize: 15, padding: '2px 16px' }}>
+                            {value ? 'Hoạt động' : 'Đã khoá'}
+                          </Tag>
+                        </div>
+                      ) : (
+                        <div key={key} style={{ marginBottom: 14, display: 'flex', alignItems: 'center' }}>
+                          <Text strong style={{ minWidth: 120, color: '#595959', fontSize: 15 }}>
+                            {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:
+                          </Text>
+                          <Text style={{ marginLeft: 10, color: '#262626', fontSize: 15 }}>{String(value)}</Text>
+                        </div>
+                      )
+                    ))}
+                  {/* Nếu chưa có is_activate vẫn hiển thị Hoạt động */}
+                  {!('is_activate' in selectedUser) && (
+                    <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center' }}>
+                      <Text strong style={{ minWidth: 120, color: '#595959', fontSize: 15 }}>Trạng thái:</Text>
+                      <Tag color="green" style={{ marginLeft: 10, fontSize: 15, padding: '2px 16px' }}>Hoạt động</Tag>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </>
+            {/* XÓA nút đóng ở dưới cùng */}
+          </div>
         )}
       </Modal>
     </>

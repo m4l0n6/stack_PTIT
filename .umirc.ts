@@ -87,6 +87,7 @@ export default defineConfig({
       component: "@/layouts/AdminLayout",
       routes: [
         { path: "", component: "@/pages/Admin/Dashboard" },
+        { path: "tags", component: "@/pages/Admin/Tags" },
         { path: "users", component: "@/pages/Admin/Users" },
         {
           path: "questions",

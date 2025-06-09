@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getQuestions } from "@/services/Questions";
 import {
   Table,
   Button,
@@ -10,8 +11,10 @@ import {
   Descriptions,
   Typography,
 } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
+import { useModel } from "umi";
+import { users as mockUsers } from "@/mock/users";
 
 const { Text } = Typography;
 
@@ -21,129 +24,64 @@ const RecentPosts: React.FC = () => {
   const [isQuestionDetailModalVisible, setIsQuestionDetailModalVisible] =
     useState(false);
   const [selectedAnswers, setSelectedAnswers] = useState<any[]>([]);
-  const [selectedUser, setSelectedUser] = useState<{
-    id: number;
-    name: string;
-    avatar: string;
-    joinDate?: string;
-    expireDate?: string;
-    status?: string;
-    intro?: string;
-    posts?: number;
-  } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<import("@/services/Users/typing").User | null>(null);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null
   );
+  const [data, setData] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(false);
+  const userModel = useModel('user');
 
-  // Dữ liệu tĩnh
-  const data: Question[] = [
-    {
-      id: 1,
-      title: "Cách học TypeScript hiệu quả",
-      content: "Nội dung chi tiết về cách học TypeScript một cách hiệu quả...",
-      tags: ["typescript", "programming"],
-      user: {
-        id: 101,
-        name: "Nguyễn Văn A",
-        avatar: "https://example.com/avatar1.jpg",
-      },
-      createdAt: "2025-05-25",
-      voteCount: 50,
-      answerCount: 2,
-      viewCount: 1200,
-      answers: [
-        {
-          id: 1,
-          content:
-            "Bạn nên bắt đầu với các tài liệu chính thức của TypeScript.",
-          user: { id: 102, name: "Trần Thị B", avatar: "avatar2.jpg" },
-          createdAt: "2025-05-25",
-          voteCount: 10,
-          isAccepted: true,
-          commentCount: 3,
-          comments: [],
-        },
-        {
-          id: 2,
-          content: "Học qua các dự án thực tế sẽ rất hiệu quả.",
-          user: { id: 103, name: "Lê Văn C", avatar: "avatar3.jpg" },
-          createdAt: "2025-05-26",
-          voteCount: 5,
-          isAccepted: false,
-          commentCount: 1,
-          comments: [],
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Hướng dẫn sử dụng Ant Design",
-      content: "Hướng dẫn chi tiết về cách sử dụng Ant Design trong React...",
-      tags: ["antd", "react"],
-      user: {
-        id: 102,
-        name: "Trần Thị B",
-        avatar: "https://example.com/avatar2.jpg",
-      },
-      createdAt: "2025-05-24",
-      voteCount: 30,
-      answerCount: 1,
-      viewCount: 850,
-      answers: [
-        {
-          id: 3,
-          content: "Ant Design rất dễ sử dụng với React.",
-          user: { id: 101, name: "Nguyễn Văn A", avatar: "avatar1.jpg" },
-          createdAt: "2025-05-24",
-          voteCount: 8,
-          isAccepted: false,
-          commentCount: 2,
-          comments: [],
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Tối ưu hóa hiệu suất React",
-      content: "Các phương pháp tối ưu hóa hiệu suất cho ứng dụng React...",
-      tags: ["react", "performance"],
-      user: {
-        id: 103,
-        name: "Lê Văn C",
-        avatar: "https://example.com/avatar3.jpg",
-      },
-      createdAt: "2025-05-23",
-      voteCount: 75,
-      answerCount: 0,
-      viewCount: 2000,
-      answers: [],
-    },
-  ];
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      setLoading(true);
+      try {
+        const result = await getQuestions({ page: 1, pageSize: 20, sort: "newest" });
+        if (result?.success) {
+          // Sắp xếp theo id tăng dần
+          const sorted = result.data.list.slice().sort((a, b) => a.id - b.id);
+          setData(sorted);
+        }
+      } catch (error) {
+        // handle error if needed
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
 
   const showAnswerModal = (answers: any[]) => {
     setSelectedAnswers(answers);
     setIsAnswerModalVisible(true);
   };
 
-  const showUserModal = (user: {
-    id: number;
-    name: string;
-    avatar: string;
-  }) => {
-    setSelectedUser({
-      ...user,
-      joinDate: "2025-01-01",
-      expireDate: "2025-12-31",
-      status: "Hoạt động",
-      intro: "Thành viên tích cực, yêu thích lập trình.",
-      posts: 5,
-    });
+  const showUserModal = (user: { id: number; name?: string; username?: string; avatar: string }) => {
+    // Lấy user đầy đủ từ mockUsers dựa vào id
+    const fullUser = mockUsers.find((u) => u.id === user.id);
+    if (fullUser) {
+      setSelectedUser(fullUser);
+    } else {
+      setSelectedUser({
+        id: user.id,
+        username: user.name || user.username || '',
+        avatar: user.avatar || '',
+        email: '',
+        created_at: '',
+        reputation: 0,
+        role: '',
+      });
+    }
     setIsUserModalVisible(true);
   };
 
   const showQuestionDetailModal = (question: Question) => {
     setSelectedQuestion(question);
     setIsQuestionDetailModalVisible(true);
+  };
+
+  const handleDeleteQuestion = (id: number) => {
+    setData(prev => prev.filter(q => q.id !== id));
   };
 
   const columns = [
@@ -180,27 +118,35 @@ const RecentPosts: React.FC = () => {
       key: "user",
       width: 160,
       align: "center" as const,
-      render: (user: { id: number; name: string; avatar: string }) => (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
-          <Avatar
-            src={user.avatar}
-            size={32}
-            onClick={() => showUserModal(user)}
-            style={{ cursor: "pointer", border: "2px solid #1890ff" }}
-          />
-          <Text style={{ fontSize: "11px", textAlign: "center" }}>
-            {user.name}
-          </Text>
-        </div>
-      ),
+      render: (_: any, record: Question) => {
+        const user = mockUsers.find((u) => u.id === record.user_id) || record.user;
+        if (!user) return null;
+        return (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: "4px",
+            }}
+          >
+            <Avatar
+              src={user.avatar || ''}
+              size={32}
+              onClick={() => showUserModal({
+                id: user.id,
+                name: user.username,
+                avatar: user.avatar || '',
+              })}
+              style={{ cursor: "pointer", border: "2px solid #1890ff" }}
+            />
+            <Text style={{ fontSize: "11px", textAlign: "center" }}>
+              {user.username}
+            </Text>
+          </div>
+        );
+      },
     },
     {
       title: "Hành động",
@@ -220,18 +166,11 @@ const RecentPosts: React.FC = () => {
           </Button>
           <Button
             type="default"
-            icon={<EditOutlined />}
-            size="small"
-            style={{ borderRadius: "6px" }}
-          >
-            Sửa
-          </Button>
-          <Button
-            type="default"
             danger
             icon={<DeleteOutlined />}
             size="small"
             style={{ borderRadius: "6px" }}
+            onClick={() => handleDeleteQuestion(record.id)}
           >
             Xóa
           </Button>
@@ -258,6 +197,7 @@ const RecentPosts: React.FC = () => {
         <Table
           columns={columns}
           dataSource={data}
+          loading={loading}
           pagination={{
             current: 1,
             pageSize: 10,
@@ -412,9 +352,9 @@ const RecentPosts: React.FC = () => {
                   🏷️ Tags:
                 </Text>
                 <Space size={8} wrap>
-                  {selectedQuestion.tags.map((tag) => (
+                  {(selectedQuestion.tags || []).map((tag) => (
                     <Tag
-                      key={tag}
+                      key={typeof tag === 'string' ? tag : tag.id}
                       color="geekblue"
                       style={{
                         borderRadius: "20px",
@@ -423,7 +363,7 @@ const RecentPosts: React.FC = () => {
                         fontWeight: "500",
                       }}
                     >
-                      {tag}
+                      {typeof tag === 'string' ? tag : tag.name}
                     </Tag>
                   ))}
                 </Space>
@@ -454,20 +394,24 @@ const RecentPosts: React.FC = () => {
                   style={{ display: "flex", alignItems: "center", gap: "12px" }}
                 >
                   <Avatar
-                    src={selectedQuestion.user.avatar}
+                    src={selectedQuestion.user?.avatar}
                     size={50}
                     style={{
                       border: "3px solid #1890ff",
                       cursor: "pointer",
                     }}
-                    onClick={() => showUserModal(selectedQuestion.user)}
+                    onClick={() => selectedQuestion.user && showUserModal({
+                      id: selectedQuestion.user.id,
+                      name: selectedQuestion.user.username,
+                      avatar: selectedQuestion.user.avatar || '',
+                    })}
                   />
                   <div>
                     <Text strong style={{ fontSize: "15px", display: "block" }}>
-                      {selectedQuestion.user.name}
+                      {selectedQuestion.user?.username}
                     </Text>
                     <Text type="secondary" style={{ fontSize: "12px" }}>
-                      Đăng ngày: {selectedQuestion.createdAt}
+                      Đăng ngày: {selectedQuestion.created_at}
                     </Text>
                   </div>
                 </div>
@@ -518,7 +462,7 @@ const RecentPosts: React.FC = () => {
                       color: "#52c41a",
                     }}
                   >
-                    {selectedQuestion.voteCount}
+                    {(selectedQuestion.upvotes || 0) - (selectedQuestion.downvotes || 0)}
                   </div>
                   <Text type="secondary" style={{ fontSize: "12px" }}>
                     Lượt vote
@@ -529,18 +473,18 @@ const RecentPosts: React.FC = () => {
                   style={{
                     padding: "12px 20px",
                     backgroundColor:
-                      selectedQuestion.answerCount > 0 ? "#e6f7ff" : "#f5f5f5",
+                      (selectedQuestion.answer_count || 0) > 0 ? "#e6f7ff" : "#f5f5f5",
                     borderRadius: "8px",
                     border:
-                      selectedQuestion.answerCount > 0
+                      (selectedQuestion.answer_count || 0) > 0
                         ? "1px solid #91d5ff"
                         : "1px solid #d9d9d9",
                     minWidth: "100px",
                     cursor:
-                      selectedQuestion.answerCount > 0 ? "pointer" : "default",
+                      (selectedQuestion.answer_count || 0) > 0 ? "pointer" : "default",
                   }}
                   onClick={() =>
-                    selectedQuestion.answerCount > 0 &&
+                    (selectedQuestion.answer_count || 0) > 0 &&
                     showAnswerModal(selectedQuestion.answers || [])
                   }
                 >
@@ -549,12 +493,12 @@ const RecentPosts: React.FC = () => {
                       fontSize: "24px",
                       fontWeight: "bold",
                       color:
-                        selectedQuestion.answerCount > 0
+                        (selectedQuestion.answer_count || 0) > 0
                           ? "#1890ff"
                           : "#8c8c8c",
                     }}
                   >
-                    {selectedQuestion.answerCount}
+                    {selectedQuestion.answer_count || 0}
                   </div>
                   <Text type="secondary" style={{ fontSize: "12px" }}>
                     Câu trả lời
@@ -577,7 +521,7 @@ const RecentPosts: React.FC = () => {
                       color: "#fa8c16",
                     }}
                   >
-                    {selectedQuestion.viewCount}
+                    {selectedQuestion.views}
                   </div>
                   <Text type="secondary" style={{ fontSize: "12px" }}>
                     Lượt xem
@@ -614,7 +558,7 @@ const RecentPosts: React.FC = () => {
       >
         {selectedAnswers.length > 0 ? (
           <div>
-            {selectedAnswers.map((answer, index) => (
+            {selectedAnswers.map((answer: any, index: number) => (
               <div
                 key={answer.id}
                 style={{
@@ -641,21 +585,21 @@ const RecentPosts: React.FC = () => {
                     <Text style={{ color: "#595959" }}>{answer.content}</Text>
                   </Descriptions.Item>
                   <Descriptions.Item label="Người trả lời">
-                    {answer.user.name}
+                    {answer.user?.username || answer.user?.name || "Ẩn danh"}
                   </Descriptions.Item>
                   <Descriptions.Item label="Ngày trả lời">
-                    {answer.createdAt}
+                    {answer.created_at || answer.createdAt}
                   </Descriptions.Item>
                   <Descriptions.Item label="Số lượt vote">
-                    <Text style={{ color: "#52c41a" }}>{answer.voteCount}</Text>
+                    <Text style={{ color: "#52c41a" }}>{(answer.upvotes || 0) - (answer.downvotes || 0) || answer.voteCount || 0}</Text>
                   </Descriptions.Item>
                   <Descriptions.Item label="Được chấp nhận">
-                    <Tag color={answer.isAccepted ? "green" : "red"}>
-                      {answer.isAccepted ? "Có" : "Không"}
+                    <Tag color={answer.is_accepted || answer.isAccepted ? "green" : "red"}>
+                      {(answer.is_accepted || answer.isAccepted) ? "Có" : "Không"}
                     </Tag>
                   </Descriptions.Item>
                   <Descriptions.Item label="Số bình luận">
-                    {answer.commentCount}
+                    {answer.comment_count || answer.commentCount || 0}
                   </Descriptions.Item>
                 </Descriptions>
               </div>
@@ -669,55 +613,69 @@ const RecentPosts: React.FC = () => {
       {/* Modal hiển thị hồ sơ người dùng */}
       <Modal
         title={
-          <Text strong style={{ fontSize: "18px", color: "#1d39c4" }}>
-            Hồ sơ người dùng
+          <Text strong style={{ fontSize: "20px", color: "#1d39c4", letterSpacing: 1 }}>
+            👤 Hồ sơ người dùng
           </Text>
         }
         open={isUserModalVisible}
         onCancel={() => setIsUserModalVisible(false)}
         footer={null}
-        style={{ borderRadius: "12px" }}
+        style={{ borderRadius: "16px" }}
         bodyStyle={{
-          backgroundColor: "#f0f5ff",
-          padding: "24px",
-          borderRadius: "12px",
+          background: "linear-gradient(135deg, #f0f5ff 0%, #e6eafc 100%)",
+          padding: "32px 0 24px 0",
+          borderRadius: "16px",
         }}
       >
         {selectedUser ? (
           <div style={{ textAlign: "center" }}>
             <Avatar
               src={selectedUser.avatar}
-              size={80}
-              style={{ marginBottom: "16px", border: "2px solid #1890ff" }}
+              size={96}
+              style={{ marginBottom: 20, border: "3px solid #1890ff", boxShadow: "0 2px 12px #b3c6ff55" }}
             />
+            <Text strong style={{ fontSize: 22, color: "#1d39c4", display: "block", marginBottom: 4 }}>
+              {selectedUser.username}
+            </Text>
+            <Text type="secondary" style={{ fontSize: 15, marginBottom: 16, display: "block" }}>
+              {selectedUser.title || selectedUser.role}
+            </Text>
             <Descriptions
               column={1}
               labelStyle={{
                 fontWeight: "bold",
                 color: "#595959",
-                fontSize: "14px",
+                fontSize: "15px",
+                width: 120,
               }}
-              contentStyle={{ color: "#262626", fontSize: "14px" }}
-              style={{ maxWidth: "300px", margin: "0 auto" }}
+              contentStyle={{ color: "#262626", fontSize: "15px" }}
+              style={{ maxWidth: 340, margin: "0 auto", background: "#fff", borderRadius: 12, padding: 16, boxShadow: "0 2px 8px #b3c6ff22" }}
             >
-              <Descriptions.Item label="Tên">
-                {selectedUser.name}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày tham gia">
-                {selectedUser.joinDate}
-              </Descriptions.Item>
-              <Descriptions.Item label="Ngày hết hạn">
-                {selectedUser.expireDate}
-              </Descriptions.Item>
-              <Descriptions.Item label="Trạng thái">
-                {selectedUser.status}
-              </Descriptions.Item>
-              <Descriptions.Item label="Giới thiệu">
-                {selectedUser.intro}
-              </Descriptions.Item>
-              <Descriptions.Item label="Bài viết">
-                {selectedUser.posts}
-              </Descriptions.Item>
+              {selectedUser.email && (
+                <Descriptions.Item label="Email">
+                  <span style={{ color: "#1d39c4" }}>{selectedUser.email}</span>
+                </Descriptions.Item>
+              )}
+              {selectedUser.bio && (
+                <Descriptions.Item label="Giới thiệu">
+                  <span style={{ fontStyle: "italic" }}>{selectedUser.bio}</span>
+                </Descriptions.Item>
+              )}
+              {selectedUser.reputation !== undefined && (
+                <Descriptions.Item label="Điểm uy tín">
+                  <span style={{ color: "#52c41a", fontWeight: 600 }}>{selectedUser.reputation}</span>
+                </Descriptions.Item>
+              )}
+              {selectedUser.role && (
+                <Descriptions.Item label="Vai trò">
+                  {selectedUser.role === 'admin' ? 'Quản trị viên' : selectedUser.role === 'teacher' ? 'Giảng viên' : 'Sinh viên'}
+                </Descriptions.Item>
+              )}
+              {selectedUser.created_at && (
+                <Descriptions.Item label="Ngày tham gia">
+                  {selectedUser.created_at}
+                </Descriptions.Item>
+              )}
             </Descriptions>
           </div>
         ) : (
