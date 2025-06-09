@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
-import HeaderBasicLauyout from "./components/BasicLayout/Header";
+import HeaderAppLauyout from "./components/AppLayout/Header";
 
 const { Content, Sider, Footer } = Layout;
 
@@ -37,7 +37,7 @@ export default function AppLayout() {
 
   return (
     <Layout className="min-h-screen">
-      <HeaderBasicLauyout />
+      <HeaderAppLauyout />
       <Layout style={{ marginTop: 64 }}>
         <Sider 
           width={200} 

@@ -11,7 +11,7 @@ const answers: Answer[] = [
     updated_at: "2023-10-02",
     upvotes: 7,
     downvotes: 0,
-    is_accepted: true,
+    is_accepted: false,
     user: users[1],
     comment_count: 2
   },
@@ -37,7 +37,7 @@ const answers: Answer[] = [
     updated_at: "2023-10-06",
     upvotes: 12,
     downvotes: 0,
-    is_accepted: false,
+    is_accepted: true,
     user: users[2],
     comment_count: 0
   }

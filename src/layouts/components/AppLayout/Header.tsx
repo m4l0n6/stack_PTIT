@@ -41,7 +41,7 @@ const header: MenuProps["items"] = [
 
 const { Text } = Typography;
 
-const HeaderBasicLauyout: React.FC = () => {
+const HeaderAppLauyout: React.FC = () => {
   const { user, handleLogout, loadUserFromStorage } = useModel("user");
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -325,4 +325,4 @@ const HeaderBasicLauyout: React.FC = () => {
   );
 };
 
-export default HeaderBasicLauyout;
+export default HeaderAppLauyout;

@@ -32,6 +32,7 @@ const TinyEditor: React.FC<TinyEditorProps> = ({ onEditorInit }) => {
           init={{
             height: 200,
             menubar: false,
+            languages: 'vi',
             plugins: [
               "advlist autolink lists link image charmap print preview anchor",
               "searchreplace visualblocks code fullscreen",

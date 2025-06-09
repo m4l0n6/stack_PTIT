@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Tag, Avatar, Typography, Space } from "antd";
+import { Card, Tag, Avatar, Typography, Space, Tooltip } from "antd";
 import { Link } from "umi";
 import { CheckCircleFilled, LockOutlined } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
@@ -13,6 +13,12 @@ interface QuestionCardProps {
 const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
   // Xác định trạng thái của câu hỏi
   const isClosed = question.status === "closed";
+
+  function decodeHtmlEntities(str: string) {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = str;
+    return txt.value;
+  }
 
   return (
     <div
@@ -47,12 +53,14 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           }`}
         >
           <div className="flex items-center">
-            {question.has_accepted_answer && (
-              <CheckCircleFilled className="mr-1 text-green-500" />
-            )}
-            {question.answer_count || 0}
+            {question.has_accepted_answer ? (
+              <Tooltip title="Câu hỏi này đã có câu trả lời được chấp nhận">
+                <CheckCircleFilled className="mr-1 text-green-500" />
+              </Tooltip>
+            ) : null}
+            <p className="text-lg">{question.answer_count || 0}</p>
           </div>
-          <div className="text-gray-500 text-xs">câu trả lời</div>
+          <div className="text-black text-xs">câu trả lời</div>
         </div>
 
         <div className="flex flex-col items-center mt-2">
@@ -81,8 +89,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
           
         </Title>
 
-        <div className="mb-3 text-gray-500 text-sm line-clamp-2">
-          {question.content.replace(/<[^>]+>/g, "").substring(0, 200)}
+        <div className="mb-3 h-10 text-gray-500 text-sm line-clamp-2">
+          {decodeHtmlEntities(question.content.replace(/<[^>]+>/g, "")).substring(0, 200)}
           {question.content.length > 200 && "..."}
         </div>
 
