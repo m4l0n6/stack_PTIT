@@ -76,9 +76,11 @@ const PublicProfile = () => {
       const diffYears = Math.floor(diffMonths / 12);
 
       if (diffYears > 0) {
-        return `${diffYears} năm ${diffMonths % 12} tháng`;
+        const months = diffMonths % 12;
+        return `${diffYears} năm${months > 0 ? ` ${months} tháng` : ""}`;
       } else if (diffMonths > 0) {
-        return `${diffMonths} tháng ${diffDays % 30} ngày`;
+        const days = diffDays % 30;
+        return `${diffMonths} tháng${days > 0 ? ` ${days} ngày` : ""}`;
       } else {
         return `${diffDays} ngày`;
       }
@@ -86,10 +88,14 @@ const PublicProfile = () => {
       console.error("Error calculating join time:", error);
       return createdDate;
     }
-  };  const handleTabChange = (key: string) => {
+  };
+
+  const handleTabChange = (key: string) => {
     // Xử lý tất cả các tab trong cùng trang
     setSearchParams({ tab: key });
-  };  // Tạo items cho tabs với điều kiện hiển thị
+  }; 
+
+   // Tạo items cho tabs với điều kiện hiển thị
   const items: TabsProps["items"] = [
     {
       key: "profile",

@@ -62,6 +62,12 @@ export default () => {
       message.warning("Vui lòng đăng nhập để bình chọn");
       return;
     }
+    
+    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
+    if (question && question.user_id === user.id) {
+      message.warning("Bạn không thể bình chọn câu hỏi của chính mình");
+      return;
+    }
 
     try {
       const result = await voteQuestion(id, direction);
@@ -73,9 +79,9 @@ export default () => {
             : "Đã bình chọn tiêu cực cho câu hỏi"
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error voting question:", error);
-      message.error("Không thể bình chọn. Vui lòng thử lại sau");
+      message.error(error?.data?.message || "Không thể bình chọn. Vui lòng thử lại sau");
     }
   };
 
@@ -88,6 +94,12 @@ export default () => {
   ) => {
     if (!user) {
       message.warning("Vui lòng đăng nhập để bình chọn");
+      return;
+    }
+    
+    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
+    if (question && question.user_id === user.id) {
+      message.warning("Người đặt câu hỏi không thể bình chọn câu trả lời");
       return;
     }
 
@@ -108,12 +120,12 @@ export default () => {
             : "Đã bình chọn tiêu cực cho câu trả lời"
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error voting answer:", error);
-      message.error("Không thể bình chọn. Vui lòng thử lại sau");
+      message.error(error?.data?.message || "Không thể bình chọn. Vui lòng thử lại sau");
     }
   };
-
+  
   // Handle accept answer
   const handleAcceptAnswer = async (
     questionId: number,
@@ -156,6 +168,12 @@ export default () => {
     if (!user) {
       message.warning("Vui lòng đăng nhập để trả lời");
       history.push("/auth/login");
+      return false;
+    }
+
+    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
+    if (question && question.user_id === user.id) {
+      message.warning("Bạn không thể tự trả lời câu hỏi của chính mình");
       return false;
     }
 

@@ -12,7 +12,7 @@ import comments from './comments';
 import votes from './votes';
 
 // Dữ liệu mẫu cho questions
-const questions: Question[] = [
+export const questionsData: Question[] = [  // ← THÊM EXPORT
   {
     id: 1,
     user_id: 4,
@@ -27,7 +27,7 @@ const questions: Question[] = [
     user: users[2],
     tags: [tags[0], tags[1], tags[2], tags[3]],
     answer_count: 2,
-    status: "closed",
+    status: "open",
   },
   {
     id: 2,
@@ -59,9 +59,28 @@ const questions: Question[] = [
     user: users[0],
     tags: [tags[7], tags[8], tags[4], tags[9]],
     answer_count: 0,
+    status: "closed", 
+  },
+  {
+    id: 4,
+    user_id: 4,
+    title: "Cách sử dụng GraphQL trong ứng dụng React",
+    content:
+      "Tôi muốn tích hợp GraphQL vào ứng dụng React của mình để cải thiện hiệu suất và khả năng mở rộng. Có ai có kinh nghiệm với Apollo Client hoặc Relay có thể chia sẻ cách thiết lập và sử dụng không?",
+    created_at: "2024-10-15",
+    updated_at: "2024-10-15",
+    views: 180,
+    upvotes: 12,
+    downvotes: 1,
+    user: users[3],
+    tags: [tags[10], tags[11], tags[12]],
+    answer_count: 0,
     status: "open",
   },
 ];
+
+// Alias cho backward compatibility
+const questions = questionsData;
 
 // Biến đếm cho ID mới
 let nextQuestionId = questions.length + 1;
@@ -407,6 +426,14 @@ export default {
       });
     }
     
+    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
+    if (question.user_id === userId) {
+      return res.status(403).send({
+        success: false,
+        message: 'Bạn không thể bình chọn câu hỏi của chính mình',
+      });
+    }
+    
     // Kiểm tra xem người dùng đã bình chọn câu hỏi này chưa
     const existingVote = votes.find(v => v.user_id === userId && v.question_id === id);
     
@@ -504,6 +531,14 @@ export default {
       });
     }
     
+    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
+    if (question.user_id === userId) {
+      return res.status(403).send({
+        success: false,
+        message: 'Bạn không thể tự trả lời câu hỏi của chính mình',
+      });
+    }
+    
     // Kiểm tra vai trò - chỉ cho phép student và teacher trả lời
     if (user.role === 'admin') {
       return res.status(403).send({
@@ -557,11 +592,20 @@ export default {
     
     const userId = parseInt(token.replace('mock-token-', ''), 10);
     const answer = answers.find(a => a.id === answerId && a.question_id === questionId);
+    const question = questions.find(q => q.id === questionId);
     
-    if (!answer) {
+    if (!answer || !question) {
       return res.status(404).send({
         success: false,
-        message: 'Không tìm thấy câu trả lời',
+        message: 'Không tìm thấy câu trả lời hoặc câu hỏi',
+      });
+    }
+    
+    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
+    if (question.user_id === userId) {
+      return res.status(403).send({
+        success: false,
+        message: 'Người đặt câu hỏi không thể bình chọn câu trả lời',
       });
     }
     

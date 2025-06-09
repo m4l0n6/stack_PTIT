@@ -10,6 +10,8 @@ interface AnswerFormProps {
   isSubmitting: boolean;
   handleSubmit: () => Promise<void>;
   onEditorInit: (editor: any) => void;
+  questionUserId: number | string;
+  currentUserId: string | number | undefined;
 }
 
 const AnswerForm: React.FC<AnswerFormProps> = ({
@@ -17,24 +19,29 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
   isSubmitting,
   handleSubmit,
   onEditorInit,
+  questionUserId,
+  currentUserId,
 }) => {
-  return (
-    <div className="mt-6">
-      <Card title="Câu trả lời của bạn">
-        {isAuthenticated ? (
-          <div>
-            <TinyEditor onEditorInit={onEditorInit} />
-            <div className="mt-4">
-              <Button
-                type="primary"
-                onClick={handleSubmit}
-                loading={isSubmitting}
-              >
-                Đăng câu trả lời
-              </Button>
-            </div>
+  const isQuestionOwner = currentUserId && questionUserId === currentUserId;
+
+  if (isQuestionOwner) {
+    return (
+      <div className="mt-6">
+        <Card title="Trả lời">
+          <div className="py-4 text-center">
+            <Text type="secondary">
+              Bạn không thể tự trả lời câu hỏi của chính mình.
+            </Text>
           </div>
-        ) : (
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="mt-6">
+        <Card title="Trả lời">
           <div className="py-4 text-center">
             <Text type="secondary">
               Vui lòng{" "}
@@ -42,7 +49,26 @@ const AnswerForm: React.FC<AnswerFormProps> = ({
               trả lời câu hỏi này
             </Text>
           </div>
-        )}
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6">
+      <Card title="Câu trả lời của bạn">
+        <div>
+          <TinyEditor onEditorInit={onEditorInit} />
+          <div className="mt-4">
+            <Button
+              type="primary"
+              onClick={handleSubmit}
+              loading={isSubmitting}
+            >
+              Đăng câu trả lời
+            </Button>
+          </div>
+        </div>
       </Card>
     </div>
   );

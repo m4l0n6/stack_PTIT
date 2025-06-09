@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Space, Tag, Avatar, Typography, Button, message } from "antd";
-import { Link } from "umi";
-import { ArrowUpOutlined, ArrowDownOutlined, SaveOutlined  } from "@ant-design/icons";
+import { Link, useModel } from "umi";
+import { ArrowUpOutlined, ArrowDownOutlined, SaveOutlined } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 
 const { Text } = Typography;
@@ -15,6 +15,41 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
   question,
   handleVote,
 }) => {
+  const { user } = useModel('user');
+  const isQuestionOwner = user && question.user_id === user.id;
+  
+  // Xử lý trường hợp tags có thể là string[] hoặc object[]
+  const renderTags = () => {
+    if (!question.tags || question.tags.length === 0) return null;
+    
+    return question.tags.map((tag, index) => {
+      // Nếu tag là string (tag mới tạo)
+      if (typeof tag === 'string') {
+        return (
+          <Link to={`/questions/tagged/${tag}`} key={`new-tag-${index}`}>
+            <Tag color="blue">
+              {tag}
+            </Tag>
+          </Link>
+        );
+      } 
+      // Nếu tag là object (tag có sẵn)
+      else if (typeof tag === 'object' && tag !== null) {
+        return (
+          <Link to={`/questions/tagged/${tag.name}`} key={tag.id || `tag-${index}`}>
+            <Tag color="blue">
+              {tag.name}{" "}
+              {tag.count !== undefined && (
+                <span className="text-xs">({tag.count})</span>
+              )}
+            </Tag>
+          </Link>
+        );
+      }
+      return null;
+    });
+  };
+
   return (
     <div className="flex">
       {/* Cột voting bên trái */}
@@ -23,6 +58,8 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           type="text"
           icon={<ArrowUpOutlined />}
           onClick={() => handleVote("up")}
+          disabled={isQuestionOwner}
+          title={isQuestionOwner ? "Bạn không thể bình chọn câu hỏi của chính mình" : ""}
           className="vote-button"
         />
         <div className="my-1 font-bold text-lg text-center vote-count">
@@ -32,6 +69,8 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           type="text"
           icon={<ArrowDownOutlined />}
           onClick={() => handleVote("down")}
+          disabled={isQuestionOwner}
+          title={isQuestionOwner ? "Bạn không thể bình chọn câu hỏi của chính mình" : ""}
           className="vote-button"
         />
         <Button 
@@ -41,8 +80,6 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           style={{ marginTop: "10px" }}
           onClick={() => message.info("Chức năng lưu câu hỏi chưa được triển khai")}
         />
-
-        
       </div>
 
       {/* Nội dung câu hỏi bên phải */}
@@ -55,15 +92,7 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
             />
           </div>
           <Space className="mt-4" size={[0, 8]} wrap>
-            {question.tags &&
-              question.tags.map((tag) => (
-                <Tag color="blue" key={tag.id}>
-                  {tag.name}{" "}
-                  {tag.count !== undefined && (
-                    <span className="text-xs">({tag.count})</span>
-                  )}
-                </Tag>
-              ))}
+            {renderTags()}
           </Space>
 
           <div className="flex justify-end mt-4">
@@ -74,7 +103,7 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
               <div className="flex items-center mt-2">
                 <Avatar src={question.user?.avatar} />
                 <Link
-                  to={`/users/${question.user?.id}/${question.user?.username.replace(/\s+/g, "-")}`}
+                  to={`/users/${question.user?.id}/${question.user?.username?.replace(/\s+/g, "-")}`}
                 >
                   <Text strong className="ml-2 hover:text-[#1890ff]">
                     {question.user?.username}

@@ -1,16 +1,35 @@
-import React, { useState, useRef } from 'react';
-import { Form, Input, Button, Select, message, Card, Space } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import { Form, Input, Button, Select, message, Card, Space, Tag } from 'antd';
 import { useModel, history } from 'umi';
 import { createQuestion } from '@/services/Questions';
 import { Editor } from '@tinymce/tinymce-react';
 
 const { Option } = Select;
 
+// Định nghĩa kiểu dữ liệu cho CustomTagProps
+interface CustomTagProps {
+  label: React.ReactNode;
+  value: any;
+  closable: boolean;
+  onClose: () => void;
+}
+
 const QuestionCreatePage = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  
+  // Sử dụng model tag để lấy danh sách tags
+  const { tags, loading: loadingTags, fetchTags } = useModel('tag');
+  
   const { user } = useModel('user');
   const editorRef = useRef<any>(null);
+
+  // Gọi fetchTags khi component mount nếu tags chưa được tải
+  useEffect(() => {
+    if (tags.length === 0) {
+      fetchTags();
+    }
+  }, [fetchTags, tags.length]);
 
   const onFinish = async (values: any) => {
     if (!user) {
@@ -30,6 +49,12 @@ const QuestionCreatePage = () => {
       return;
     }
     
+    // Giới hạn số lượng tags
+    if (values.tags && values.tags.length > 5) {
+      message.warning('Chỉ được chọn tối đa 5 thẻ');
+      values.tags = values.tags.slice(0, 5);
+    }
+    
     setLoading(true);
     try {
       const result = await createQuestion({
@@ -40,7 +65,7 @@ const QuestionCreatePage = () => {
       
       if (result?.success) {
         message.success('Đã đăng câu hỏi thành công!');
-        history.push('/questions');
+        history.push(`/question/${result.data.id}`);
       } else {
         message.error(result?.message || 'Không thể tạo câu hỏi');
       }
@@ -50,6 +75,27 @@ const QuestionCreatePage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Custom tag render để đảm bảo hiển thị đúng
+  const tagRender = (props: CustomTagProps) => {
+    const { label, value, closable, onClose } = props;
+    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    
+    return (
+      <Tag
+        color="blue"
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+        style={{ marginRight: 3 }}
+      >
+        {label}
+      </Tag>
+    );
   };
 
   return (
@@ -92,7 +138,7 @@ const QuestionCreatePage = () => {
             help="Mô tả chi tiết câu hỏi của bạn. Nêu rõ vấn đề, những gì bạn đã thử và kết quả mong muốn."
           >
             <Editor
-              apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46" // Thay thế bằng API key thực tế nếu cần
+              apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46"
               onInit={(evt: any, editor: any) => (editorRef.current = editor)}
               initialValue=""
               init={{
@@ -147,23 +193,34 @@ const QuestionCreatePage = () => {
             name="tags"
             rules={[
               { required: true, message: "Vui lòng chọn ít nhất một tag" },
+              { 
+                type: 'array', 
+                max: 5, 
+                message: 'Bạn chỉ có thể chọn tối đa 5 thẻ' 
+              }
             ]}
+            extra="Chọn hoặc tạo tối đa 5 thẻ liên quan đến câu hỏi của bạn"
           >
             <Select
               mode="tags"
+              style={{ width: '100%' }}
               placeholder="Thêm tags liên quan (tối đa 5)"
+              loading={loadingTags}
+              tagRender={tagRender}
+              filterOption={(input, option) => {
+                if (!option?.children) return false;
+                return option.children.toString().toLowerCase().includes(input.toLowerCase());
+              }}
               maxTagCount={5}
+              allowClear
+              showArrow
+              tokenSeparators={[',']}
             >
-              <Option value="java">Java</Option>
-              <Option value="python">Python</Option>
-              <Option value="javascript">JavaScript</Option>
-              <Option value="c#">C#</Option>
-              <Option value="c++">C++</Option>
-              <Option value="react">React</Option>
-              <Option value="angular">Angular</Option>
-              <Option value="vue">Vue</Option>
-              <Option value="database">Database</Option>
-              <Option value="sql">SQL</Option>
+              {tags.map(tag => (
+                <Option key={tag.id} value={tag.name}>
+                  {tag.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 

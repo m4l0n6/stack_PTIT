@@ -122,6 +122,8 @@ const QuestionDetail: React.FC = () => {
         onEditorInit={(editor) => {
           editorRef.current = editor;
         }}
+        questionUserId={question.user_id}
+        currentUserId={user?.id}
       />
     </div>
   );

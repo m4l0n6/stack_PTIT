@@ -9,7 +9,7 @@ import {
   Input,
   List,
 } from "antd";
-import { Link } from "umi";
+import { Link, useModel } from "umi";
 import {
   ArrowUpOutlined,
   ArrowDownOutlined,
@@ -50,6 +50,8 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
   commentForms,
   submittingComments,
 }) => {
+  const isQuestionOwner = currentUserId && questionUserId === currentUserId;
+
   return (
     <Card key={answer.id} className="mb-4 answer-card">
       <div className="flex">
@@ -61,6 +63,12 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
               icon={<ArrowUpOutlined />}
               onClick={() => handleVoteAnswer(answer.id, "up")}
               className="vote-button"
+              disabled={!!isQuestionOwner}
+              title={
+                isQuestionOwner
+                  ? "Người đặt câu hỏi không thể bình chọn câu trả lời"
+                  : ""
+              }
             />
           </Tooltip>
           <div className="my-1 font-bold text-lg text-center vote-count">
@@ -72,6 +80,12 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
               icon={<ArrowDownOutlined />}
               onClick={() => handleVoteAnswer(answer.id, "down")}
               className="vote-button"
+              disabled={!!isQuestionOwner}
+              title={
+                isQuestionOwner
+                  ? "Người đặt câu hỏi không thể bình chọn câu trả lời"
+                  : ""
+              }
             />
           </Tooltip>
           {answer.is_accepted && (
@@ -79,18 +93,16 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
               <CheckCircleFilled className="mt-2 text-green-500 text-2xl" />
             </Tooltip>
           )}
-          {!answer.is_accepted &&
-            currentUserId &&
-            questionUserId === currentUserId && (
-              <Tooltip title="Chấp nhận câu trả lời này">
-                <Button
-                  type="text"
-                  icon={<CheckCircleFilled />}
-                  onClick={() => handleAcceptAnswer(answer.id)}
-                  className="mt-2"
-                />
-              </Tooltip>
-            )}
+          {!answer.is_accepted && isQuestionOwner && (
+            <Tooltip title="Chấp nhận câu trả lời này">
+              <Button
+                type="text"
+                icon={<CheckCircleFilled />}
+                onClick={() => handleAcceptAnswer(answer.id)}
+                className="mt-2"
+              />
+            </Tooltip>
+          )}
         </div>
 
         {/* Answer content */}
@@ -117,7 +129,10 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
               <div className="flex items-center mt-2">
                 <Avatar src={answer.user?.avatar} />
                 <Link
-                  to={`/users/${answer.user?.id}/${answer.user?.username.replace(/\s+/g, "-")}`}
+                  to={`/users/${answer.user?.id}/${answer.user?.username.replace(
+                    /\s+/g,
+                    "-"
+                  )}`}
                 >
                   <Text strong className="ml-2 hover:text-[#1890ff]">
                     {answer.user?.username}
@@ -180,7 +195,10 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
                       avatar={<Avatar src={comment.user?.avatar} />}
                       title={
                         <Link
-                          to={`/users/${comment.user?.id}/${comment.user?.username.replace(/\s+/g, "-")}`}
+                          to={`/users/${comment.user?.id}/${comment.user?.username.replace(
+                            /\s+/g,
+                            "-"
+                          )}`}
                         >
                           {comment.user?.username}
                         </Link>

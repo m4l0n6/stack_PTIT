@@ -34,6 +34,11 @@ export const question_tags = [
   { question_id: 3, tag_id: 9 }, // authentication
   { question_id: 3, tag_id: 5 }, // react
   { question_id: 3, tag_id: 10 }, // typescript
+
+  { question_id: 4, tag_id: 11 }, // graphql
+  { question_id: 4, tag_id: 12 }, // docker
+  { question_id: 4, tag_id: 13 }, // kubernetes
+  { question_id: 4, tag_id: 14 }, // microservices
 ];
 
 // Bảng liên kết giữa users và tags (tag follows)

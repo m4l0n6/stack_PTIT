@@ -16,6 +16,19 @@ const answers: Answer[] = [
     comment_count: 2
   },
   {
+    id: 5,
+    question_id: 2,
+    user_id: 1, // sinh viên 1
+    content: "Từ kinh nghiệm của tôi, có một số cách để tối ưu hiệu suất trong React:\n\n1. **Sử dụng React.memo và useMemo**: Tránh re-render không cần thiết bằng cách bọc components với React.memo và sử dụng useMemo cho các phép tính phức tạp.\n\n2. **Ảo hóa danh sách (List Virtualization)**: Khi hiển thị danh sách lớn, chỉ render những phần đang trong viewport. Sử dụng thư viện như react-window hoặc react-virtualized.\n\n3. **Code-splitting**: Chia nhỏ bundle JS để tải theo nhu cầu sử dụng React.lazy và Suspense.\n\n4. **Tối ưu hóa hình ảnh**: Sử dụng lazy loading và định dạng hình ảnh phù hợp.\n\nHy vọng điều này giúp ích!",
+    created_at: "2023-10-05",
+    updated_at: "2023-10-05",
+    upvotes: 5,
+    downvotes: 0,
+    is_accepted: true, // Được chấp nhận
+    user: users[0], // Đối tượng user của sinh viên 1
+    comment_count: 1
+  },
+  {
     id: 2,
     question_id: 1,
     user_id: 4,

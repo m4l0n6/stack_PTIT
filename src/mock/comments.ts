@@ -4,7 +4,7 @@ import { Comment } from '@/services/Comments/typing';
 const comments: Comment[] = [
   {
     id: 1,
-    user_id: 1,
+    user_id: 4,
     content: "Rất hữu ích, cảm ơn thầy!",
     created_at: "2023-10-02",
     answer_id: 1,
@@ -12,7 +12,7 @@ const comments: Comment[] = [
   },
   {
     id: 2,
-    user_id: 3,
+    user_id: 1,
     content: "Bạn có thể thêm dotenv để quản lý biến môi trường nữa nhé",
     created_at: "2023-10-03",
     answer_id: 1,

@@ -11,9 +11,12 @@ export interface Answer {
   upvotes: number;
   downvotes: number;
   is_accepted: boolean;
-
   // Các trường quan hệ
   user?: User;
   comments?: Comment[];
   comment_count?: number;
+  
+  // API response fields
+  question_title?: string;
+  question_content?: string;
 }
