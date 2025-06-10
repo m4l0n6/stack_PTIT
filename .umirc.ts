@@ -97,6 +97,7 @@ export default defineConfig({
       wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
       allowedRoles: ["admin"],
     },
+
     {
       path: "*",
       component: "@/pages/404",
