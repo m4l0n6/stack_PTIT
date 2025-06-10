@@ -33,6 +33,9 @@ export async function searchTags(keyword: string): Promise<APIResponse<Tag[]>> {
 export async function getUserTagFollows(): Promise<APIResponse<Tag[]>> {
   return request("/api/user/tag-follows", {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
 }
 
@@ -40,6 +43,9 @@ export async function getUserTagFollows(): Promise<APIResponse<Tag[]>> {
 export async function updateUserTagFollows(tagIds: number[]): Promise<APIResponse<Tag[]>> {
   return request("/api/user/tag-follows", {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
     data: { tagIds },
   });
 }

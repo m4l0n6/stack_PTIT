@@ -38,6 +38,7 @@ export const question_tags = [
   { question_id: 4, tag_id: 11 }, // graphql
   { question_id: 4, tag_id: 12 }, // docker
   { question_id: 4, tag_id: 13 }, // kubernetes
+  { question_id: 4, tag_id: 14 }, // microservices
 ];
 
 // Bảng liên kết giữa users và tags (tag follows)
@@ -201,5 +202,59 @@ export default {
       data: updatedFollows,
       message: 'Đã cập nhật danh sách tags theo dõi',
     });
+  },
+
+  // API thêm tag
+  'POST /api/tags': (req: any, res: any) => {
+    const { name, description } = req.body;
+    if (!name || name.trim() === "") {
+      return res.status(400).send({ success: false, message: 'Tên tag là bắt buộc' });
+    }
+    if (tags.some(t => t.name.toLowerCase() === name.trim().toLowerCase())) {
+      return res.status(400).send({ success: false, message: 'Tag đã tồn tại' });
+    }
+    const nextId = tags.length > 0 ? Math.max(...tags.map(t => t.id)) + 1 : 1;
+    const newTag = { id: nextId, name: name.trim(), description: description?.trim?.() || "" };
+    tags.push(newTag);
+    res.send({ success: true, data: { ...newTag, count: 0 } });
+  },
+
+  // API sửa tag
+  'PUT /api/tags/:id': (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const { name, description } = req.body;
+    const tag = tags.find(t => t.id === id);
+    if (!tag) {
+      return res.status(404).send({ success: false, message: 'Không tìm thấy tag' });
+    }
+    if (!name || name.trim() === "") {
+      return res.status(400).send({ success: false, message: 'Tên tag là bắt buộc' });
+    }
+    if (tags.some(t => t.name.toLowerCase() === name.trim().toLowerCase() && t.id !== id)) {
+      return res.status(400).send({ success: false, message: 'Tag đã tồn tại' });
+    }
+    tag.name = name.trim();
+    tag.description = description?.trim?.() || "";
+    const count = question_tags.filter(qt => qt.tag_id === id).length;
+    res.send({ success: true, data: { id: tag.id, name: tag.name, description: tag.description, count } });
+  },
+
+  // API xoá tag
+  'DELETE /api/tags/:id': (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const idx = tags.findIndex(t => t.id === id);
+    if (idx === -1) {
+      return res.status(404).send({ success: false, message: 'Không tìm thấy tag' });
+    }
+    tags.splice(idx, 1);
+    // Xoá liên kết với question_tags và user_tag_follows
+    for (let i = question_tags.length - 1; i >= 0; i--) {
+      if (question_tags[i].tag_id === id) question_tags.splice(i, 1);
+    }
+    for (let i = user_tag_follows.length - 1; i >= 0; i--) {
+      if (user_tag_follows[i].tag_id === id) user_tag_follows.splice(i, 1);
+    }
+    // Return the latest tags for debug
+    res.send({ success: true, message: 'Đã xoá tag', tags });
   },
 };

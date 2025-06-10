@@ -142,7 +142,7 @@ const PublicProfile = () => {
 
   if (!profileUser) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-full">
         <div className="text-center">
           <h2>Không tìm thấy người dùng</h2>
           <Link to="/">

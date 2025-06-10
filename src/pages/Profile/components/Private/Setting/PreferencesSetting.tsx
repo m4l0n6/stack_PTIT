@@ -14,8 +14,8 @@ import {
   MoonOutlined,
   SunOutlined,
 } from "@ant-design/icons";
-import { Link, useParams } from "umi";
-import { useState } from "react";
+import { Link, useParams, useModel } from "umi";
+import { useState, useEffect } from "react";
 
 const { Option } = Select;
 
@@ -23,14 +23,26 @@ const PreferencesSetting: React.FC = () => {
   const params = useParams<{ id: string }>();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const { user } = useModel("user");
+  const { theme, setTheme } = useModel("theme");
+  
+  // Cập nhật form khi user thay đổi
+  useEffect(() => {
+    form.setFieldsValue({
+      theme: user?.theme || theme || "light",
+    });
+  }, [user, theme, form]);
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Cập nhật theme
+      if (values.theme !== theme) {
+        await setTheme(values.theme);
+      }
       message.success("Cập nhật cài đặt giao diện thành công!");
     } catch (error) {
+      console.error("Lỗi khi cập nhật cài đặt:", error);
       message.error("Có lỗi xảy ra khi cập nhật cài đặt");
     } finally {
       setLoading(false);
@@ -60,8 +72,7 @@ const PreferencesSetting: React.FC = () => {
               autoSave: true,
               showOnlineStatus: true,
             }}
-          >
-            <Form.Item label="Chủ đề" name="theme">
+          >            <Form.Item label="Chủ đề" name="theme">
               <Radio.Group>
                 <Radio.Button value="light">
                   <SunOutlined /> Sáng
@@ -69,8 +80,17 @@ const PreferencesSetting: React.FC = () => {
                 <Radio.Button value="dark">
                   <MoonOutlined /> Tối
                 </Radio.Button>
-                <Radio.Button value="auto">Tự động</Radio.Button>
               </Radio.Group>
+            </Form.Item>
+
+            <Form.Item>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={loading}
+              >
+                Lưu cài đặt
+              </Button>
             </Form.Item>
           </Form>
         </Card>
@@ -82,7 +102,7 @@ const PreferencesSetting: React.FC = () => {
             name="showNotifications"
             valuePropName="checked"
           >
-            <Switch />
+            <Switch disabled />
           </Form.Item>
 
           <Form.Item

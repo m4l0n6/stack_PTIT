@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { message, theme } from "antd";
+import { useModel } from "umi";
+import { updateUserTheme } from "@/services/Users";
 
 // Theme configs cho Ant Design
 const getAntdTheme = (isDark: boolean) => ({
@@ -13,35 +15,61 @@ const getAntdTheme = (isDark: boolean) => ({
   },
 });
 
-export default function useTheme() {
-  // Khởi tạo theme từ localStorage hoặc mặc định là 'light'
-  const [theme, setTheme] = useState<string>(() => {
-    return localStorage.getItem("theme") || "light";
+export default () => {
+  const { user, setUser } = useModel("user");
+
+  // Khởi tạo theme từ user nếu đã đăng nhập, mặc định là 'light'
+  const [theme, setThemeState] = useState<string>(() => {
+    return user?.theme || "light";
   });
+
+  // Cập nhật theme khi user thay đổi
+  useEffect(() => {
+    if (user?.theme && user.theme !== theme) {
+      setThemeState(user.theme);
+    }
+  }, [user]);
 
   // Cập nhật theme khi thay đổi
   useEffect(() => {
-    localStorage.setItem("theme", theme);
-
     // Cập nhật data-theme attribute
     document.documentElement.setAttribute("data-theme", theme);
 
     // Cập nhật class trên body (giữ tương thích)
     document.body.className = theme === "dark" ? "dark-theme" : "light-theme";
   }, [theme]);
+  // Cập nhật theme cho user
+  const updateTheme = async (newTheme: 'light' | 'dark') => {
+    setThemeState(newTheme);
+    message.success(
+      `Đã chuyển sang giao diện ${newTheme === "light" ? "sáng" : "tối"}`
+    );
+
+    // Nếu user đã đăng nhập, cập nhật theme lên server và trong state user
+    if (user) {
+      try {
+        const result = await updateUserTheme(newTheme);
+        if (result.success && result.data) {
+          setUser({
+            ...user,
+            theme: newTheme
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi cập nhật theme:", error);
+      }
+    }
+  };
 
   // Chuyển đổi theme
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    message.success(
-      `Đã chuyển sang giao diện ${newTheme === "light" ? "sáng" : "tối"}`
-    );
+    updateTheme(newTheme as 'light' | 'dark');
   };
 
   return {
     theme,
-    setTheme,
+    setTheme: updateTheme,
     toggleTheme,
     isDark: theme === "dark",
     antdTheme: getAntdTheme(theme === "dark"),

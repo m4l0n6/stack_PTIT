@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import { Modal, Button, Radio, Space } from "antd";
+import { Modal, Button, Radio, Space, message } from "antd";
 import type { RadioChangeEvent } from "antd";
+import { useModel } from "umi";
+import { updateUserRole } from "@/services/Users";
 
 interface ModalChooseRoleProps {
     visible: boolean;
     setVisible: (visible: boolean) => void;
+    onRoleConfirm?: (role: string) => void;
 }
 
-const ModalChooseRole: React.FC<ModalChooseRoleProps> = ({visible, setVisible}) => {
+const ModalChooseRole: React.FC<ModalChooseRoleProps> = ({visible, setVisible, onRoleConfirm}) => {
     const [role, setRole] = useState<string>('student');
+    const [loading, setLoading] = useState<boolean>(false);
+    const { user, setUser } = useModel('user');
 
     const handleRoleChange = (e: RadioChangeEvent) => {
         setRole(e.target.value);
@@ -16,18 +21,44 @@ const ModalChooseRole: React.FC<ModalChooseRoleProps> = ({visible, setVisible}) 
 
     const handleReset = () => {
       setRole("student"); // Reset về giá trị mặc định nếu cần
+    };    const handleSubmit = async () => {
+        setLoading(true);
+        try {
+            // Lưu role cho người dùng hiện tại
+            if (user) {
+                // Gọi API cập nhật role
+                const result = await updateUserRole(
+                    user.id, 
+                    role as "teacher" | "student"
+                );
+                
+                if (result.success && result.data) {
+                    // Cập nhật user trong state và localStorage
+                    const updatedUser = { ...user, role };
+                    setUser(updatedUser);
+                    
+                    // Cập nhật localStorage tường minh để đảm bảo dữ liệu được lưu đúng
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                    
+                    message.success(`Cập nhật vai trò thành công! Bạn đã chọn vai trò: ${role === 'student' ? 'Sinh viên' : 'Giáo viên'}`);
+                    
+                    // Gọi callback nếu được truyền vào
+                    if (onRoleConfirm) {
+                        onRoleConfirm(role);
+                    }
+                } else {
+                    message.error(result.message || "Không thể cập nhật vai trò");
+                }
+            }
+        } catch (error) {
+            console.error("Error updating role:", error);
+            message.error("Có lỗi xảy ra khi cập nhật vai trò");
+        } finally {
+            setLoading(false);
+            setVisible(false);
+            handleReset(); // Reset lại vai trò sau khi xác nhận
+        }
     };
-
-    const handleSubmit = () => {
-        console.log("Selected role:", role);
-        // Xử lý khi người dùng chọn xong vai trò
-        // Ví dụ: lưu vào localStorage, gọi API, v.v.
-        
-        setVisible(false);
-        handleReset(); // Reset lại vai trò sau khi xác nhận
-    };
-
-    
 
     return (
         <Modal
@@ -37,11 +68,11 @@ const ModalChooseRole: React.FC<ModalChooseRoleProps> = ({visible, setVisible}) 
             footer={[
                 <Button key="cancel" onClick={() => {handleReset(); setVisible(false);}}>
                     Huỷ
-                </Button>,
-                <Button 
+                </Button>,                <Button 
                     key="submit" 
                     type="primary" 
                     onClick={handleSubmit}
+                    loading={loading}
                 >
                     Xác nhận
                 </Button>

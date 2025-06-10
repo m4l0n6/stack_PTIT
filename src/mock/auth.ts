@@ -7,11 +7,12 @@ export default {
     const user = users.find(
       (u) => u.email === email && u.password === password
     );
-    
     if (user) {
+      if (user.is_activate === false) {
+        return res.status(403).send({ success: false, message: "Tài khoản đã bị khoá" });
+      }
       // Tạo phiên bản user không có password để trả về
       const { password: _, ...safeUser } = user;
-      
       res.send({
         success: true,
         data: {

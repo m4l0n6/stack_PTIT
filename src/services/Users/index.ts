@@ -78,3 +78,37 @@ export const getUserTags = async (userId: number): Promise<APIResponse<Tag[]>> =
   }
 };
 
+// Cập nhật theme cho user
+export const updateUserTheme = async (theme: "light" | "dark"): Promise<APIResponse<User>> => {
+  try {
+    const response = await request.put('/api/users/theme', { theme });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error updating user theme:", error);
+    return {
+      success: false,
+      message: "Không thể cập nhật giao diện người dùng"
+    };
+  }
+};
+
+// Cập nhật vai trò cho user
+export const updateUserRole = async (userId: number, role: "teacher" | "student"): Promise<APIResponse<User>> => {
+  try {
+    const response = await request.put(`/api/users/${userId}/role`, { role });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    return {
+      success: false,
+      message: "Không thể cập nhật vai trò người dùng"
+    };
+  }
+};
+

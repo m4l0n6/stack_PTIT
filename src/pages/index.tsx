@@ -2,24 +2,19 @@ import { useState } from "react";
 import { Button, Typography, Card, Tag, Empty, Spin, Row, Col } from "antd";
 import { useModel, Link } from "umi";
 import { PlusOutlined } from "@ant-design/icons";
+import TagFollow from "./Question/TagFollow";
 
 import ModalTagFollow from "@/components/Modal/ModalTagFollow";
-import ModalChooseRole from "@/components/Modal/ModalChooseRole";
-import ModalChooseTheme from "@/components/Modal/ModalChooseTheme";
 
 const { Title } = Typography;
 
 export default function HomePage() {
   const { user } = useModel("user");
   const { followedTags, followLoading } = useModel("tag");
-
-  // Tách riêng state cho từng modal
   const [tagModalVisible, setTagModalVisible] = useState(false);
-  const [roleModalVisible, setRoleModalVisible] = useState(false);
-  const [themeModalVisible, setThemeModalVisible] = useState(false);
 
   return (
-    <div>
+    <div className="h-full">
       {user ? (
         <div>
           <Title level={2}>Chào mừng trở lại, {user.username}!</Title>
@@ -69,42 +64,23 @@ export default function HomePage() {
             visible={tagModalVisible}
             setVisible={setTagModalVisible}
           />
+
+          <TagFollow />
         </div>
       ) : (
-        <div className="flex flex-col items-center">
-          <h1 className="text-3xl">Welcome to Stack PTIT</h1>
-          <p className="mb-4 text-lg">
-            Nơi bạn có thể đặt câu hỏi và tìm kiếm câu trả lời
-          </p>
+        <div className="flex justify-center items-center bg-[var(--bg-primary)] h-full">
+          <div className="text-center">
+            <h1 className="mb-2 font-bold text-3xl">Welcome to Stack PTIT</h1>
+            <p className="mb-4 text-lg">
+              Nơi bạn có thể đặt câu hỏi và tìm kiếm câu trả lời
+            </p>
 
-          <div className="flex space-x-4 mb-4">
-            <Button type="primary" onClick={() => setTagModalVisible(true)}>
-              Thiết lập thẻ theo dõi
-            </Button>
-
-            <Button type="default" onClick={() => setRoleModalVisible(true)}>
-              Chọn vai trò
-            </Button>
+            <Link to="/auth/login">
+              <Button type="primary" size="large">
+                Đăng nhập ngay để bắt đầu
+              </Button>
+            </Link>
           </div>
-
-          <Button type="default" onClick={() => setThemeModalVisible(true)}>
-            Chọn giao diện
-          </Button>
-
-          <ModalChooseRole
-            visible={roleModalVisible}
-            setVisible={setRoleModalVisible}
-          />
-
-          <ModalTagFollow
-            visible={tagModalVisible}
-            setVisible={setTagModalVisible}
-          />
-
-          <ModalChooseTheme
-            visible={themeModalVisible}
-            setVisible={setThemeModalVisible}
-          />
         </div>
       )}
     </div>
