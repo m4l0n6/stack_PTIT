@@ -43,3 +43,26 @@ export async function updateUserTagFollows(tagIds: number[]): Promise<APIRespons
     data: { tagIds },
   });
 }
+
+// Thêm tag mới
+export async function addTag(data: Partial<Tag>): Promise<APIResponse<Tag>> {
+  return request('/api/tags', {
+    method: 'POST',
+    data,
+  });
+}
+
+// Sửa tag
+export async function updateTag(id: number, data: Partial<Tag>): Promise<APIResponse<Tag>> {
+  return request(`/api/tags/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+// Xóa tag
+export async function deleteTag(id: number): Promise<APIResponse<null>> {
+  return request(`/api/tags/${id}`, {
+    method: 'DELETE',
+  });
+}
