@@ -1,8 +1,8 @@
 import { defineConfig } from "umi";
 
 export default defineConfig({
-  title: "Hệ thống hỏi đáp",
-  favicons: ["https://cdn-icons-png.flaticon.com/512/25/25231.png"],
+  title: "Diễn đàn sinh viên",
+  favicons: ["/stackPTIT.png"],
   routes: [
     {
       path: "/auth",
@@ -36,11 +36,13 @@ export default defineConfig({
           component: "@/pages/Question/Create",
           wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
           allowedRoles: ["teacher", "student"],
-        },        // Hồ sơ công khai - không yêu cầu đăng nhập
+        },
+        // Hồ sơ công khai - không yêu cầu đăng nhập
         {
           path: "users/:id/:name",
           component: "@/pages/Profile/index",
-        },        // Hồ sơ cá nhân - yêu cầu đăng nhập và role phù hợp
+        },
+        // Hồ sơ cá nhân - yêu cầu đăng nhập và role phù hợp
         {
           path: "user",
           wrappers: ["@/wrappers/auth", "@/wrappers/roleAuth"],
@@ -50,7 +52,7 @@ export default defineConfig({
               path: "saves/:id",
               component: "@/pages/Profile/components/Private/Saves",
               wrappers: [
-                "@/wrappers/auth", 
+                "@/wrappers/auth",
                 "@/wrappers/roleAuth",
                 "@/wrappers/profileAuth",
               ],
@@ -60,7 +62,7 @@ export default defineConfig({
               path: "settings/:id",
               component: "@/pages/Profile/components/Private/Setting",
               wrappers: [
-                "@/wrappers/auth", 
+                "@/wrappers/auth",
                 "@/wrappers/roleAuth",
                 "@/wrappers/profileAuth",
               ],
@@ -68,17 +70,20 @@ export default defineConfig({
               routes: [
                 {
                   path: "profile",
-                  component: "@/pages/Profile/components/Private/Setting/ProfileSetting",
+                  component:
+                    "@/pages/Profile/components/Private/Setting/ProfileSetting",
                 },
                 {
                   path: "account",
-                  component: "@/pages/Profile/components/Private/Setting/AccountSetting",
+                  component:
+                    "@/pages/Profile/components/Private/Setting/AccountSetting",
                 },
                 {
                   path: "preferences",
-                  component: "@/pages/Profile/components/Private/Setting/PreferencesSetting",
+                  component:
+                    "@/pages/Profile/components/Private/Setting/PreferencesSetting",
                 },
-              ]
+              ],
             },
           ],
         },

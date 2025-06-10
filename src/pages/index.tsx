@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Typography, Card, Tag, Empty, Spin, Row, Col } from "antd";
 import { useModel, Link } from "umi";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from "@ant-design/icons";
 
 import ModalTagFollow from "@/components/Modal/ModalTagFollow";
 import ModalChooseRole from "@/components/Modal/ModalChooseRole";

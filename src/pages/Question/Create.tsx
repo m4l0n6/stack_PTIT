@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Form, Input, Button, Select, message, Card, Space, Tag } from 'antd';
-import { useModel, history } from 'umi';
-import { createQuestion } from '@/services/Questions';
-import TinyEditor from '@/components/TinyEditor';
+import React, { useState, useRef, useEffect } from "react";
+import { Form, Input, Button, Select, message, Card, Space, Tag } from "antd";
+import { useModel, history } from "umi";
+import { createQuestion } from "@/services/Questions";
+import TinyEditor from "@/components/TinyEditor";
 
 const { Option } = Select;
 
@@ -17,11 +17,11 @@ interface CustomTagProps {
 const QuestionCreatePage = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  
+
   // Sử dụng model tag để lấy danh sách tags
-  const { tags, loading: loadingTags, fetchTags } = useModel('tag');
-  
-  const { user } = useModel('user');
+  const { tags, loading: loadingTags, fetchTags } = useModel("tag");
+
+  const { user } = useModel("user");
   const editorRef = useRef<any>(null);
 
   // Gọi fetchTags khi component mount nếu tags chưa được tải
@@ -38,45 +38,46 @@ const QuestionCreatePage = () => {
 
   const onFinish = async (values: any) => {
     if (!user) {
-      message.error('Bạn cần đăng nhập để đặt câu hỏi');
-      history.push('/auth/login');
+      message.error("Bạn cần đăng nhập để đặt câu hỏi");
+      history.push("/auth/login");
       return;
     }
 
     if (!editorRef.current) {
-      message.error('Lỗi khi tải editor');
+      message.error("Lỗi khi tải editor");
       return;
     }
 
     const content = editorRef.current.getContent();
-    if (!content || content.length < 30) {
-      message.error('Nội dung câu hỏi phải có ít nhất 30 ký tự');
+    const plainText = editorRef.current.getContent({ format: "text" });
+    if (!plainText || plainText.trim().length < 20) {
+      message.error("Nội dung câu hỏi phải có ít nhất 20 ký tự");
       return;
     }
-    
+
     // Giới hạn số lượng tags
     if (values.tags && values.tags.length > 5) {
-      message.warning('Chỉ được chọn tối đa 5 thẻ');
+      message.warning("Chỉ được chọn tối đa 5 thẻ");
       values.tags = values.tags.slice(0, 5);
     }
-    
+
     setLoading(true);
     try {
       const result = await createQuestion({
         title: values.title,
         content: content,
-        tags: values.tags
+        tags: values.tags,
       });
-      
+
       if (result?.success) {
-        message.success('Đã đăng câu hỏi thành công!');
+        message.success("Đã đăng câu hỏi thành công!");
         history.push(`/question/${result.data.id}`);
       } else {
-        message.error(result?.message || 'Không thể tạo câu hỏi');
+        message.error(result?.message || "Không thể tạo câu hỏi");
       }
     } catch (error) {
-      console.error('Lỗi khi đăng câu hỏi:', error);
-      message.error('Không thể tạo câu hỏi. Vui lòng thử lại sau.');
+      console.error("Lỗi khi đăng câu hỏi:", error);
+      message.error("Không thể tạo câu hỏi. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +90,7 @@ const QuestionCreatePage = () => {
       event.preventDefault();
       event.stopPropagation();
     };
-    
+
     return (
       <Tag
         color="blue"

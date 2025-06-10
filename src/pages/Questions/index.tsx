@@ -7,11 +7,22 @@ import { useModel } from "umi";
 const { Title } = Typography;
 
 const QuestionPage: React.FC = () => {
-  const { questions, total, page, pageSize, handleFilterChange, handlePageChange, handleSortChange, sort, filter, loading } = useModel('Question.question');
+  const {
+    questions,
+    total,
+    page,
+    pageSize,
+    handleFilterChange,
+    handlePageChange,
+    handleSortChange,
+    sort,
+    filter,
+    loading,
+  } = useModel("Question.question");
 
   return (
-    <div>      
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div>
+      <div className="flex justify-between">
         <Title level={2}>Danh sách câu hỏi</Title>
         <Link to="/ask">
           <Button type="primary">+ Đặt câu hỏi</Button>
@@ -44,7 +55,7 @@ const QuestionPage: React.FC = () => {
           />
         </div>
       </div>
-      
+
       {loading ? (
         <div className="flex justify-center items-center py-10">
           <Spin size="large" />
@@ -54,7 +65,7 @@ const QuestionPage: React.FC = () => {
           {questions.map((question) => (
             <Question key={question.id} question={question} />
           ))}
-          
+
           <div className="flex justify-center mt-4">
             <Pagination
               current={page}

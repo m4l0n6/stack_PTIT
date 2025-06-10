@@ -390,7 +390,12 @@ export default {
     
     // Xử lý tags
     if (tagNames && Array.isArray(tagNames)) {
-      // Xử lý tags...
+      tagNames.forEach(tagName => {
+        const tagObj = tags.find(t => t.name === tagName);
+        if (tagObj) {
+          question_tags.push({ question_id: newQuestion.id, tag_id: tagObj.id });
+        }
+      });
     }
     
     res.send({

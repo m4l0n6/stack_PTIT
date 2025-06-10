@@ -55,7 +55,7 @@ export async function getQuestions(params?: {
 
 // Lấy chi tiết câu hỏi
 export async function getQuestionDetail(id: number): Promise<APIResponse<Question>> {
-  console.log("Calling API for question ID:", id); // Log để debug
+  console.log("Calling API for question ID:", id);
   return request(`/api/questions/${id}`, {
     method: "GET",
   });
