@@ -11,7 +11,6 @@ import {
   Typography,
 } from "antd";
 import { EyeOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useModal } from "@/hooks/useModal";
 import { useModel } from "umi";
 
 const { Text } = Typography;

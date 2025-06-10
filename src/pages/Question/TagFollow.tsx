@@ -12,21 +12,21 @@ const TagFollow: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Fetch questions for all followed tags
+  // Lấy tất cả câu hỏi từ các thẻ đã theo dõi
   const fetchAllQuestions = async () => {
     if (followedTags.length === 0) return;
     
     try {
       setLoading(true);
       
-      // Fetch questions for each tag and combine them
+      // Tạo một mảng các Promise để lấy câu hỏi từ từng thẻ
       const promises = followedTags.map(tag => 
         searchQuestions({ tag: tag.name })
       );
       
       const results = await Promise.all(promises);
       
-      // Collect all questions from all tags
+      // Kết hợp tất cả câu hỏi từ các kết quả
       let allQuestions: Question[] = [];
       results.forEach(result => {
         if (result?.success && result.data.list) {
@@ -34,12 +34,12 @@ const TagFollow: React.FC = () => {
         }
       });
       
-      // Remove duplicates (if any) based on question id
+      // Loại bỏ câu hỏi trùng lặp dựa trên ID
       const uniqueQuestions = Array.from(
         new Map(allQuestions.map(q => [q.id, q])).values()
       );
       
-      // Sort by newest first (assuming there's a created_at or similar field)
+      // Sắp xếp câu hỏi theo ngày tạo mới nhất
       uniqueQuestions.sort((a, b) => 
         new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
       );
@@ -52,7 +52,7 @@ const TagFollow: React.FC = () => {
     }
   };
 
-  // Fetch questions when component mounts or followed tags change
+  // Gọi hàm fetchAllQuestions khi component mount và khi followedTags thay đổi
   useEffect(() => {
     if (followedTags.length > 0) {
       fetchAllQuestions();
@@ -68,7 +68,7 @@ const TagFollow: React.FC = () => {
   }
 
   if (followedTags.length === 0) {
-    return null; // Don't render anything if no followed tags
+    return null; 
   }
 
   return (

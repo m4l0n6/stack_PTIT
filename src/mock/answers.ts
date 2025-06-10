@@ -50,7 +50,7 @@ const answers: Answer[] = [
     updated_at: "2023-10-06",
     upvotes: 12,
     downvotes: 0,
-    is_accepted: true,
+    is_accepted: false,
     user: users[2],
     comment_count: 0
   }
