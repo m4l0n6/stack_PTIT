@@ -122,11 +122,11 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
                 Thêm bình luận
               </Button>
             </div>
-            <div className="bg-blue-50 p-3 rounded-md">
+            <div className="bg-[var(--bg-primary)] p-3 rounded-md">
               <div className="text-gray-500 text-sm">
                 Đã trả lời vào {answer.created_at}
               </div>
-              <div className="flex items-center mt-2">
+              <div className="flex items-center bg-[var(--bg-primary)] mt-2">
                 <Avatar src={answer.user?.avatar} />
                 <Link
                   to={`/users/${answer.user?.id}/${answer.user?.username.replace(
@@ -185,7 +185,7 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
 
           {/* Comments */}
           {answer.comments && answer.comments.length > 0 && (
-            <div className="bg-gray-50 mt-4 p-4 rounded-md comments">
+            <div className="bg-[var(--bg-primary)] mt-4 p-4 border-[var(--border-color)] rounded-md comments">
               <List
                 itemLayout="horizontal"
                 dataSource={answer.comments}

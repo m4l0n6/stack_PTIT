@@ -1,5 +1,17 @@
 import { useState, useEffect } from "react";
-import { message } from "antd";
+import { message, theme } from "antd";
+
+// Theme configs cho Ant Design
+const getAntdTheme = (isDark: boolean) => ({
+  algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+  token: {
+    colorBgContainer: isDark ? "#141414" : "#ffffff",
+    colorBgElevated: isDark ? "#1f1f1f" : "#ffffff",
+    colorBgLayout: isDark ? "#000000" : "#f5f5f5",
+    colorBorder: isDark ? "#434343" : "#d9d9d9",
+    colorText: isDark ? "#ffffffd9" : "#000000d9",
+  },
+});
 
 export default function useTheme() {
   // Khởi tạo theme từ localStorage hoặc mặc định là 'light'
@@ -7,54 +19,31 @@ export default function useTheme() {
     return localStorage.getItem("theme") || "light";
   });
 
-  // Khởi tạo fontSize từ localStorage hoặc mặc định là 'medium'
-  const [fontSize, setFontSize] = useState<string>(() => {
-    return localStorage.getItem("fontSize") || "medium";
-  });
-
-  // Cập nhật theme trong localStorage khi thay đổi
+  // Cập nhật theme khi thay đổi
   useEffect(() => {
     localStorage.setItem("theme", theme);
-    // Cập nhật class trên body để áp dụng theme
+
+    // Cập nhật data-theme attribute
+    document.documentElement.setAttribute("data-theme", theme);
+
+    // Cập nhật class trên body (giữ tương thích)
     document.body.className = theme === "dark" ? "dark-theme" : "light-theme";
   }, [theme]);
 
-  // Cập nhật fontSize trong localStorage khi thay đổi
-  useEffect(() => {
-    localStorage.setItem("fontSize", fontSize);
-    // Cập nhật font size trên html để áp dụng kích thước chữ
-    document.documentElement.setAttribute("data-font-size", fontSize);
-  }, [fontSize]);
-
-  // Chuyển đổi theme giữa light và dark
+  // Chuyển đổi theme
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     message.success(
-      `Đã chuyển sang giao diện ${
-        newTheme === "light" ? "sáng" : "tối"
-      }`
+      `Đã chuyển sang giao diện ${newTheme === "light" ? "sáng" : "tối"}`
     );
-  };
-
-  // Thay đổi font size
-  const changeFontSize = (size: string) => {
-    if (["small", "medium", "large"].includes(size)) {
-      setFontSize(size);
-      message.success(
-        `Đã thay đổi kích thước chữ: ${
-          size === "small" ? "Nhỏ" : size === "medium" ? "Vừa" : "Lớn"
-        }`
-      );
-    }
   };
 
   return {
     theme,
-    fontSize,
     setTheme,
-    setFontSize,
     toggleTheme,
-    changeFontSize,
+    isDark: theme === "dark",
+    antdTheme: getAntdTheme(theme === "dark"),
   };
 }

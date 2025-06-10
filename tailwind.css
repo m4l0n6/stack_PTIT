@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --text-primary: #000000d9;
+  --text-secondary: #00000073;
+  --border-color: #d9d9d9;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #141414;
+  --bg-secondary: #1f1f1f;
+  --text-primary: #ffffffd9;
+  --text-secondary: #ffffff73;
+  --border-color: #434343;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 /* Tùy chỉnh cuộn */
 ::-webkit-scrollbar {
     width: 6px; /* Scrollbar width */
@@ -111,77 +133,16 @@
 }
 /* Header search: end */
 
-/* Theme styles */
-body.light-theme {
-  --bg-color: #ffffff;
-  --text-color: #333333;
-  --card-bg: #ffffff;
-  --border-color: #e8e8e8;
-  --hover-bg: #f5f5f5;
-  --primary-color: #1890ff;
+/* Theme CSS: start */
+.theme-bg {
+  background-color: var(--bg-primary);
 }
 
-body.dark-theme {
-  --bg-color: #1f1f1f;
-  --text-color: #f0f0f0;
-  --card-bg: #2d2d2d;
-  --border-color: #434343;
-  --hover-bg: #3a3a3a;
-  --primary-color: #177ddc;
+.theme-text {
+  color: var(--text-primary);
 }
 
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Tùy chỉnh các component chung cho dark mode */
-body.dark-theme .ant-card {
-  background-color: var(--card-bg);
+.theme-border {
   border-color: var(--border-color);
 }
-
-body.dark-theme .ant-list-item {
-  border-color: var(--border-color);
-}
-
-body.dark-theme .ant-btn:not(.ant-btn-primary) {
-  background-color: var(--card-bg);
-  border-color: var(--border-color);
-  color: var(--text-color);
-}
-
-body.dark-theme .ant-input {
-  background-color: #333;
-  color: #f0f0f0;
-  border-color: var(--border-color);
-}
-
-/* Font size styles */
-html[data-font-size="small"] {
-  font-size: 14px;
-}
-
-html[data-font-size="medium"] {
-  font-size: 16px;
-}
-
-html[data-font-size="large"] {
-  font-size: 18px;
-}
-
-/* Điều chỉnh kích thước cho các element cụ thể */
-html[data-font-size="small"] .question-title {
-  font-size: 1.3rem;
-}
-
-html[data-font-size="medium"] .question-title {
-  font-size: 1.5rem;
-}
-
-html[data-font-size="large"] .question-title {
-  font-size: 1.7rem;
-}
-
-/* Các điều chỉnh tương tự cho các phần tử khác */
+/* Theme CSS: end */

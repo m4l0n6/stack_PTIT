@@ -73,7 +73,7 @@ export const questionsData: Question[] = [  // ← THÊM EXPORT
     upvotes: 12,
     downvotes: 1,
     user: users[3],
-    tags: [tags[10], tags[11], tags[12]],
+    tags: [tags[10], tags[11]],
     answer_count: 0,
     status: "open",
   },

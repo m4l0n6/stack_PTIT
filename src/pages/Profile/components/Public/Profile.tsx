@@ -1,11 +1,26 @@
-import { Statistic, Row, Col, List, Tag as AntTag, Space, Tabs, Typography, Spin, Tooltip } from "antd";
+import {
+  Statistic,
+  Row,
+  Col,
+  List,
+  Tag as AntTag,
+  Space,
+  Tabs,
+  Typography,
+  Spin,
+  Tooltip,
+} from "antd";
 import { Link, useModel } from "umi";
 import React, { useEffect } from "react";
 import { User } from "@/services/Users/typing";
 import { Question } from "@/services/Questions/typing";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
-import { QuestionCircleOutlined, CommentOutlined, TagOutlined } from "@ant-design/icons";
+import {
+  QuestionCircleOutlined,
+  CommentOutlined,
+  TagOutlined,
+} from "@ant-design/icons";
 
 const { TabPane } = Tabs;
 const { Text, Title } = Typography;
@@ -15,13 +30,8 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
-  const { 
-    questions, 
-    answers, 
-    tags, 
-    loading, 
-    fetchUserData 
-  } = useModel('profile');
+  const { questions, answers, tags, loading, fetchUserData } =
+    useModel("profile");
 
   useEffect(() => {
     if (user?.id) {
@@ -30,7 +40,11 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   }, [user?.id, fetchUserData]);
 
   if (!user) {
-    return <div>Không có thông tin người dùng</div>;
+    return (
+      <div className="text-primary">
+        Không có thông tin người dùng
+      </div>
+    );
   }
 
   const questionVotes = questions.reduce((acc, question) => {
@@ -40,20 +54,36 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   return (
     <div className="flex md:flex-row flex-col">
       <div className="mr-4 mb-6 md:mb-0 w-full md:w-1/4">
-        <h1 className="mb-2 text-2xl">Trạng thái</h1>
-        <div className="mb-2 p-4 border rounded-lg">
+        <h1 className="mb-2 text-primary text-2xl">Trạng thái</h1>
+        <div className="bg-[var(--bg-primary)] bg-primary mb-2 p-4 border theme-border border-border rounded-lg">
           <Row gutter={16}>
             <Col span={12}>
-              <Statistic title="Danh tiếng" value={user?.reputation || 0} />
+              <Statistic
+                title="Danh tiếng"
+                value={user?.reputation || 0}
+                valueStyle={{ color: "var(--text-primary)" }}
+              />
             </Col>
             <Col span={12}>
-              <Statistic title="Câu hỏi" value={questions.length} />
+              <Statistic
+                title="Câu hỏi"
+                value={questions.length}
+                valueStyle={{ color: "var(--text-primary)" }}
+              />
             </Col>
             <Col span={12}>
-              <Statistic title="Câu trả lời" value={answers.length} />
+              <Statistic
+                title="Câu trả lời"
+                value={answers.length}
+                valueStyle={{ color: "var(--text-primary)" }}
+              />
             </Col>
             <Col span={12}>
-              <Statistic title="Thẻ" value={tags.length} />
+              <Statistic
+                title="Thẻ"
+                value={tags.length}
+                valueStyle={{ color: "var(--text-primary)" }}
+              />
             </Col>
           </Row>
         </div>
@@ -61,9 +91,11 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 
       <div className="w-full md:w-3/4">
         <div className="mb-4">
-          <h1 className="mb-2 text-2xl">Giới thiệu</h1>
-          <div className="mb-2 p-4 border rounded-lg">
-            <p>{user?.bio || "Chưa có thông tin giới thiệu"}</p>
+          <h1 className="mb-2 text-primary text-2xl">Giới thiệu</h1>
+          <div className="bg-[var(--bg-primary)] bg-primary mb-2 p-4 border theme-border border-border rounded-lg">
+            <p className="text-primary">
+              {user?.bio || "Chưa có thông tin giới thiệu"}
+            </p>
           </div>
         </div>
 
@@ -83,51 +115,57 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 renderItem={(question: Question) => (
                   <List.Item
                     key={question.id}
-                    className="hover:bg-[#f5f5f5] mb-2 border-2 border-gray-200 rounded-lg"
+                    className="bg-[var(--bg-primary)] hover:shadow-md mb-2 rounded-lg transition-all duration-200"
                   >
-                    <div className="p-2 w-full">
+                    <div className="px-4 py-2 w-full">
                       <Link
                         to={`/question/${question.id}`}
-                        className="font-medium hover:text-blue-600 text-lg"
+                        className="hover:opacity-80 font-medium text-primary text-lg transition-opacity duration-200"
                       >
                         {question.title}
                       </Link>
 
-                      <div className="mt-2">
-                        <Space>
-                          <Tooltip
-                            title={`Tiêu cực: ${question.upvotes} - Tích cực: ${question.downvotes}`}
-                          >
-                            <AntTag color="blue">
-                              {question.upvotes - question.downvotes} votes
-                            </AntTag>
-                          </Tooltip>
-
-                          <AntTag color="green">
-                            {question.answer_count || 0} câu trả lời
-                          </AntTag>
-                          <AntTag color="orange">
-                            {question.views} lượt xem
-                          </AntTag>
-                        </Space>
-                      </div>
-
                       <div className="mt-2 mb-2">
                         {question.tags?.map((tag) => (
                           <AntTag key={tag.id} className="mr-1">
-                            <Link to={`/questions/tagged/${tag.name}`}>
+                            <Link
+                              to={`/questions/tagged/${tag.name}`}
+                              className="text-inherit"
+                            >
                               {tag.name}
                             </Link>
                           </AntTag>
                         ))}
                       </div>
-                      <Text type="secondary">
-                        Đăng{" "}
-                        {formatDistanceToNow(new Date(question.created_at), {
-                          addSuffix: true,
-                          locale: vi,
-                        })}
-                      </Text>
+
+                      <div className="flex justify-between items-center mt-2">
+                        <div>
+                          <Space>
+                            <Tooltip
+                              title={`Tiêu cực: ${question.upvotes} - Tích cực: ${question.downvotes}`}
+                            >
+                              <AntTag color="blue">
+                                {question.upvotes - question.downvotes} votes
+                              </AntTag>
+                            </Tooltip>
+
+                            <AntTag color="green">
+                              {question.answer_count || 0} câu trả lời
+                            </AntTag>
+                            <AntTag color="orange">
+                              {question.views} lượt xem
+                            </AntTag>
+                          </Space>
+                        </div>
+
+                        <span className="text-secondary">
+                          Đăng{" "}
+                          {formatDistanceToNow(new Date(question.created_at), {
+                            addSuffix: true,
+                            locale: vi,
+                          })}
+                        </span>
+                      </div>
                     </div>
                   </List.Item>
                 )}
@@ -149,12 +187,12 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 renderItem={(answer: any) => (
                   <List.Item
                     key={answer.id}
-                    className="hover:bg-[#f5f5f5] p-4 border-b last:border-b-0"
+                    className="bg-[var(--bg-primary)] bg-primary border-[var(--border-color)] transition-all duration-200"
                   >
-                    <div className="w-full">
+                    <div className="px-4 py-2 w-full">
                       <Link
                         to={`/question/${answer.question_id}`}
-                        className="font-medium hover:text-blue-600 text-lg"
+                        className="hover:opacity-80 font-medium text-primary text-lg transition-opacity duration-200"
                       >
                         {answer.question_title ||
                           `Câu trả lời cho câu hỏi #${answer.question_id}`}
@@ -162,7 +200,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 
                       <div className="mt-2">
                         <div
-                          className="bg-gray-50 p-2 rounded-md text-gray-600"
+                          className="bg-secondary p-2 rounded-md text-secondary"
                           dangerouslySetInnerHTML={{
                             __html:
                               answer.content?.length > 200
@@ -184,13 +222,13 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                             <AntTag color="green">Đã chấp nhận</AntTag>
                           )}
                         </Space>
-                        <Text type="secondary">
+                        <span className="text-secondary">
                           Trả lời{" "}
                           {formatDistanceToNow(new Date(answer.created_at), {
                             addSuffix: true,
                             locale: vi,
                           })}
-                        </Text>
+                        </span>
                       </div>
                     </div>
                   </List.Item>
@@ -209,21 +247,21 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
             <Spin spinning={loading.tags}>
               <div className="flex flex-wrap gap-4 p-4">
                 {tags.length > 0 ? (
-                  tags.map((tag: any) => (
+                  tags.map((tag: any) => (  
                     <div
                       key={tag.id}
-                      className="flex-1 bg-gray-50 p-4 border rounded-lg min-w-[200px]"
+                      className="flex-1 bg-[var(--bg-primary)] bg-secondary hover:shadow-md p-4 rounded-lg min-w-[200px] transition-all duration-200"
                     >
                       <Link
                         to={`/questions/tagged/${tag.name}`}
-                        className="font-medium text-lg"
+                        className="hover:opacity-80 font-medium text-primary text-lg transition-opacity duration-200"
                       >
                         {tag.name}
                       </Link>
                       <div className="mt-2">
                         <AntTag color="blue">{tag.count || 0} bài đăng</AntTag>
                         {tag.description && (
-                          <div className="mt-2 text-gray-600 text-sm">
+                          <div className="mt-2 text-secondary text-sm">
                             {tag.description}
                           </div>
                         )}
@@ -231,8 +269,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                     </div>
                   ))
                 ) : (
-                  <div className="p-4 w-full text-gray-500 text-center">
-                    {" "}
+                  <div className="p-4 w-full text-secondary text-center">
                     Người dùng chưa có thẻ nào
                   </div>
                 )}

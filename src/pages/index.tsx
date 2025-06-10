@@ -6,7 +6,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import ModalTagFollow from "@/components/Modal/ModalTagFollow";
 import ModalChooseRole from "@/components/Modal/ModalChooseRole";
 import ModalChooseTheme from "@/components/Modal/ModalChooseTheme";
-import ModalThemeSetting from '@/components/Modal/ModalThemeSetting';
 
 const { Title } = Typography;
 
@@ -24,14 +23,16 @@ export default function HomePage() {
       {user ? (
         <div>
           <Title level={2}>Chào mừng trở lại, {user.username}!</Title>
-          <p className="mb-4 text-lg">Khám phá câu hỏi với các chủ đề bạn yêu thích</p>
-          
+          <p className="mb-4 text-lg">
+            Khám phá câu hỏi với các chủ đề bạn yêu thích
+          </p>
+
           <Card
             title="Các thẻ bạn đang theo dõi"
             extra={
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={() => setTagModalVisible(true)}
               >
                 Cập nhật
@@ -45,11 +46,12 @@ export default function HomePage() {
               </div>
             ) : followedTags.length > 0 ? (
               <Row gutter={[12, 16]}>
-                {followedTags.map(tag => (
+                {followedTags.map((tag) => (
                   <Col key={tag.id}>
                     <Link to={`/questions/tagged/${tag.name}`}>
                       <Tag color="blue" className="px-3 py-1 text-base">
-                        {tag.name} <span className="text-xs">({tag.count || 0})</span>
+                        {tag.name}{" "}
+                        <span className="text-xs">({tag.count || 0})</span>
                       </Tag>
                     </Link>
                   </Col>
@@ -99,7 +101,7 @@ export default function HomePage() {
             setVisible={setTagModalVisible}
           />
 
-          <ModalThemeSetting
+          <ModalChooseTheme
             visible={themeModalVisible}
             setVisible={setThemeModalVisible}
           />

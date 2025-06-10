@@ -20,6 +20,7 @@ import { useModel } from "umi";
 import type { MenuProps } from "antd";
 import Notification from "@/components/Notification";
 import { getSearchSuggestions } from "@/services/Search";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const { Header } = Layout;
 const { Search } = Input;
@@ -288,6 +289,7 @@ const HeaderBasicLauyout: React.FC = () => {
         <div>
           {user ? (
             <div className="flex items-center ml-4">
+              <ThemeSwitcher />
               <Notification numberOfNotifications={10} />
               <Dropdown menu={{ items: userMenu }} placement="bottomRight">
                 <div className="flex items-center ml-4 cursor-pointer">

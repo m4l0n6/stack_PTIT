@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { Button, Tooltip } from "antd";
-import { BulbOutlined, SettingOutlined } from "@ant-design/icons";
+import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useModel } from "umi";
-import ModalThemeSetting from "./Modal/ModalThemeSetting";
 
 const ThemeSwitcher: React.FC = () => {
-  const { toggleTheme, theme } = useModel("theme");
-  const [settingVisible, setSettingVisible] = useState(false);
+  const { toggleTheme, theme, isDark } = useModel("theme");
 
   return (
     <>
@@ -14,23 +12,13 @@ const ThemeSwitcher: React.FC = () => {
         <Tooltip title="Bật/Tắt chế độ tối">
           <Button
             type="text"
-            icon={<BulbOutlined />}
+            icon={isDark ? <SunOutlined /> : <MoonOutlined />}
             onClick={toggleTheme}
-            className={theme === "dark" ? "text-yellow-400" : ""}
-          />
-        </Tooltip>
-        <Tooltip title="Tùy chỉnh giao diện">
-          <Button
-            type="text"
-            icon={<SettingOutlined />}
-            onClick={() => setSettingVisible(true)}
+            className={theme === "dark" ? "text-yellow-400" : "text-white"}
           />
         </Tooltip>
       </div>
-      <ModalThemeSetting
-        visible={settingVisible}
-        setVisible={setSettingVisible}
-      />
+
     </>
   );
 };

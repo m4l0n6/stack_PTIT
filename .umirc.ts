@@ -1,6 +1,8 @@
 import { defineConfig } from "umi";
 
 export default defineConfig({
+  title: "Hệ thống hỏi đáp",
+  favicons: ["https://cdn-icons-png.flaticon.com/512/25/25231.png"],
   routes: [
     {
       path: "/auth",
@@ -20,7 +22,7 @@ export default defineConfig({
       path: "/",
       component: "@/layouts/AppLayout",
       routes: [
-        { path: "/", component: "@/pages/index" },
+        { path: "/", component: "@/pages/index", name: "Trang chủ" },
         { path: "questions", component: "@/pages/Questions/index" },
         {
           path: "questions/tagged/:tagname",

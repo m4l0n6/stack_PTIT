@@ -45,7 +45,7 @@ const SavedQuestionsPage: React.FC = () => {
   
   return (
     <div className="mx-auto px-4 py-6 container">
-      <Title level={2}>Câu hỏi đã lưu</Title>
+      <Title level={4}>Câu hỏi đã lưu</Title>
 
       <Card>
         {loading ? (
@@ -123,7 +123,7 @@ const SavedQuestionsPage: React.FC = () => {
             )}
             pagination={{
               pageSize: 10,
-              hideOnSinglePage: true,
+              hideOnSinglePage: false,
             }}
           />
         ) : (

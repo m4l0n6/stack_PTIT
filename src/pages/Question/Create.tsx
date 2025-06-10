@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Form, Input, Button, Select, message, Card, Space, Tag } from 'antd';
 import { useModel, history } from 'umi';
 import { createQuestion } from '@/services/Questions';
-import { Editor } from '@tinymce/tinymce-react';
+import TinyEditor from '@/components/TinyEditor';
 
 const { Option } = Select;
 
@@ -30,6 +30,11 @@ const QuestionCreatePage = () => {
       fetchTags();
     }
   }, [fetchTags, tags.length]);
+
+  // Thêm hàm xử lý editor init
+  const handleEditorInit = (editor: any) => {
+    editorRef.current = editor;
+  };
 
   const onFinish = async (values: any) => {
     if (!user) {
@@ -137,55 +142,7 @@ const QuestionCreatePage = () => {
             required
             help="Mô tả chi tiết câu hỏi của bạn. Nêu rõ vấn đề, những gì bạn đã thử và kết quả mong muốn."
           >
-            <Editor
-              apiKey="0owk7bayafnj8xzh9yrst8npn8gc52f6wlir3wl2hjgu2h46"
-              onInit={(evt: any, editor: any) => (editorRef.current = editor)}
-              initialValue=""
-              init={{
-                height: 350,
-                menubar: false,
-                plugins: [
-                  "advlist",
-                  "autolink",
-                  "lists",
-                  "link",
-                  "image",
-                  "charmap",
-                  "preview",
-                  "anchor",
-                  "searchreplace",
-                  "visualblocks",
-                  "code",
-                  "fullscreen",
-                  "insertdatetime",
-                  "media",
-                  "table",
-                  "code",
-                  "help",
-                  "wordcount",
-                  "codesample",
-                ],
-                toolbar:
-                  "undo redo | blocks | " +
-                  "bold italic forecolor | alignleft aligncenter " +
-                  "alignright alignjustify | bullist numlist outdent indent | " +
-                  "removeformat | codesample | help",
-                content_style:
-                  "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                codesample_languages: [
-                  { text: "HTML/XML", value: "markup" },
-                  { text: "JavaScript", value: "javascript" },
-                  { text: "CSS", value: "css" },
-                  { text: "PHP", value: "php" },
-                  { text: "Ruby", value: "ruby" },
-                  { text: "Python", value: "python" },
-                  { text: "Java", value: "java" },
-                  { text: "C", value: "c" },
-                  { text: "C#", value: "csharp" },
-                  { text: "C++", value: "cpp" },
-                ],
-              }}
-            />
+            <TinyEditor onEditorInit={handleEditorInit} />
           </Form.Item>
 
           <Form.Item
@@ -193,30 +150,33 @@ const QuestionCreatePage = () => {
             name="tags"
             rules={[
               { required: true, message: "Vui lòng chọn ít nhất một tag" },
-              { 
-                type: 'array', 
-                max: 5, 
-                message: 'Bạn chỉ có thể chọn tối đa 5 thẻ' 
-              }
+              {
+                type: "array",
+                max: 5,
+                message: "Bạn chỉ có thể chọn tối đa 5 thẻ",
+              },
             ]}
             extra="Chọn hoặc tạo tối đa 5 thẻ liên quan đến câu hỏi của bạn"
           >
             <Select
               mode="tags"
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               placeholder="Thêm tags liên quan (tối đa 5)"
               loading={loadingTags}
               tagRender={tagRender}
               filterOption={(input, option) => {
                 if (!option?.children) return false;
-                return option.children.toString().toLowerCase().includes(input.toLowerCase());
+                return option.children
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase());
               }}
               maxTagCount={5}
               allowClear
               showArrow
-              tokenSeparators={[',']}
+              tokenSeparators={[","]}
             >
-              {tags.map(tag => (
+              {tags.map((tag) => (
                 <Option key={tag.id} value={tag.name}>
                   {tag.name}
                 </Option>
