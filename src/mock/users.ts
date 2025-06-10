@@ -53,25 +53,104 @@ export const users: User[] = [
   },
 ];
 
-// Export mặc định cho routes
 export default {
+  // Lấy người dùng theo ID
   "GET /api/users/:id": (req: any, res: any) => {
     const id = parseInt(req.params.id, 10);
     const user = users.find((u) => u.id === id);
-
     if (user) {
-      // Không trả về password
       const { password: _, ...safeUser } = user;
+      res.send({ success: true, data: safeUser });
+    } else {
+      res.status(404).send({ success: false, message: "Không tìm thấy người dùng" });
+    }
+  },
 
+  // Khoá tài khoản người dùng
+  "POST /api/users/:id/lock": (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const user = users.find((u) => u.id === id);
+    if (user) {
+      user.is_activate = false;
+      res.send({ success: true, data: { ...user, password: undefined } });
+    } else {
+      res.status(404).send({ success: false, message: "Không tìm thấy người dùng" });
+    }
+  },
+
+  // Mở khoá tài khoản người dùng
+  "POST /api/users/:id/unlock": (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const user = users.find((u) => u.id === id);
+    if (user) {
+      user.is_activate = true;
+      res.send({ success: true, data: { ...user, password: undefined } });
+    } else {
+      res.status(404).send({ success: false, message: "Không tìm thấy người dùng" });
+    }
+  },
+
+  // Huỷ API xoá người dùng
+  // "DELETE /api/users/:id": (req: any, res: any) => {
+  //   const id = parseInt(req.params.id, 10);
+  //   const idx = users.findIndex((u) => u.id === id);
+  //   if (idx !== -1) {
+  //     // Xoá các dữ liệu liên quan nếu cần (ví dụ: answers, comments, votes)
+  //     // TODO: Nếu có mock answers/comments/votes thì filter ở đây
+  //     users.splice(idx, 1);
+  //     res.send({ success: true });
+  //   } else {
+  //     res.status(404).send({ success: false, message: "Không tìm thấy người dùng" });
+  //   }
+  // },
+
+  // Xoá nhiều người dùng cùng lúc
+  "DELETE /api/users": (req: any, res: any) => {
+    const ids: number[] = req.body?.ids;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: "Danh sách ID không hợp lệ hoặc trống.",
+      });
+    }
+
+    let deletedCount = 0;
+    ids.forEach((id) => {
+      const index = users.findIndex((u) => u.id === id);
+      if (index !== -1) {
+        users.splice(index, 1);
+        deletedCount++;
+      }
+    });
+
+    res.send({
+      success: true,
+      message: `Đã xoá ${deletedCount} người dùng.`,
+    });
+  },
+
+  // Đăng nhập
+  "POST /api/login": (req: any, res: any) => {
+    const { email, password } = req.body;
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
+    if (user) {
+      if (user.is_activate === false) {
+        return res.status(403).send({ success: false, message: "Tài khoản đã bị khoá" });
+      }
+      const { password: _, ...safeUser } = user;
       res.send({
         success: true,
-        data: safeUser,
+        data: {
+          token: "mock-token-" + user.id,
+          user: safeUser
+        },
       });
     } else {
-      res.status(404).send({
-        success: false,
-        message: "Không tìm thấy người dùng",
-      });
+      res
+        .status(401)
+        .send({ success: false, message: "Email hoặc mật khẩu không đúng" });
     }
   },
 };

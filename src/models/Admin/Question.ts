@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getQuestions } from "@/services/Questions";
+import { getQuestions, deleteQuestion } from "@/services/Questions";
 import { useModel } from "umi";
 import { users as mockUsers } from "@/mock/users";
 import { Question } from "@/services/Questions/typing";
@@ -61,8 +61,16 @@ export default () => {
     setIsQuestionDetailModalVisible(true);
   };
 
-  const handleDeleteQuestion = (id: number) => {
-    setData(prev => prev.filter(q => q.id !== id));
+  const handleDeleteQuestion = async (id: number) => {
+    try {
+      await deleteQuestion(id);
+      setData(prev => prev.filter(q => q.id !== id));
+      // Optionally: gọi lại getQuestions để đồng bộ dữ liệu mới nhất
+      // const result = await getQuestions({ page: 1, pageSize: 20, sort: "newest" });
+      // if (result?.success) setData(result.data.list);
+    } catch (err: any) {
+      // Hiển thị lỗi nếu cần
+    }
   };
 
   return {

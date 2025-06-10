@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, Avatar, Button, Typography, Space, Card, Modal, Tag, Tooltip } from "antd";
-import { EyeOutlined, DeleteOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
+import { EyeOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
 import { useModel } from "umi";
 
 const { Title, Text } = Typography;
@@ -12,7 +12,6 @@ const UserList: React.FC = () => {
     modalVisible,
     openModal,
     closeModal,
-    handleDeleteUser,
     handleToggleStatus,
   } = useModel("Admin.User");
 
@@ -64,14 +63,7 @@ const UserList: React.FC = () => {
               onClick={() => openModal(record)}
             />
           </Tooltip>
-          <Tooltip title="Xoá tài khoản">
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              size="small"
-              onClick={() => handleDeleteUser(record.id)}
-            />
-          </Tooltip>
+          {/* Đã huỷ nút xoá tài khoản */}
           <Tooltip title={record.is_activate ? 'Khoá tài khoản' : 'Mở khoá tài khoản'}>
             <Button
               icon={record.is_activate ? <LockOutlined /> : <UnlockOutlined />}

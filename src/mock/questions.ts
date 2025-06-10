@@ -1115,5 +1115,34 @@ export default {
       success: true,
       data: suggestions
     });
-  }
+  },
+
+  // API xoá câu hỏi
+  'DELETE /api/questions/:id': (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const questionIndex = questions.findIndex(q => q.id === id);
+    if (questionIndex === -1) {
+      return res.status(404).send({ success: false, message: 'Không tìm thấy câu hỏi' });
+    }
+    // Xoá câu hỏi
+    questions.splice(questionIndex, 1);
+    // Xoá các answer liên quan
+    for (let i = answers.length - 1; i >= 0; i--) {
+      if (answers[i].question_id === id) answers.splice(i, 1);
+    }
+    // Xoá các comment liên quan đến answer của question này
+    for (let i = comments.length - 1; i >= 0; i--) {
+      const answer = answers.find(a => a.id === comments[i].answer_id);
+      if (!answer || answer.question_id === id) comments.splice(i, 1);
+    }
+    // Xoá các vote liên quan đến question này
+    for (let i = votes.length - 1; i >= 0; i--) {
+      if (votes[i].question_id === id) votes.splice(i, 1);
+    }
+    // Xoá liên kết tag
+    for (let i = question_tags.length - 1; i >= 0; i--) {
+      if (question_tags[i].question_id === id) question_tags.splice(i, 1);
+    }
+    res.send({ success: true, message: 'Đã xoá câu hỏi', questions });
+  },
 };

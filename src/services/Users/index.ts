@@ -78,3 +78,48 @@ export const getUserTags = async (userId: number): Promise<APIResponse<Tag[]>> =
   }
 };
 
+// Khoá tài khoản người dùng
+export const lockUser = async (id: number): Promise<APIResponse<User>> => {
+  try {
+    const response = await request.post(`/api/users/${id}/lock`);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error locking user:", error);
+    return {
+      success: false,
+      message: "Không thể khoá tài khoản người dùng"
+    };
+  }
+};
+
+// Mở khoá tài khoản người dùng
+export const unlockUser = async (id: number): Promise<APIResponse<User>> => {
+  try {
+    const response = await request.post(`/api/users/${id}/unlock`);
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error unlocking user:", error);
+    return {
+      success: false,
+      message: "Không thể mở khoá tài khoản người dùng"
+    };
+  }
+};
+
+export const deleteUsers = async (ids: number[]): Promise<APIResponse<null>> => {
+  try {
+    await request.delete(`/api/users`, { data: { ids } }); // gửi danh sách IDs trong body
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    return { success: false, message: "Không thể xoá nhiều người dùng" };
+  }
+};
+
+

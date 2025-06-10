@@ -45,7 +45,7 @@ export async function updateUserTagFollows(tagIds: number[]): Promise<APIRespons
 }
 
 // Thêm tag mới
-export async function addTag(data: Partial<Tag>): Promise<APIResponse<Tag>> {
+export async function addTag(data: { name: string; description?: string }) {
   return request('/api/tags', {
     method: 'POST',
     data,
@@ -53,15 +53,15 @@ export async function addTag(data: Partial<Tag>): Promise<APIResponse<Tag>> {
 }
 
 // Sửa tag
-export async function updateTag(id: number, data: Partial<Tag>): Promise<APIResponse<Tag>> {
+export async function updateTag(id: number, data: { name?: string; description?: string }) {
   return request(`/api/tags/${id}`, {
     method: 'PUT',
     data,
   });
 }
 
-// Xóa tag
-export async function deleteTag(id: number): Promise<APIResponse<null>> {
+// Xoá tag
+export async function deleteTag(id: number) {
   return request(`/api/tags/${id}`, {
     method: 'DELETE',
   });
