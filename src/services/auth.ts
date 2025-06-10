@@ -15,6 +15,10 @@ export function login(data: { email: string; password: string }): Promise<AuthRe
     method: "POST",
     data,
     errorHandler: (error) => {
+      // Nếu backend trả về lỗi tài khoản bị khoá, trả về message phù hợp
+      if (error?.data?.message === 'Tài khoản đã bị khoá') {
+        return Promise.reject({ ...error, message: 'Tài khoản của bạn đã bị khoá. Vui lòng liên hệ quản trị viên.' });
+      }
       console.error('Login API error:', error);
       return Promise.reject(error);
     }

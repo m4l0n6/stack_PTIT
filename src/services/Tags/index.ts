@@ -49,3 +49,26 @@ export async function updateUserTagFollows(tagIds: number[]): Promise<APIRespons
     data: { tagIds },
   });
 }
+
+// Thêm tag mới
+export async function addTag(data: { name: string; description?: string }) {
+  return request('/api/tags', {
+    method: 'POST',
+    data,
+  });
+}
+
+// Sửa tag
+export async function updateTag(id: number, data: { name?: string; description?: string }) {
+  return request(`/api/tags/${id}`, {
+    method: 'PUT',
+    data,
+  });
+}
+
+// Xoá tag
+export async function deleteTag(id: number) {
+  return request(`/api/tags/${id}`, {
+    method: 'DELETE',
+  });
+}

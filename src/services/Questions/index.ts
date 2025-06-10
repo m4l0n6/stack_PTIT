@@ -154,3 +154,13 @@ export async function getQuestionsByTag(params: {
     params,
   });
 }
+
+// Xoá câu hỏi
+export async function deleteQuestion(id: number): Promise<{ success: boolean; message?: string }> {
+  return request(`/api/questions/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+}

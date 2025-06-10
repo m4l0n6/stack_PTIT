@@ -49,6 +49,7 @@ const QuestionCreatePage = () => {
     }
 
     const content = editorRef.current.getContent();
+
     const plainText = editorRef.current.getContent({ format: "text" });
     if (!plainText || plainText.trim().length < 20) {
       message.error("Nội dung câu hỏi phải có ít nhất 20 ký tự");

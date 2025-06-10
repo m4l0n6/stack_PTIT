@@ -5,6 +5,7 @@ import { Bar } from '@ant-design/plots';
 import { useModel } from 'umi';
 import { users } from '@/mock/users';
 import comments from '@/mock/comments';
+import dayjs from 'dayjs';
 
 const AdminDashboard: React.FC = () => {
   // Lấy dữ liệu từ model
@@ -12,51 +13,102 @@ const AdminDashboard: React.FC = () => {
   const questions = useModel('Question.question');
   const [activeTab, setActiveTab] = useState('posts');
 
-  // Tạo mảng nhãn cho 5 ngày gần nhất (27/05/2025 - 31/05/2025)
-  const labels = ['27/05/2025', '28/05/2025', '29/05/2025', '30/05/2025', '31/05/2025'];
+  // Lấy 5 ngày gần nhất (dạng dd/MM/yyyy, luôn đủ 2 số)
+  const labels = Array.from({ length: 5 }, (_, i) => dayjs().subtract(4 - i, 'day').format('DD/MM/YYYY'));
 
-  // Dữ liệu cho thống kê người dùng
-  const userChartData = [
-    ...labels.map((date, idx) => ({
-      type: 'Số sinh viên đăng nhập',
+  // Thống kê số user đăng ký mới mỗi ngày (theo created_at)
+  const userChartData = labels.flatMap(date => [
+    {
+      type: 'Số sinh viên đăng ký',
       date,
-      value: [120, 130, 140, 145, 150][idx],
-    })),
-    ...labels.map((date, idx) => ({
-      type: 'Số giảng viên đăng nhập',
+      value: users.filter(u => u.role === 'student' && dayjs(u.created_at).format('DD/MM/YYYY') === date).length,
+    },
+    {
+      type: 'Số giảng viên đăng ký',
       date,
-      value: [15, 18, 17, 19, 20][idx],
-    })),
-  ];
+      value: users.filter(u => u.role === 'teacher' && dayjs(u.created_at).format('DD/MM/YYYY') === date).length,
+    },
+  ]);
 
-  // Dữ liệu cho thống kê bài viết
-  const postChartData = [
-    ...labels.map((date, idx) => ({
-      type: 'Bài viết hoàn thành',
-      date,
-      value: [25, 28, 30, 32, 30][idx],
-    })),
-    ...labels.map((date, idx) => ({
+  // Thống kê bài viết được đăng mỗi ngày (theo created_at)
+  const postChartData = labels.flatMap(date => [
+    {
       type: 'Bài viết được đăng',
       date,
-      value: [40, 45, 48, 50, 50][idx],
-    })),
-  ];
+      value: Number(questions.questions.filter(q => q.created_at && dayjs(q.created_at).format('DD/MM/YYYY') === date).length),
+    },
+  ]);
 
   const chartConfig = {
     data: activeTab === 'posts' ? postChartData : userChartData,
-    xField: 'value',
-    yField: 'date',
+    xField: 'date',
+    yField: 'value',
     seriesField: 'type',
-    isStack: false,
-    legend: { position: 'top' },
+    isGroup: true,
+    legend: {
+      position: 'top',
+      itemName: {
+        style: {
+          fontWeight: 600,
+          fontSize: 16,
+        },
+      },
+    },
     color: activeTab === 'posts'
-      ? ['#4CAF50', '#FF4D4F']
-      : ['#FF9800', '#2196F3'],
-    label: { position: 'right' as const },
-    xAxis: { title: { text: 'Số lượng' } },
-    yAxis: { title: { text: 'Ngày' } },
-    height: 350,
+      ? ['#4CAF50', '#1976D2', '#FFB300']
+      : ['#FF9800', '#2196F3', '#8BC34A'],
+    label: {
+      position: 'top',
+      style: {
+        fill: '#222',
+        fontWeight: 600,
+        fontSize: 15,
+        textShadow: '0 1px 2px #fff',
+      },
+      offset: 8,
+    },
+    xAxis: {
+      title: { text: 'Ngày', style: { fontWeight: 700, fontSize: 16 } },
+      label: {
+        style: {
+          fontWeight: 600,
+          fontSize: 15,
+        },
+        autoRotate: true,
+        rotate: Math.PI / 6, // Xoay nhãn 30 độ để không bị cắt chữ
+        autoHide: false,
+        autoEllipsis: false,
+      },
+      line: { style: { stroke: '#bdbdbd', lineWidth: 2 } },
+      grid: { line: { style: { stroke: '#e0e0e0', lineDash: [4, 4] } } },
+    },
+    tooltip: {
+      showMarkers: true,
+      shared: true,
+      customContent: (title: string, items: any[]) => {
+        if (!items || items.length === 0) return null;
+        return `<div style='padding:8px 12px;min-width:120px;'>
+          <div style='font-weight:700;font-size:15px;margin-bottom:6px;'>${title}</div>
+          ${items.map(item => {
+            let v = Number(item.value);
+            if (isNaN(v) || v == null) v = 0;
+            return `<div style='margin-bottom:2px;'><span style='display:inline-block;width:12px;height:12px;background:${item.color};border-radius:2px;margin-right:6px;'></span>${item.name}: <b>${v}</b></div>`;
+          }).join('')}
+        </div>`;
+      },
+      domStyles: {
+        'g2-tooltip': {
+          borderRadius: '10px',
+          boxShadow: '0 2px 12px #b3c6ff55',
+          fontSize: '15px',
+          padding: '12px 16px',
+        },
+      },
+    },
+    height: 420,
+    columnStyle: { radius: [8, 8, 0, 0], fill: '#fff', stroke: '#e0e0e0', lineWidth: 1 },
+    padding: [40, 40, 60, 60],
+    animation: { appear: { animation: 'scale-in-x', duration: 800 } },
   };
 
   // Lấy dữ liệu mock
