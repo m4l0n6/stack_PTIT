@@ -1,6 +1,5 @@
 // Imports từ các mock data khác
 import answers from './answers';
-import { Question } from '@/services/Questions/typing';
 import { tags, question_tags } from './tags';
 import { users } from './users';
 import { questionsData } from "./questions"; 

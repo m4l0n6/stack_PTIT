@@ -1,41 +1,140 @@
 // src/pages/Profile/components/Saves.tsx
-import { Card, List, Button } from "antd";
-import React from "react";
-import { Link, useParams } from "umi";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import React, { useEffect } from 'react';
+import { Card, List, Tag, Space, Typography, Empty, Breadcrumb, Button } from 'antd';
+import { Link, useModel, history } from 'umi';
+import { BookOutlined, HomeOutlined } from '@ant-design/icons';
+import { formatDistanceToNow } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
-const Saves: React.FC = () => {
-  const params = useParams<{ id: string }>();
+const { Title, Text } = Typography;
 
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          <h1 className="ml-4 font-bold text-2xl">Tất cả bài viết lưu trữ</h1>
-        </div>
-      </div>
-
-      <div>
-        <Card>
-          <h1 className="mb-2 font-bold">Bài viết đã lưu</h1>
-          <List>
-            {Array.from({ length: 5 }, (_, index) => (
-              <List.Item key={index} className="hover:bg-[#f5f5f5]">
-                <div className="flex justify-center items-center bg-green-500 mr-2 rounded-lg w-12 h-8 text-white">
-                  <div>5</div>
-                </div>
-                <List.Item.Meta
-                  title={<a href="#">Bài viết {index + 1}</a>}
-                  description="Mô tả ngắn về bài viết đã lưu"
-                />
-                <div>31/08/2005</div>
-              </List.Item>
-            ))}
-          </List>
+const SavedQuestionsPage: React.FC = () => {
+  const { 
+    savedQuestions, 
+    loading, 
+    fetchSavedQuestions, 
+    handleSaveQuestion 
+  } = useModel('savedQuestion');
+  
+  const { user } = useModel('user');
+  
+  useEffect(() => {
+    if (user) {
+      fetchSavedQuestions();
+    }
+  }, [user, fetchSavedQuestions]);
+  
+  const handleUnsaveQuestion = async (questionId: number) => {
+    if (user) {
+      await handleSaveQuestion(questionId, user);
+    }
+  };
+  
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+        <Card className="w-full max-w-lg text-center">
+          <Title level={4}>Vui lòng đăng nhập để xem danh sách câu hỏi đã lưu</Title>
+          <Button type="primary" onClick={() => history.push('/auth/login')}>
+            Đăng nhập
+          </Button>
         </Card>
       </div>
+    );
+  }
+  
+  return (
+    <div className="mx-auto px-4 py-6 container">
+      <Title level={2}>Câu hỏi đã lưu</Title>
+
+      <Card>
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <div className="text-center">
+              <div className="mb-4 loading-spinner"></div>
+              <Text type="secondary">Đang tải danh sách câu hỏi đã lưu...</Text>
+            </div>
+          </div>
+        ) : savedQuestions.length > 0 ? (
+          <List
+            dataSource={savedQuestions}
+            renderItem={(item) => (
+              <List.Item
+                key={item.saved_id}
+                actions={[
+                  <Button
+                    key="unsave"
+                    danger
+                    onClick={() => handleUnsaveQuestion(item.question.id)}
+                  >
+                    Bỏ lưu
+                  </Button>,
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <Link
+                      to={`/question/${item.question.id}`}
+                      className="font-medium text-lg"
+                    >
+                      {item.question.title}
+                    </Link>
+                  }
+                  description={
+                    <Space direction="vertical" size="small" className="w-full">
+                      <div>
+                        <Space size={[0, 8]} wrap>
+                          {item.question.tags?.map((tag: any) => (
+                            <Tag color="blue" key={tag.id}>
+                              <Link to={`/questions/tagged/${tag.name}`}>
+                                {tag.name}
+                              </Link>
+                            </Tag>
+                          ))}
+                        </Space>
+                      </div>
+                      <div className="flex justify-between">
+                        <Space>
+                          <Tag color="blue">
+                            {item.question.upvotes - item.question.downvotes}{" "}
+                            votes
+                          </Tag>
+                          <Tag color="green">
+                            {item.question.answer_count || 0} câu trả lời
+                          </Tag>
+                          <Tag color="orange">
+                            {item.question.views} lượt xem
+                          </Tag>
+                        </Space>
+                        <Space>
+                          <Text type="secondary">
+                            Đã lưu{" "}
+                            {formatDistanceToNow(new Date(item.saved_at), {
+                              addSuffix: true,
+                              locale: vi,
+                            })}
+                          </Text>
+                        </Space>
+                      </div>
+                    </Space>
+                  }
+                />
+              </List.Item>
+            )}
+            pagination={{
+              pageSize: 10,
+              hideOnSinglePage: true,
+            }}
+          />
+        ) : (
+          <Empty
+            description="Bạn chưa lưu câu hỏi nào"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        )}
+      </Card>
     </div>
   );
 };
 
-export default Saves;
+export default SavedQuestionsPage;

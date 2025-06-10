@@ -1,7 +1,12 @@
 import React from "react";
-import { Card, Space, Tag, Avatar, Typography, Button, message } from "antd";
+import { Card, Space, Tag, Avatar, Typography, Button, Tooltip } from "antd";
 import { Link, useModel } from "umi";
-import { ArrowUpOutlined, ArrowDownOutlined, SaveOutlined } from "@ant-design/icons";
+import { 
+  ArrowUpOutlined, 
+  ArrowDownOutlined, 
+  SaveOutlined,
+  SaveFilled
+} from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 
 const { Text } = Typography;
@@ -9,11 +14,17 @@ const { Text } = Typography;
 interface QuestionContentProps {
   question: Question;
   handleVote: (direction: "up" | "down") => Promise<void>;
+  handleSave: () => Promise<void>;  // Thêm props cho chức năng lưu
+  isSaved: boolean;                 // Trạng thái đã lưu
+  isSavingQuestion: boolean;        // Trạng thái đang lưu
 }
 
 const QuestionContent: React.FC<QuestionContentProps> = ({
   question,
   handleVote,
+  handleSave,
+  isSaved,
+  isSavingQuestion
 }) => {
   const { user } = useModel('user');
   const isQuestionOwner = user && question.user_id === user.id;
@@ -73,13 +84,16 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           title={isQuestionOwner ? "Bạn không thể bình chọn câu hỏi của chính mình" : ""}
           className="vote-button"
         />
-        <Button 
-          type="text"
-          icon={<SaveOutlined />}
-          className="vote-button"
-          style={{ marginTop: "10px" }}
-          onClick={() => message.info("Chức năng lưu câu hỏi chưa được triển khai")}
-        />
+        <Tooltip title={isSaved ? "Bỏ lưu câu hỏi" : "Lưu câu hỏi này"}>
+          <Button 
+            type="text"
+            icon={isSaved ? <SaveFilled style={{ color: '#1890ff' }} /> : <SaveOutlined />}
+            className="vote-button"
+            style={{ marginTop: "10px" }}
+            onClick={handleSave}
+            loading={isSavingQuestion}
+          />
+        </Tooltip>
       </div>
 
       {/* Nội dung câu hỏi bên phải */}
@@ -106,7 +120,7 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
                   to={`/users/${question.user?.id}/${question.user?.username?.replace(/\s+/g, "-")}`}
                 >
                   <Text strong className="ml-2 hover:text-[#1890ff]">
-                    {question.user?.username}
+                    {question.user?.username || 'Người dùng ẩn danh'}
                   </Text>
                 </Link>
               </div>

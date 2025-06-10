@@ -13,34 +13,48 @@ import AnswerForm from './components/Detail/AnswerForm';
 
 const { Title } = Typography;
 
-const QuestionDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { user } = useModel("user");
+const QuestionDetailPage = () => {
   const {
     question,
     loading,
-    isSubmittingAnswer,
-    commentForms,
-    submittingComments,
     fetchQuestionDetail,
     handleVote,
     handleVoteAnswer,
     handleAcceptAnswer,
     handleSubmitAnswer,
-    toggleCommentForm,
     handleSubmitComment,
-    getSortedAnswers,
-  } = useModel("Question.questiondetail");
-
+    toggleCommentForm,
+    isSubmittingAnswer,
+    commentForms,
+    submittingComments,
+  } = useModel('Question.questiondetail');
+  
+  // Sử dụng model savedQuestion
+  const {
+    isSaved,
+    isSavingQuestion,
+    handleSaveQuestion,
+    checkQuestionSaveStatus
+  } = useModel("savedQuestion");
+  
+  const { user } = useModel("user");
+  const params = useParams<{ id: string }>();
+  const questionId = parseInt(params.id || '0', 10); // Sửa lỗi Argument of type 'string | undefined'
   const editorRef = useRef<any>(null);
-  const questionId = parseInt(id!, 10);
 
   // Fetch question detail on mount or when ID changes
   useEffect(() => {
-    if (id) {
+    if (params.id && questionId > 0) {
       fetchQuestionDetail(questionId);
     }
-  }, [id, fetchQuestionDetail]);
+  }, [params.id, fetchQuestionDetail, questionId]);
+
+  useEffect(() => {
+    // Kiểm tra trạng thái lưu khi component mount và user có sẵn
+    if (questionId > 0 && user) {
+      checkQuestionSaveStatus(questionId);
+    }
+  }, [questionId, user, checkQuestionSaveStatus]);
 
   // Hàm wrapper để phù hợp với interface
   const onVoteQuestion = (direction: "up" | "down") => {
@@ -69,6 +83,11 @@ const QuestionDetail: React.FC = () => {
     }
   };
 
+  // Xử lý lưu câu hỏi
+  const onSaveQuestion = async () => {
+    await handleSaveQuestion(questionId, user);
+  };
+  
   // Hiển thị loading spin khi đang tải
   if (loading) {
     return (
@@ -90,21 +109,33 @@ const QuestionDetail: React.FC = () => {
     );
   }
 
-  const sortedAnswers = getSortedAnswers();
+  // Sắp xếp câu trả lời với kiểm tra null/undefined và sử dụng upvotes - downvotes thay vì score
+  const sortedAnswers = (question.answers || []).sort((a, b) => {
+    const scoreA = (a.upvotes || 0) - (a.downvotes || 0);
+    const scoreB = (b.upvotes || 0) - (b.downvotes || 0);
+    return scoreB - scoreA;
+  });
+
   return (
     <div className="question-detail">
       {/* Tiêu đề và thông tin câu hỏi */}
       <QuestionHeader question={question} />
 
       {/* Nội dung câu hỏi */}
-      <QuestionContent question={question} handleVote={onVoteQuestion} />
-
+      <QuestionContent 
+        question={question} 
+        handleVote={onVoteQuestion}
+        handleSave={onSaveQuestion}
+        isSaved={isSaved}
+        isSavingQuestion={isSavingQuestion} 
+      />
+      
       {/* Câu trả lời */}
       <AnswerList
         answers={sortedAnswers}
         questionId={questionId}
-        questionUserId={question.user?.id}
-        currentUserId={user?.id}
+        questionUserId={question.user?.id || 0}
+        currentUserId={user?.id || 0}
         answerCount={question.answer_count || 0}
         handleVoteAnswer={onVoteAnswer}
         handleAcceptAnswer={onAcceptAnswer}
@@ -123,10 +154,10 @@ const QuestionDetail: React.FC = () => {
           editorRef.current = editor;
         }}
         questionUserId={question.user_id}
-        currentUserId={user?.id}
+        currentUserId={user?.id || 0}
       />
     </div>
   );
 };
 
-export default QuestionDetail;
+export default QuestionDetailPage;
