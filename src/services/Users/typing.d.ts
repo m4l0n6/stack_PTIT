@@ -10,4 +10,5 @@ export interface User {
   bio?: string; // thêm cho UI
   theme?: string; // thêm cho UI
   role: string;
+  is_activate?: boolean; // true: hoạt động, false: đã khoá
 }

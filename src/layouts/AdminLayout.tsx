@@ -75,6 +75,11 @@ const userMenu: MenuProps["items"] = [
               icon: <UploadOutlined />,
               label: <Link to="/dashboard/questions">Câu hỏi</Link>,
             },
+            {
+              key: "4",
+              icon: <UploadOutlined />,
+              label: <Link to="/dashboard/tags">Quản lý tag</Link>,
+            },
           ]}
         />
       </Sider>

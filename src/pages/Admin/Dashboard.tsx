@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { Card, Row, Col, Statistic, Button } from 'antd';
 import { UserOutlined, FileTextOutlined, CommentOutlined, EyeOutlined, ArrowLeftOutlined, ExpandOutlined, ExpandAltOutlined } from '@ant-design/icons';
 import { Bar } from '@ant-design/plots';
+import { useModel } from 'umi';
+import { users } from '@/mock/users';
+import comments from '@/mock/comments';
 
 const AdminDashboard: React.FC = () => {
+  // Lấy dữ liệu từ model
+  const user  = useModel('user');
+  const questions = useModel('Question.question');
   const [activeTab, setActiveTab] = useState('posts');
 
   // Tạo mảng nhãn cho 5 ngày gần nhất (27/05/2025 - 31/05/2025)
@@ -53,6 +59,13 @@ const AdminDashboard: React.FC = () => {
     height: 350,
   };
 
+  // Lấy dữ liệu mock
+  const totalUsers = users.length;
+  const totalQuestions = questions.questions.length;
+  const totalComments = comments.length;
+  // Tính tổng số lượt xem từ tất cả questions
+  const totalViews = questions.questions.reduce((sum: number, q: any) => sum + (q.views || 0), 0);
+
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
       {/* Tiêu đề */}
@@ -81,7 +94,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
             <Statistic
               title="Tổng số người dùng"
-              value={3892}
+              value={totalUsers}
               prefix={<UserOutlined />}
               valueStyle={{ color: '#3f8600' }}
             />
@@ -92,7 +105,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
             <Statistic
               title="Tổng số bài viết"
-              value={1245}
+              value={totalQuestions}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: '#cf1322' }}
             />
@@ -103,7 +116,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
             <Statistic
               title="Tổng số bình luận"
-              value={8567}
+              value={totalComments}
               prefix={<CommentOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -114,7 +127,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
             <Statistic
               title="Tổng số lượt xem"
-              value={125890}
+              value={totalViews}
               prefix={<EyeOutlined />}
               valueStyle={{ color: '#8b5cf6' }}
             />

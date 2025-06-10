@@ -12,6 +12,7 @@ export const users: User[] = [
     title: "Sinh viên 1",
     bio: "Đam mê công nghệ thông tin và học hỏi không ngừng.",
     role: "student",
+    is_activate: true,
   },
   {
     id: 2,
@@ -24,6 +25,7 @@ export const users: User[] = [
     title: "Giảng viên 1",
     bio: "Chuyên gia trong lĩnh vực khoa học máy tính, giảng dạy tại PTIT.",
     role: "teacher",
+    is_activate: true,
   },
   {
     id: 3,
@@ -34,6 +36,7 @@ export const users: User[] = [
     reputation: 1000,
     avatar: "https://placehold.co/150",
     role: "admin",
+    is_activate: true,
   },
   {
     id: 4,
@@ -46,6 +49,7 @@ export const users: User[] = [
     title: "Sinh viên 2",
     bio: "Yêu thích lập trình web và machine learning.",
     role: "student",
+    is_activate: true,
   },
 ];
 
