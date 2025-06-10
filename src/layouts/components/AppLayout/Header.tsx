@@ -309,14 +309,14 @@ const HeaderBasicLauyout: React.FC = () => {
                 style={{ marginLeft: "8px" }}
                 onClick={() => history.push("/auth/login")}
               >
-                Log In
+                Đăng nhập
               </Button>
               <Button
                 type="default"
                 style={{ marginLeft: "8px" }}
                 onClick={() => history.push("/auth/register")}
               >
-                Sign Up
+                Đăng ký
               </Button>
             </>
           )}

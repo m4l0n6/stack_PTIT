@@ -1,12 +1,8 @@
 import { Form, Input, Button, Card, Divider, message, Checkbox } from "antd";
 import React, { useState } from "react";
-import {
-  GoogleOutlined,
-  FacebookOutlined,
-  GithubOutlined,
-} from "@ant-design/icons";
 import { Link, useModel, history } from "umi";
 import { register } from "@/services/auth";
+import SocialAuth from "@/components/SocialAuth";
 
 const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
@@ -52,27 +48,7 @@ const RegisterPage = () => {
           className="shadow-md w-full max-w-md register-card"
           headStyle={{ fontSize: "20px", textAlign: "center", fontWeight: "bold" }}
         >
-          <div className="flex gap-2 mb-4">
-            <Button
-              type="default"
-              className="flex justify-center items-center bg-[#db4437] hover:opacity-90 h-10 text-white"
-              style={{ width: "calc(100%/3 - 10px)" }}
-              icon={<GoogleOutlined />}
-            />
-            <Button
-              type="default"
-              className="flex justify-center items-center bg-[#3b5998] hover:opacity-90 h-10 text-white"
-              style={{ width: "calc(100%/3 - 10px)" }}
-              icon={<FacebookOutlined />}
-            />
-            <Button
-              type="default"
-              className="flex justify-center items-center bg-[#333] hover:opacity-90 h-10 text-white" 
-              style={{ width: "calc(100%/3 - 10px)" }}
-              icon={<GithubOutlined />}
-            />
-          </div>
-          
+          <SocialAuth />
           <Divider style={{ borderColor: "#d9d9d9" }}>hoặc đăng ký với email</Divider>
           
           <Form 
