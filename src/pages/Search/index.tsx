@@ -437,9 +437,11 @@ const SearchPage: React.FC = () => {
 
   const renderSearchConditionsBuilder = () => {
     return (
-      <Card className="mb-6">
-        <Title level={4} className="mb-4">🔍 Xây dựng điều kiện tìm kiếm</Title>
-        
+      <Card className="bg-[var(--bg-primary)] mb-6">
+        <Title level={4} className="mb-4">
+          Xây dựng điều kiện tìm kiếm
+        </Title>
+
         <Space direction="vertical" className="w-full" size="middle">
           {searchConditions.map((condition, index) => (
             <Card key={condition.id} size="small" className="bg-gray-50">
@@ -447,7 +449,9 @@ const SearchPage: React.FC = () => {
                 <Col span={4}>
                   <Select
                     value={condition.type}
-                    onChange={(value) => updateConditionType(condition.id, value)}
+                    onChange={(value) =>
+                      updateConditionType(condition.id, value)
+                    }
                     className="w-full"
                   >
                     <Option value="text">Văn bản</Option>
@@ -458,28 +462,34 @@ const SearchPage: React.FC = () => {
                     <Option value="user">User</Option>
                   </Select>
                 </Col>
-                
+
                 <Col span={3}>
-                  {condition.type === 'text' ? (
+                  {condition.type === "text" ? (
                     <Select
                       value={condition.operator}
-                      onChange={(value) => updateCondition(condition.id, { operator: value })}
+                      onChange={(value) =>
+                        updateCondition(condition.id, { operator: value })
+                      }
                       className="w-full"
                     >
                       <Option value="contains">chứa</Option>
                     </Select>
-                  ) : condition.type === 'tag' ? (
+                  ) : condition.type === "tag" ? (
                     <Select
                       value={condition.operator}
-                      onChange={(value) => updateCondition(condition.id, { operator: value })}
+                      onChange={(value) =>
+                        updateCondition(condition.id, { operator: value })
+                      }
                       className="w-full"
                     >
                       <Option value="=">=</Option>
                     </Select>
-                  ) : condition.type === 'user' ? (
+                  ) : condition.type === "user" ? (
                     <Select
                       value={condition.operator}
-                      onChange={(value) => updateCondition(condition.id, { operator: value })}
+                      onChange={(value) =>
+                        updateCondition(condition.id, { operator: value })
+                      }
                       className="w-full"
                     >
                       <Option value="=">=</Option>
@@ -487,7 +497,9 @@ const SearchPage: React.FC = () => {
                   ) : (
                     <Select
                       value={condition.operator}
-                      onChange={(value) => updateCondition(condition.id, { operator: value })}
+                      onChange={(value) =>
+                        updateCondition(condition.id, { operator: value })
+                      }
                       className="w-full"
                     >
                       <Option value="=">=</Option>
@@ -498,33 +510,40 @@ const SearchPage: React.FC = () => {
                     </Select>
                   )}
                 </Col>
-                
+
                 <Col span={14}>
-                  {condition.type === 'votes' || condition.type === 'answers' || condition.type === 'comments' || condition.type === 'user' ? (
+                  {condition.type === "votes" ||
+                  condition.type === "answers" ||
+                  condition.type === "comments" ||
+                  condition.type === "user" ? (
                     <InputNumber
                       value={condition.value as number}
-                      onChange={(value) => updateCondition(condition.id, { value: value || 0 })}
+                      onChange={(value) =>
+                        updateCondition(condition.id, { value: value || 0 })
+                      }
                       min={0}
                       className="w-full"
                       placeholder={
-                        condition.type === 'user' 
-                          ? "Nhập ID người dùng" 
+                        condition.type === "user"
+                          ? "Nhập ID người dùng"
                           : `Nhập số ${condition.type}`
                       }
                     />
                   ) : (
                     <Input
                       value={condition.value as string}
-                      onChange={(e) => updateCondition(condition.id, { value: e.target.value })}
+                      onChange={(e) =>
+                        updateCondition(condition.id, { value: e.target.value })
+                      }
                       placeholder={
-                        condition.type === 'text' 
-                          ? "Nhập từ khóa tìm kiếm..." 
+                        condition.type === "text"
+                          ? "Nhập từ khóa tìm kiếm..."
                           : "Nhập tên tag..."
                       }
                     />
                   )}
                 </Col>
-                
+
                 <Col span={3}>
                   <Button
                     type="text"
@@ -539,7 +558,7 @@ const SearchPage: React.FC = () => {
               </Row>
             </Card>
           ))}
-          
+
           <div className="flex justify-between items-center">
             <Button
               type="dashed"
@@ -549,7 +568,7 @@ const SearchPage: React.FC = () => {
             >
               Thêm điều kiện
             </Button>
-            
+
             <Space>
               <Button onClick={() => setSearchConditions([])}>
                 Xóa tất cả
@@ -558,17 +577,22 @@ const SearchPage: React.FC = () => {
                 type="primary"
                 icon={<SearchOutlined />}
                 onClick={handleSearch}
-                disabled={searchConditions.length === 0 || searchConditions.every(c => !c.value)}
+                disabled={
+                  searchConditions.length === 0 ||
+                  searchConditions.every((c) => !c.value)
+                }
               >
                 Tìm kiếm
               </Button>
             </Space>
           </div>
         </Space>
-        
+
         {searchConditions.length === 0 && (
           <div className="py-8 text-center">
-            <Text type="secondary">Nhấn "Thêm điều kiện" để bắt đầu xây dựng tìm kiếm</Text>
+            <Text type="secondary">
+              Nhấn "Thêm điều kiện" để bắt đầu xây dựng tìm kiếm
+            </Text>
           </div>
         )}
       </Card>

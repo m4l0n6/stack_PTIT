@@ -12,7 +12,6 @@ interface APIResponse<T> {
 
 export const getUserById = async (id: string): Promise<APIResponse<User>> => {
   try {
-    // Gọi API để lấy user theo ID
     const response = await request.get(`/api/users/${id}`);
     return {
       success: true,
@@ -27,7 +26,6 @@ export const getUserById = async (id: string): Promise<APIResponse<User>> => {
   }
 };
 
-// Lấy danh sách câu hỏi của người dùng
 export const getUserQuestions = async (userId: number): Promise<APIResponse<Question[]>> => {
   try {
     const response = await request.get(`/api/users/${userId}/questions`);
@@ -44,7 +42,6 @@ export const getUserQuestions = async (userId: number): Promise<APIResponse<Ques
   }
 };
 
-// Lấy danh sách câu trả lời của người dùng
 export const getUserAnswers = async (userId: number): Promise<APIResponse<Answer[]>> => {
   try {
     const response = await request.get(`/api/users/${userId}/answers`);
@@ -61,7 +58,6 @@ export const getUserAnswers = async (userId: number): Promise<APIResponse<Answer
   }
 };
 
-// Lấy danh sách thẻ phổ biến của người dùng
 export const getUserTags = async (userId: number): Promise<APIResponse<Tag[]>> => {
   try {
     const response = await request.get(`/api/users/${userId}/tags`);
@@ -78,7 +74,6 @@ export const getUserTags = async (userId: number): Promise<APIResponse<Tag[]>> =
   }
 };
 
-// Khoá tài khoản người dùng
 export const lockUser = async (id: number): Promise<APIResponse<User>> => {
   try {
     const response = await request.post(`/api/users/${id}/lock`);
@@ -95,7 +90,6 @@ export const lockUser = async (id: number): Promise<APIResponse<User>> => {
   }
 };
 
-// Mở khoá tài khoản người dùng
 export const unlockUser = async (id: number): Promise<APIResponse<User>> => {
   try {
     const response = await request.post(`/api/users/${id}/unlock`);
@@ -114,7 +108,7 @@ export const unlockUser = async (id: number): Promise<APIResponse<User>> => {
 
 export const deleteUsers = async (ids: number[]): Promise<APIResponse<null>> => {
   try {
-    await request.delete(`/api/users`, { data: { ids } }); // gửi danh sách IDs trong body
+    await request.delete(`/api/users`, { data: { ids } });
     return { success: true };
   } catch (error) {
     console.error("Error deleting users:", error);
@@ -122,4 +116,34 @@ export const deleteUsers = async (ids: number[]): Promise<APIResponse<null>> => 
   }
 };
 
+export const updateUserTheme = async (theme: "light" | "dark"): Promise<APIResponse<User>> => {
+  try {
+    const response = await request.put('/api/users/theme', { theme });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error updating user theme:", error);
+    return {
+      success: false,
+      message: "Không thể cập nhật giao diện người dùng"
+    };
+  }
+};
 
+export const updateUserRole = async (userId: number, role: "teacher" | "student"): Promise<APIResponse<User>> => {
+  try {
+    const response = await request.put(`/api/users/${userId}/role`, { role });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    return {
+      success: false,
+      message: "Không thể cập nhật vai trò người dùng"
+    };
+  }
+};

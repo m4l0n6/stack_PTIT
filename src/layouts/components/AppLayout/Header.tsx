@@ -20,6 +20,7 @@ import { useModel } from "umi";
 import type { MenuProps } from "antd";
 import Notification from "@/components/Notification";
 import { getSearchSuggestions } from "@/services/Search";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const { Header } = Layout;
 const { Search } = Input;
@@ -136,23 +137,29 @@ const HeaderBasicLauyout: React.FC = () => {
 
   // Search hint content with suggestions and templates
   const searchHintContent = (
-    <div className="bg-white shadow-lg p-4 w-[800px] max-h-[600px] overflow-y-auto">
+    <div className="bg-[var(--bg-primary)] shadow-lg p-4 w-[800px] max-h-[600px] overflow-y-auto">
       <div className="mb-4">
         <h3 className="mb-2 font-bold">🔍 Mẫu tìm kiếm - Click để thử</h3>
 
         {searchTemplates.map((category, categoryIndex) => (
           <div key={categoryIndex} className="mb-4">
-            <h4 className="mb-2 font-semibold text-blue-600">{category.category}</h4>
+            <h4 className="mb-2 font-semibold text-blue-600">
+              {category.category}
+            </h4>
             <div className="gap-1 grid grid-cols-1">
               {category.items.map((item, itemIndex) => (
                 <div
                   key={itemIndex}
-                  className="flex justify-between items-center bg-gray-50 hover:bg-blue-50 p-2 rounded transition-colors cursor-pointer"
+                  className="flex justify-between items-center bg-[var(--bg-primary)] hover:bg-blue-50 p-2 rounded transition-colors cursor-pointer"
                   onClick={() => handleTemplateClick(item.text)}
                 >
                   <div className="flex-1">
-                    <code className="bg-white mr-3 px-2 py-1 rounded font-medium text-blue-600">{item.text}</code>
-                    <span className="text-gray-600 text-sm">{item.description}</span>
+                    <code className="bg-[var(--bg-primary)] mr-3 px-2 py-1 rounded font-medium text-blue-600">
+                      {item.text}
+                    </code>
+                    <span className="text-gray-600 text-sm">
+                      {item.description}
+                    </span>
                   </div>
                   <Button
                     type="link"
@@ -168,31 +175,39 @@ const HeaderBasicLauyout: React.FC = () => {
                 </div>
               ))}
             </div>
-            {categoryIndex < searchTemplates.length - 1 && <Divider className="my-3" />}
+            {categoryIndex < searchTemplates.length - 1 && (
+              <Divider className="my-3" />
+            )}
           </div>
         ))}
       </div>
 
-      <div className="bg-blue-50 mb-4 p-3 rounded-lg">
+      <div className="bg-[var(--bg-primary)] mb-4 p-3 rounded-lg">
         <h4 className="mb-2 font-semibold">💡 Cú pháp tìm kiếm nâng cao</h4>
         <div className="space-y-1 text-sm">
           <div>
-            <code className="bg-white px-1">[tag]</code> - Tìm theo tag
+            <code className="bg-[var(--bg-primary)] px-1">[tag]</code> - Tìm
+            theo tag
           </div>
           <div>
-            <code className="bg-white px-1">"phrase"</code> - Tìm chính xác cụm từ
+            <code className="bg-[var(--bg-primary)] px-1">"phrase"</code> - Tìm
+            chính xác cụm từ
           </div>
           <div>
-            <code className="bg-white px-1">votes{">"}=n</code> - Lọc theo votes ({">"}=, {"<"}=, {">"}, {"<"}, =)
+            <code className="bg-[var(--bg-primary)] px-1">votes{">"}=n</code> -
+            Lọc theo votes ({">"}=, {"<"}=, {">"}, {"<"}, =)
           </div>
           <div>
-            <code className="bg-white px-1">answers{">"}=n</code> - Lọc theo số câu trả lời
+            <code className="bg-[var(--bg-primary)] px-1">answers{">"}=n</code>{" "}
+            - Lọc theo số câu trả lời
           </div>
           <div>
-            <code className="bg-white px-1">comments{">"}=n</code> - Lọc theo số comments
+            <code className="bg-[var(--bg-primary)] px-1">comments{">"}=n</code>{" "}
+            - Lọc theo số comments
           </div>
           <div>
-            <code className="bg-white px-1">user:id</code> - Tìm câu hỏi của người dùng có ID cụ thể
+            <code className="bg-[var(--bg-primary)] px-1">user:id</code> - Tìm
+            câu hỏi của người dùng có ID cụ thể
           </div>
         </div>
       </div>
@@ -220,10 +235,22 @@ const HeaderBasicLauyout: React.FC = () => {
                     )}
                     <Text>{item.text}</Text>
                     {item.description && (
-                      <Text type="secondary" className="ml-2">- {item.description}</Text>
+                      <Text type="secondary" className="ml-2">
+                        - {item.description}
+                      </Text>
                     )}
                   </div>
-                  <Tag color={item.type === "tag" ? "blue" : item.type === "user" ? "purple" : "green"}>{item.count}</Tag>
+                  <Tag
+                    color={
+                      item.type === "tag"
+                        ? "blue"
+                        : item.type === "user"
+                          ? "purple"
+                          : "green"
+                    }
+                  >
+                    {item.count}
+                  </Tag>
                 </div>
               </List.Item>
             )}
@@ -234,7 +261,9 @@ const HeaderBasicLauyout: React.FC = () => {
       {searchValue && suggestions.length === 0 && !loadingSuggestions && (
         <div>
           <Divider className="my-3" />
-          <Text type="secondary">Không có gợi ý từ hệ thống cho "{searchValue}"</Text>
+          <Text type="secondary">
+            Không có gợi ý từ hệ thống cho "{searchValue}"
+          </Text>
         </div>
       )}
     </div>
@@ -288,6 +317,7 @@ const HeaderBasicLauyout: React.FC = () => {
         <div>
           {user ? (
             <div className="flex items-center ml-4">
+              <ThemeSwitcher />
               <Notification numberOfNotifications={10} />
               <Dropdown menu={{ items: userMenu }} placement="bottomRight">
                 <div className="flex items-center ml-4 cursor-pointer">
@@ -307,14 +337,14 @@ const HeaderBasicLauyout: React.FC = () => {
                 style={{ marginLeft: "8px" }}
                 onClick={() => history.push("/auth/login")}
               >
-                Log In
+                Đăng nhập
               </Button>
               <Button
                 type="default"
                 style={{ marginLeft: "8px" }}
                 onClick={() => history.push("/auth/register")}
               >
-                Sign Up
+                Đăng ký
               </Button>
             </>
           )}

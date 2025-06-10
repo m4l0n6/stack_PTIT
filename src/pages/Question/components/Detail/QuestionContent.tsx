@@ -70,7 +70,11 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           icon={<ArrowUpOutlined />}
           onClick={() => handleVote("up")}
           disabled={isQuestionOwner}
-          title={isQuestionOwner ? "Bạn không thể bình chọn câu hỏi của chính mình" : ""}
+          title={
+            isQuestionOwner
+              ? "Bạn không thể bình chọn câu hỏi của chính mình"
+              : ""
+          }
           className="vote-button"
         />
         <div className="my-1 font-bold text-lg text-center vote-count">
@@ -81,13 +85,23 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
           icon={<ArrowDownOutlined />}
           onClick={() => handleVote("down")}
           disabled={isQuestionOwner}
-          title={isQuestionOwner ? "Bạn không thể bình chọn câu hỏi của chính mình" : ""}
+          title={
+            isQuestionOwner
+              ? "Bạn không thể bình chọn câu hỏi của chính mình"
+              : ""
+          }
           className="vote-button"
         />
         <Tooltip title={isSaved ? "Bỏ lưu câu hỏi" : "Lưu câu hỏi này"}>
-          <Button 
+          <Button
             type="text"
-            icon={isSaved ? <SaveFilled style={{ color: '#1890ff' }} /> : <SaveOutlined />}
+            icon={
+              isSaved ? (
+                <SaveFilled style={{ color: "#1890ff" }} />
+              ) : (
+                <SaveOutlined />
+              )
+            }
             className="vote-button"
             style={{ marginTop: "10px" }}
             onClick={handleSave}
@@ -109,8 +123,8 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
             {renderTags()}
           </Space>
 
-          <div className="flex justify-end mt-4">
-            <div className="bg-blue-50 p-3 rounded-md">
+          <div className="flex justify-end bg-[var(--bg-primary)] mt-4">
+            <div className="bg-[var(--bg-primary)] p-3 rounded-md">
               <div className="text-gray-500 text-sm">
                 Đã hỏi vào {question.created_at}
               </div>
@@ -120,7 +134,7 @@ const QuestionContent: React.FC<QuestionContentProps> = ({
                   to={`/users/${question.user?.id}/${question.user?.username?.replace(/\s+/g, "-")}`}
                 >
                   <Text strong className="ml-2 hover:text-[#1890ff]">
-                    {question.user?.username || 'Người dùng ẩn danh'}
+                    {question.user?.username || "Người dùng ẩn danh"}
                   </Text>
                 </Link>
               </div>
