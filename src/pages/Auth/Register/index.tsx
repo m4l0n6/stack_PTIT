@@ -50,7 +50,7 @@ const RegisterPage = () => {
         <Card 
           title="Đăng ký tài khoản mới"
           className="shadow-md w-full max-w-md register-card"
-          headStyle={{ fontSize: "20px", textAlign: "center", fontWeight: "bold" }}
+          styles={{ header: { fontSize: "20px", textAlign: "center", fontWeight: "bold" } }}
         >
           <div className="flex gap-2 mb-4">
             <Button

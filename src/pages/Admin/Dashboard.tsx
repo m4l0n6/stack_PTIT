@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Statistic, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Row, Col, Statistic, Button, message } from 'antd';
 import { UserOutlined, FileTextOutlined, CommentOutlined, EyeOutlined, ArrowLeftOutlined, ExpandOutlined, ExpandAltOutlined } from '@ant-design/icons';
 import { Bar } from '@ant-design/plots';
 import { useModel } from 'umi';
-import { users } from '@/mock/users';
-import comments from '@/mock/comments';
+import { getUsers } from '@/services/Users';
+import { getQuestions } from '@/services/Questions';
+import { getComments } from '@/services/Comments';
 
 const AdminDashboard: React.FC = () => {
   // Lấy dữ liệu từ model
   const user  = useModel('user');
   const questions = useModel('Question.question');
   const [activeTab, setActiveTab] = useState('posts');
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [totalComments, setTotalComments] = useState(0);
+  const [totalViews, setTotalViews] = useState(0);
 
   // Tạo mảng nhãn cho 5 ngày gần nhất (27/05/2025 - 31/05/2025)
   const labels = ['27/05/2025', '28/05/2025', '29/05/2025', '30/05/2025', '31/05/2025'];
@@ -59,12 +64,23 @@ const AdminDashboard: React.FC = () => {
     height: 350,
   };
 
-  // Lấy dữ liệu mock
-  const totalUsers = users.length;
-  const totalQuestions = questions.questions.length;
-  const totalComments = comments.length;
-  // Tính tổng số lượt xem từ tất cả questions
-  const totalViews = questions.questions.reduce((sum: number, q: any) => sum + (q.views || 0), 0);
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const usersRes = await getUsers();
+      setTotalUsers(usersRes.data.length);
+      const questionsRes = await getQuestions();
+      setTotalQuestions(questionsRes.data.list.length);
+      setTotalViews(questionsRes.data.list.reduce((sum: number, q: any) => sum + (q.views || 0), 0));
+      const commentsRes = await getComments();
+      setTotalComments(commentsRes.data.length);
+    } catch {
+      message.error('Không thể lấy dữ liệu thống kê!');
+    }
+  };
 
   return (
     <div className="bg-gray-50 p-6 min-h-screen">

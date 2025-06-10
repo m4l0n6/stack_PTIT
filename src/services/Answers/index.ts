@@ -7,6 +7,8 @@ interface APIResponse<T> {
   message?: string;
 }
 
+const BASE_URL = "http://localhost:8000";
+
 // Thêm câu trả lời cho câu hỏi
 export async function createAnswer(questionId: number, content: string): Promise<APIResponse<Answer>> {
   return request(`/api/questions/${questionId}/answers`, {
@@ -20,7 +22,7 @@ export async function createAnswer(questionId: number, content: string): Promise
 
 // Bình chọn câu trả lời
 export async function voteAnswer(questionId: number, answerId: number, direction: "up" | "down"): Promise<APIResponse<Answer>> {
-  return request(`/api/questions/${questionId}/answers/${answerId}/vote`, {
+  return request(`${BASE_URL}/questions/${questionId}/answers/${answerId}/vote`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

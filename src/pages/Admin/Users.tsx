@@ -1,16 +1,35 @@
-import React, { useState } from "react";
-import { Table, Avatar, Button, Typography, Space, Card, Modal, Tag, Tooltip } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Avatar, Button, Typography, Space, Card, Modal, Tag, Tooltip, message } from "antd";
 import { EyeOutlined, DeleteOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
-import { users as mockUsers } from "@/mock/users";
+import { getUsers, deleteUser, toggleUserStatus } from "@/services/Users";
 
 const { Title, Text } = Typography;
 
 const UserList: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [users, setUsers] = useState(
-    mockUsers.filter((u: any) => u.role !== 'admin').map((u: any) => ({ ...u, is_activate: typeof u.is_activate === 'boolean' ? u.is_activate : true }))
-  );
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await getUsers();
+      if (res.success) {
+        setUsers(res.data);
+      } else {
+        message.error(res.message || "Lỗi khi lấy danh sách người dùng");
+      }
+    } catch (e) {
+      message.error("Không thể kết nối tới server!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openModal = (user: any) => {
     setSelectedUser(user);
@@ -22,25 +41,26 @@ const UserList: React.FC = () => {
     setSelectedUser(null);
   };
 
-  // Thêm hàm xóa user
-  const handleDeleteUser = (id: number) => {
-    // Xóa user khỏi danh sách hiển thị
-    const newUsers = users.filter((u: any) => u.id !== id);
-    // Nếu đang xem user bị xóa thì đóng modal
-    if (selectedUser && selectedUser.id === id) {
-      closeModal();
+  const handleDeleteUser = async (id: number) => {
+    try {
+      await deleteUser(id);
+      setUsers(users.filter((u: any) => u.id !== id));
+      message.success("Đã xoá người dùng");
+      if (selectedUser && selectedUser.id === id) closeModal();
+    } catch {
+      message.error("Lỗi khi xoá người dùng");
     }
-    // Cập nhật lại danh sách users
-    setUsers(newUsers);
   };
 
-  // Hàm khoá/mở khoá user
-  const handleToggleStatus = (id: number) => {
-    setUsers(prev => prev.map(u =>
-      u.id === id ? { ...u, is_activate: !u.is_activate } : u
-    ));
-    if (selectedUser && selectedUser.id === id) {
-      setSelectedUser((prev: any) => prev ? { ...prev, is_activate: !prev.is_activate } : prev);
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleUserStatus(id);
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, is_activate: !u.is_activate } : u));
+      if (selectedUser && selectedUser.id === id) {
+        setSelectedUser((prev: any) => prev ? { ...prev, is_activate: !prev.is_activate } : prev);
+      }
+    } catch {
+      message.error("Lỗi khi cập nhật trạng thái người dùng");
     }
   };
 

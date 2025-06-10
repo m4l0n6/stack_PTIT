@@ -14,7 +14,6 @@ import {
 import { EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Question } from "@/services/Questions/typing";
 import { useModel } from "umi";
-import { users as mockUsers } from "@/mock/users";
 
 const { Text } = Typography;
 
@@ -57,21 +56,7 @@ const RecentPosts: React.FC = () => {
   };
 
   const showUserModal = (user: { id: number; name?: string; username?: string; avatar: string }) => {
-    // Lấy user đầy đủ từ mockUsers dựa vào id
-    const fullUser = mockUsers.find((u) => u.id === user.id);
-    if (fullUser) {
-      setSelectedUser(fullUser);
-    } else {
-      setSelectedUser({
-        id: user.id,
-        username: user.name || user.username || '',
-        avatar: user.avatar || '',
-        email: '',
-        created_at: '',
-        reputation: 0,
-        role: '',
-      });
-    }
+    setSelectedUser(user);
     setIsUserModalVisible(true);
   };
 
@@ -119,7 +104,7 @@ const RecentPosts: React.FC = () => {
       width: 160,
       align: "center" as const,
       render: (_: any, record: Question) => {
-        const user = mockUsers.find((u) => u.id === record.user_id) || record.user;
+        const user = record.user || record.user_id;
         if (!user) return null;
         return (
           <div
@@ -187,7 +172,7 @@ const RecentPosts: React.FC = () => {
           borderRadius: "12px",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         }}
-        headStyle={{
+        styles ={{
           backgroundColor: "#f0f5ff",
           color: "#1d39c4",
           fontSize: "18px",

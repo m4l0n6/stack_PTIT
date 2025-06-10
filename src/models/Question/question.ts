@@ -21,7 +21,10 @@ export default () => {
             filter,
           });
           
-          if (result?.success) {
+          if (Array.isArray(result)) {
+            setQuestions(result);
+            setTotal(result.length);
+          } else if (result?.success) {
             setQuestions(result.data.list);
             setTotal(result.data.total);
           } else {

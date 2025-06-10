@@ -10,10 +10,12 @@ interface APIResponse<T> {
   message?: string;
 }
 
+const BASE_URL = "http://localhost:8000";
+
 export const getUserById = async (id: string): Promise<APIResponse<User>> => {
   try {
     // Gọi API để lấy user theo ID
-    const response = await request.get(`/api/users/${id}`);
+    const response = await request.get(`${BASE_URL}/users/${id}`);
     return {
       success: true,
       data: response.data
@@ -30,7 +32,7 @@ export const getUserById = async (id: string): Promise<APIResponse<User>> => {
 // Lấy danh sách câu hỏi của người dùng
 export const getUserQuestions = async (userId: number): Promise<APIResponse<Question[]>> => {
   try {
-    const response = await request.get(`/api/users/${userId}/questions`);
+    const response = await request.get(`${BASE_URL}/users/${userId}/questions`);
     return {
       success: true,
       data: response.data
@@ -47,7 +49,7 @@ export const getUserQuestions = async (userId: number): Promise<APIResponse<Ques
 // Lấy danh sách câu trả lời của người dùng
 export const getUserAnswers = async (userId: number): Promise<APIResponse<Answer[]>> => {
   try {
-    const response = await request.get(`/api/users/${userId}/answers`);
+    const response = await request.get(`${BASE_URL}/users/${userId}/answers`);
     return {
       success: true,
       data: response.data
@@ -64,7 +66,7 @@ export const getUserAnswers = async (userId: number): Promise<APIResponse<Answer
 // Lấy danh sách thẻ phổ biến của người dùng
 export const getUserTags = async (userId: number): Promise<APIResponse<Tag[]>> => {
   try {
-    const response = await request.get(`/api/users/${userId}/tags`);
+    const response = await request.get(`${BASE_URL}/users/${userId}/tags`);
     return {
       success: true,
       data: response.data
@@ -77,4 +79,16 @@ export const getUserTags = async (userId: number): Promise<APIResponse<Tag[]>> =
     };
   }
 };
+
+export async function getUsers() {
+  return request(`${BASE_URL}/users`, { method: "GET" });
+}
+
+export async function deleteUser(id: number) {
+  return request(`${BASE_URL}/users/${id}`, { method: "DELETE" });
+}
+
+export async function toggleUserStatus(id: number) {
+  return request(`${BASE_URL}/users/${id}/toggle-status`, { method: "PUT" });
+}
 

@@ -8,6 +8,7 @@ import {
 import { Link, useModel } from "umi";
 import { login } from "@/services/auth";
 import { history } from "umi";
+import request from 'umi-request';
 
 const LoginPage: React.FC = () => {  const [loading, setLoading] = useState(false);
   const { setUser, redirectBasedOnRole } = useModel('user');
@@ -15,21 +16,31 @@ const LoginPage: React.FC = () => {  const [loading, setLoading] = useState(fals
     setLoading(true);
     try {
       const res = await login(values);
-      if (res.success) {
+      // Xử lý response chuẩn OAuth2
+      if (res.access_token) {
+        localStorage.setItem("token", res.access_token);
+        // Gọi API lấy user info
+        try {
+          const userRes = await request.get("http://localhost:8000/users/me", {
+            headers: { Authorization: `Bearer ${res.access_token}` },
+          });
+          localStorage.setItem("user", JSON.stringify(userRes));
+          setUser(userRes);
+        } catch (e) {
+          // Nếu lỗi vẫn cho đăng nhập nhưng không có user
+          localStorage.removeItem("user");
+        }
+        message.success("Đăng nhập thành công");
+        history.push("/");
+        return;
+      }
+      // Xử lý response kiểu cũ (nếu có)
+      if (res.success && res.data) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setUser(res.data.user);
         message.success("Đăng nhập thành công");
-        
-        // Kiểm tra nếu có URL chuyển hướng sau đăng nhập
-        const redirectUrl = localStorage.getItem('redirectAfterLogin');
-        if (redirectUrl) {
-          localStorage.removeItem('redirectAfterLogin');
-          history.push(redirectUrl);
-        } else {
-          // Nếu không có, sử dụng hàm từ model để điều hướng dựa trên vai trò
-          redirectBasedOnRole(res.data.user);
-        }
+        history.push("/");
       }
     } catch (err: any) {
       message.error(err?.data?.message || "Lỗi đăng nhập");
@@ -38,12 +49,23 @@ const LoginPage: React.FC = () => {  const [loading, setLoading] = useState(fals
     }
   };
 
+  request.interceptors.request.use((url, options) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      };
+    }
+    return { url, options };
+  });
+
   return (
     
         <Card 
           title="Đăng nhập vào Stack PTIT"
           className="shadow-md w-full max-w-md login-card"
-          headStyle={{ fontSize: "20px", textAlign: "center", fontWeight: "bold" }}
+          styles={{ header: { fontSize: "20px", textAlign: "center", fontWeight: "bold" } }}
         >
           <div className="flex gap-2 mb-4">
             <Button
