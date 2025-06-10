@@ -1,3 +1,4 @@
+const BASE_URL = "http://localhost:8000";
 import request from 'umi-request';
 import { Notification } from './typing.d';
 
@@ -35,4 +36,8 @@ export async function markAllNotificationsAsRead(): Promise<APIResponse<any>> {
       Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
+}
+
+export async function getNotifications(userId: number) {
+  return request(`${BASE_URL}/users/${userId}/notifications`, { method: 'GET' });
 }

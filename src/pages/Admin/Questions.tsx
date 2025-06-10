@@ -68,8 +68,8 @@ const RecentPosts: React.FC = () => {
       key: "user",
       width: 160,
       align: "center" as const,
-      render: (_: any, record: any) => {
-        const user = record.user;
+      render: (_: any, record: Question) => {
+        const user = mockUsers.find((u) => u.id === record.user_id) || record.user;
         if (!user) return null;
         return (
           <div
@@ -137,7 +137,7 @@ const RecentPosts: React.FC = () => {
           borderRadius: "12px",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         }}
-        headStyle={{
+        styles ={{
           backgroundColor: "#f0f5ff",
           color: "#1d39c4",
           fontSize: "18px",

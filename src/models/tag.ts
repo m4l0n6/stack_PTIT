@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tag } from '@/services/Tags/typing';
-import { getTags, searchTags, getUserTagFollows, updateUserTagFollows } from '@/services/Tags';
+import { getTags, searchTags, getUserTagFollows, followTag, unfollowTag } from '@/services/Tags';
 import { message } from "antd";
 import { useModel } from "umi";
 
@@ -29,7 +29,9 @@ export default () => {
         try {
             setLoading(true);
             const result = await getTags();
-            if (result.success) {
+            if (Array.isArray(result)) {
+                setTags(result);
+            } else if (result && result.success && Array.isArray(result.data)) {
                 setTags(result.data);
             } else {
                 message.error("Không thể lấy danh sách tags");
@@ -49,7 +51,9 @@ export default () => {
         try {
             setFollowLoading(true);
             const result = await getUserTagFollows();
-            if (result.success) {
+            if (result && Array.isArray(result)) {
+                setFollowedTags(result);
+            } else if (result && result.success && Array.isArray(result.data)) {
                 setFollowedTags(result.data);
             }
         } catch (error) {
@@ -59,23 +63,37 @@ export default () => {
         }
     };
 
-    // Cập nhật danh sách tags theo dõi
-    const updateFollowedTags = async (tagIds: number[]) => {
+    // Theo dõi một tag
+    const handleFollowTag = async (tagId: number) => {
         if (!user) {
             message.warning("Vui lòng đăng nhập để theo dõi tags");
             return;
         }
-        
         try {
             setFollowLoading(true);
-            const result = await updateUserTagFollows(tagIds);
-            if (result.success) {
-                setFollowedTags(result.data);
-                message.success("Đã cập nhật danh sách tags theo dõi");
-            }
+            await followTag(tagId);
+            message.success("Đã theo dõi thẻ");
+            fetchFollowedTags();
         } catch (error) {
-            console.error("Error updating followed tags:", error);
-            message.error("Đã xảy ra lỗi khi cập nhật tags theo dõi");
+            message.error("Lỗi khi theo dõi thẻ");
+        } finally {
+            setFollowLoading(false);
+        }
+    };
+
+    // Bỏ theo dõi một tag
+    const handleUnfollowTag = async (tagId: number) => {
+        if (!user) {
+            message.warning("Vui lòng đăng nhập để bỏ theo dõi tags");
+            return;
+        }
+        try {
+            setFollowLoading(true);
+            await unfollowTag(tagId);
+            message.success("Đã bỏ theo dõi thẻ");
+            fetchFollowedTags();
+        } catch (error) {
+            message.error("Lỗi khi bỏ theo dõi thẻ");
         } finally {
             setFollowLoading(false);
         }
@@ -132,7 +150,8 @@ export default () => {
         fetchTags,
         handleSearch,
         fetchFollowedTags,
-        updateFollowedTags,
+        handleFollowTag,
+        handleUnfollowTag,
         pageSize
     };
 };

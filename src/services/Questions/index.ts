@@ -3,6 +3,8 @@ import { Question } from "./typing";
 import { Answer } from "../Answers/typing";
 import { Comment } from "../Comments/typing";
 
+const BASE_URL = "http://localhost:8000";
+
 interface APIResponse<T> {
   success: boolean;
   data: T;
@@ -47,7 +49,7 @@ export async function getQuestions(params?: {
   sort?: string;
   filter?: string;
 }): Promise<PaginatedResponse<Question>> {
-  return request("/api/questions", {
+  return request(`${BASE_URL}/questions`, {
     method: "GET",
     params,
   });
@@ -55,8 +57,7 @@ export async function getQuestions(params?: {
 
 // Lấy chi tiết câu hỏi
 export async function getQuestionDetail(id: number): Promise<APIResponse<Question>> {
-  console.log("Calling API for question ID:", id);
-  return request(`/api/questions/${id}`, {
+  return request(`${BASE_URL}/questions/${id}`, {
     method: "GET",
   });
 }
@@ -66,8 +67,8 @@ export async function createQuestion(data: {
   title: string;
   content: string;
   tags: string[];
-}): Promise<APIResponse<Question>> {
-  return request("/api/questions", {
+}): Promise<Question> {
+  return request(`${BASE_URL}/questions`, {
     method: "POST",
     data,
     headers: {
@@ -78,7 +79,7 @@ export async function createQuestion(data: {
 
 // Bình chọn câu hỏi
 export async function voteQuestion(id: number, direction: "up" | "down"): Promise<APIResponse<Question>> {
-  return request(`/api/questions/${id}/vote`, {
+  return request(`${BASE_URL}/questions/${id}/vote`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -89,7 +90,7 @@ export async function voteQuestion(id: number, direction: "up" | "down"): Promis
 
 // Thêm câu trả lời cho câu hỏi
 export async function createAnswer(questionId: number, content: string): Promise<APIResponse<Answer>> {
-  return request(`/api/questions/${questionId}/answers`, {
+  return request(`${BASE_URL}/questions/${questionId}/answers`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -100,7 +101,7 @@ export async function createAnswer(questionId: number, content: string): Promise
 
 // Bình chọn câu trả lời
 export async function voteAnswer(questionId: number, answerId: number, direction: "up" | "down"): Promise<APIResponse<Answer>> {
-  return request(`/api/questions/${questionId}/answers/${answerId}/vote`, {
+  return request(`${BASE_URL}/questions/${questionId}/answers/${answerId}/vote`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -111,7 +112,7 @@ export async function voteAnswer(questionId: number, answerId: number, direction
 
 // Đánh dấu câu trả lời là đúng (chấp nhận)
 export async function acceptAnswer(questionId: number, answerId: number): Promise<APIResponse<Answer>> {
-  return request(`/api/questions/${questionId}/answers/${answerId}/accept`, {
+  return request(`${BASE_URL}/questions/${questionId}/answers/${answerId}/accept`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -121,7 +122,7 @@ export async function acceptAnswer(questionId: number, answerId: number): Promis
 
 // Thêm bình luận cho câu trả lời
 export async function createComment(questionId: number, answerId: number, content: string): Promise<APIResponse<Comment>> {
-  return request(`/api/questions/${questionId}/answers/${answerId}/comments`, {
+  return request(`${BASE_URL}/questions/${questionId}/answers/${answerId}/comments`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -135,7 +136,7 @@ export async function searchQuestions(params: {
   keyword?: string;
   tag?: string;
 }): Promise<SearchResponse<Question>> {
-  return request("/api/questions/search", {
+  return request(`${BASE_URL}/questions/search`, {
     method: "GET",
     params,
   });
@@ -149,7 +150,7 @@ export async function getQuestionsByTag(params: {
   sort?: string;
   filter?: string;
 }): Promise<PaginatedResponseWithData<Question>> {
-  return request("/api/questions/tagged", {
+  return request(`${BASE_URL}/questions/tagged`, {
     method: "GET",
     params,
   });

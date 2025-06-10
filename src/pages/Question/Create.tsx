@@ -69,12 +69,12 @@ const QuestionCreatePage = () => {
         content: content,
         tags: values.tags,
       });
-
-      if (result?.success) {
-        message.success("Đã đăng câu hỏi thành công!");
-        history.push(`/question/${result.data.id}`);
+      
+      if (result && result.id) {
+        message.success('Đã đăng câu hỏi thành công!');
+        history.push(`/question/${result.id}`);
       } else {
-        message.error(result?.message || "Không thể tạo câu hỏi");
+        message.error('Không thể tạo câu hỏi');
       }
     } catch (error) {
       console.error("Lỗi khi đăng câu hỏi:", error);

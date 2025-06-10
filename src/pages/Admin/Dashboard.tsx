@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Statistic, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Row, Col, Statistic, Button, message } from 'antd';
 import { UserOutlined, FileTextOutlined, CommentOutlined, EyeOutlined, ArrowLeftOutlined, ExpandOutlined, ExpandAltOutlined } from '@ant-design/icons';
 import { Bar } from '@ant-design/plots';
 import { useModel } from 'umi';
@@ -55,60 +55,12 @@ const AdminDashboard: React.FC = () => {
       },
     },
     color: activeTab === 'posts'
-      ? ['#4CAF50', '#1976D2', '#FFB300']
-      : ['#FF9800', '#2196F3', '#8BC34A'],
-    label: {
-      position: 'top',
-      style: {
-        fill: '#222',
-        fontWeight: 600,
-        fontSize: 15,
-        textShadow: '0 1px 2px #fff',
-      },
-      offset: 8,
-    },
-    xAxis: {
-      title: { text: 'Ngày', style: { fontWeight: 700, fontSize: 16 } },
-      label: {
-        style: {
-          fontWeight: 600,
-          fontSize: 15,
-        },
-        autoRotate: true,
-        rotate: Math.PI / 6, // Xoay nhãn 30 độ để không bị cắt chữ
-        autoHide: false,
-        autoEllipsis: false,
-      },
-      line: { style: { stroke: '#bdbdbd', lineWidth: 2 } },
-      grid: { line: { style: { stroke: '#e0e0e0', lineDash: [4, 4] } } },
-    },
-    tooltip: {
-      showMarkers: true,
-      shared: true,
-      customContent: (title: string, items: any[]) => {
-        if (!items || items.length === 0) return null;
-        return `<div style='padding:8px 12px;min-width:120px;'>
-          <div style='font-weight:700;font-size:15px;margin-bottom:6px;'>${title}</div>
-          ${items.map(item => {
-            let v = Number(item.value);
-            if (isNaN(v) || v == null) v = 0;
-            return `<div style='margin-bottom:2px;'><span style='display:inline-block;width:12px;height:12px;background:${item.color};border-radius:2px;margin-right:6px;'></span>${item.name}: <b>${v}</b></div>`;
-          }).join('')}
-        </div>`;
-      },
-      domStyles: {
-        'g2-tooltip': {
-          borderRadius: '10px',
-          boxShadow: '0 2px 12px #b3c6ff55',
-          fontSize: '15px',
-          padding: '12px 16px',
-        },
-      },
-    },
-    height: 420,
-    columnStyle: { radius: [8, 8, 0, 0], fill: '#fff', stroke: '#e0e0e0', lineWidth: 1 },
-    padding: [40, 40, 60, 60],
-    animation: { appear: { animation: 'scale-in-x', duration: 800 } },
+      ? ['#4CAF50', '#FF4D4F']
+      : ['#FF9800', '#2196F3'],
+    label: { position: 'right' as const },
+    xAxis: { title: { text: 'Số lượng' } },
+    yAxis: { title: { text: 'Ngày' } },
+    height: 350,
   };
 
   // Lấy dữ liệu mock

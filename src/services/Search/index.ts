@@ -1,3 +1,4 @@
+const BASE_URL = "http://localhost:8000";
 import request from 'umi-request';
 
 export interface SearchParams {
@@ -24,7 +25,7 @@ export async function searchQuestions(params: SearchParams): Promise<SearchResul
   const { q, page, pageSize } = params;
   const queryString = q ? encodeURIComponent(q) : '';
   
-  return request(`/api/questions/search/${queryString}`, {
+  return request(`${BASE_URL}/questions/search/${queryString}`, {
     method: 'GET',
     params: { page, pageSize },
   });
@@ -32,7 +33,7 @@ export async function searchQuestions(params: SearchParams): Promise<SearchResul
 
 export async function getSearchSuggestions(keyword: string) {
   const encodedKeyword = encodeURIComponent(keyword);
-  return request(`/api/questions/search/suggestions/${encodedKeyword}`, {
+  return request(`${BASE_URL}/questions/search/suggestions/${encodedKeyword}`, {
     method: 'GET',
   });
 } 

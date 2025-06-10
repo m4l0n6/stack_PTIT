@@ -1,3 +1,4 @@
+const BASE_URL = "http://localhost:8000";
 import request from 'umi-request';
 import { SavedQuestionWithDetails } from './typing';
 
@@ -9,7 +10,7 @@ interface APIResponse<T> {
 
 // Lưu câu hỏi
 export async function saveQuestion(questionId: number): Promise<APIResponse<SavedQuestionWithDetails>> {
-  return request(`/api/questions/${questionId}/save`, {
+  return request(`${BASE_URL}/questions/${questionId}/save`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -19,7 +20,7 @@ export async function saveQuestion(questionId: number): Promise<APIResponse<Save
 
 // Bỏ lưu câu hỏi
 export async function unsaveQuestion(questionId: number): Promise<APIResponse<SavedQuestionWithDetails>> {
-  return request(`/api/questions/${questionId}/save`, {
+  return request(`${BASE_URL}/questions/${questionId}/save`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -28,8 +29,8 @@ export async function unsaveQuestion(questionId: number): Promise<APIResponse<Sa
 }
 
 // Lấy danh sách câu hỏi đã lưu của người dùng
-export async function getSavedQuestions(): Promise<APIResponse<SavedQuestionWithDetails[]>> {
-  return request("/api/users/me/saved-questions", {
+export async function getSavedQuestions(userId: number): Promise<APIResponse<SavedQuestionWithDetails[]>> {
+  return request(`${BASE_URL}/users/${userId}/saved-questions`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -39,7 +40,7 @@ export async function getSavedQuestions(): Promise<APIResponse<SavedQuestionWith
 
 // Kiểm tra trạng thái lưu của câu hỏi
 export async function checkSaveStatus(questionId: number): Promise<APIResponse<{isSaved: boolean}>> {
-  return request(`/api/questions/${questionId}/save-status`, {
+  return request(`${BASE_URL}/questions/${questionId}/save-status`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

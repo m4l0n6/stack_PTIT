@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Input, message, Spin } from 'antd';
 import { useModel } from 'umi';
+import request from 'umi-request';
 
 interface ModalTagFollowProps {
     visible: boolean;
@@ -8,7 +9,7 @@ interface ModalTagFollowProps {
 }
 
 const ModalTagFollow: React.FC<ModalTagFollowProps> = ({ visible, setVisible }) => {
-    const { tags, loading, followedTags, updateFollowedTags, followLoading } = useModel('tag');
+    const { tags, loading, followedTags, handleFollowTag, handleUnfollowTag, followLoading } = useModel('tag');
     const { user } = useModel('user');
     const [selectedTags, setSelectedTags] = useState<number[]>([]);
     const [searchValue, setSearchValue] = useState('');
@@ -45,8 +46,17 @@ const ModalTagFollow: React.FC<ModalTagFollowProps> = ({ visible, setVisible }) 
             message.warning("Vui lòng đăng nhập để theo dõi tags");
             return;
         }
-        
-        await updateFollowedTags(selectedTags);
+        // Tìm các tag cần follow và unfollow
+        const currentIds = followedTags.map(tag => tag.id);
+        const toFollow = selectedTags.filter(id => !currentIds.includes(id));
+        const toUnfollow = currentIds.filter(id => !selectedTags.includes(id));
+        // Thực hiện tuần tự (có thể song song nếu muốn)
+        for (const id of toFollow) {
+            await handleFollowTag(id);
+        }
+        for (const id of toUnfollow) {
+            await handleUnfollowTag(id);
+        }
         setVisible(false);
     };
 

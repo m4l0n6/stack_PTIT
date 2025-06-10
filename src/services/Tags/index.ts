@@ -1,3 +1,5 @@
+const BASE_URL = "http://localhost:8000";
+
 import request from "umi-request";
 import { Tag } from "./typing";
 
@@ -9,21 +11,21 @@ interface APIResponse<T> {
 
 // Lấy danh sách tất cả các tags
 export async function getTags(): Promise<APIResponse<Tag[]>> {
-  return request("/api/tags", {
+  return request(`${BASE_URL}/tags`, {
     method: "GET",
   });
 }
 
 // Lấy tag theo ID
 export async function getTagById(id: number): Promise<APIResponse<Tag>> {
-  return request(`/api/tags/${id}`, {
+  return request(`${BASE_URL}/tags/${id}`, {
     method: "GET",
   });
 }
 
 // Tìm kiếm tags
 export async function searchTags(keyword: string): Promise<APIResponse<Tag[]>> {
-  return request("/api/tags/search", {
+  return request(`${BASE_URL}/tags/search`, {
     method: "GET",
     params: { keyword },
   });
@@ -31,7 +33,7 @@ export async function searchTags(keyword: string): Promise<APIResponse<Tag[]>> {
 
 // Lấy danh sách tags theo dõi của user hiện tại
 export async function getUserTagFollows(): Promise<APIResponse<Tag[]>> {
-  return request("/api/user/tag-follows", {
+  return request(`${BASE_URL}/tags/followed`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -39,14 +41,17 @@ export async function getUserTagFollows(): Promise<APIResponse<Tag[]>> {
   });
 }
 
-// Cập nhật danh sách tags theo dõi của user hiện tại
-export async function updateUserTagFollows(tagIds: number[]): Promise<APIResponse<Tag[]>> {
-  return request("/api/user/tag-follows", {
+// Theo dõi một tag
+export async function followTag(tagId: number): Promise<any> {
+  return request(`${BASE_URL}/tags/follow/${tagId}`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-    data: { tagIds },
+  });
+}
+
+// Bỏ theo dõi một tag
+export async function unfollowTag(tagId: number): Promise<any> {
+  return request(`${BASE_URL}/tags/follow/${tagId}`, {
+    method: "DELETE",
   });
 }
 

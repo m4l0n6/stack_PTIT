@@ -120,7 +120,13 @@ export default defineConfig({
   tailwindcss: {},
   plugins: ["@umijs/plugins/dist/model", "@umijs/plugins/dist/tailwindcss"],
   model: {},
-  mock: {
-    include: ["src/mock/**/*.ts"],
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8000',
+      changeOrigin: true,
+    },
   },
+  // mock: {
+  //   include: ["src/mock/**/*.ts"],
+  // },
 });

@@ -40,7 +40,13 @@ export default () => {
 
     try {
       const result = await getUserQuestions(userId);
-      if (result.success && result.data) {
+      if (Array.isArray(result)) {
+        setProfileState(prev => ({
+          ...prev,
+          questions: result,
+          loading: { ...prev.loading, questions: false },
+        }));
+      } else if (result.success && result.data) {
         setProfileState(prev => ({
           ...prev,
           questions: result.data ?? [],
@@ -116,7 +122,13 @@ export default () => {
 
     try {
       const result = await getUserTags(userId);
-      if (result.success && result.data) {
+      if (Array.isArray(result)) {
+        setProfileState(prev => ({
+          ...prev,
+          tags: result,
+          loading: { ...prev.loading, tags: false },
+        }));
+      } else if (result.success && result.data) {
         setProfileState(prev => ({
           ...prev,
           tags: result.data ?? [],
