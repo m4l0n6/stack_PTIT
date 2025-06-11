@@ -318,7 +318,7 @@ const HeaderBasicLauyout: React.FC = () => {
           {user ? (
             <div className="flex items-center ml-4">
               <ThemeSwitcher />
-              <Notification numberOfNotifications={10} />
+              <Notification numberOfNotifications={0} />
               <Dropdown menu={{ items: userMenu }} placement="bottomRight">
                 <div className="flex items-center ml-4 cursor-pointer">
                   <Avatar

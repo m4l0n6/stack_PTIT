@@ -51,6 +51,19 @@ export const users: User[] = [
     role: "student",
     is_activate: true,
   },
+  {
+    id: 5,
+    username: "malong",
+    email: "malongtttttt@ptit.edu.vn",
+    password: "123456",
+    created_at: "11/6/2025",
+    reputation: 0,
+    avatar: "https://placehold.co/150?text=m",
+    title: "",
+    bio: "",
+    role: "student",
+    is_activate: true,
+  },
 ];
 
 export default {

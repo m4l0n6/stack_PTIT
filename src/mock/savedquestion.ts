@@ -4,6 +4,7 @@ import { questionsData } from './questions';
 import { tags } from './tags';
 import { question_tags } from './tags';
 import { SavedQuestion } from '@/services/SavedQuestion/typing';
+import { format } from 'date-fns';
 
 // Dữ liệu mẫu cho savedQuestions
 export const savedQuestions: SavedQuestion[] = [
@@ -62,9 +63,8 @@ export default {
         message: 'Câu hỏi này đã được lưu trước đó',
       });
     }
-    
-    // Tạo bản ghi lưu câu hỏi mới
-    const now = new Date().toISOString();
+      // Tạo bản ghi lưu câu hỏi mới
+    const now = format(new Date(), 'yyyy-MM-dd'); // Format date as YYYY-MM-DD
     const savedQuestion: SavedQuestion = {
       id: nextSavedQuestionId++,
       user_id: userId,

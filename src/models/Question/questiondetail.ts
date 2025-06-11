@@ -67,12 +67,16 @@ export default () => {
     if (question && question.user_id === user.id) {
       message.warning("Bạn không thể bình chọn câu hỏi của chính mình");
       return;
-    }
-
-    try {
+    }    try {
       const result = await voteQuestion(id, direction);
       if (result?.success) {
-        setQuestion(result.data);
+        // Preserve the existing answers when updating the question state
+        if (question && question.answers) {
+          setQuestion({...result.data, answers: question.answers});
+        } else {
+          setQuestion(result.data);
+        }
+        
         message.success(
           direction === "up"
             ? "Đã bình chọn tích cực cho câu hỏi"
@@ -84,7 +88,6 @@ export default () => {
       message.error(error?.data?.message || "Không thể bình chọn. Vui lòng thử lại sau");
     }
   };
-
   // Handle vote answer
   const handleVoteAnswer = async (
     questionId: number,
@@ -97,9 +100,10 @@ export default () => {
       return;
     }
     
-    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
-    if (question && question.user_id === user.id) {
-      message.warning("Người đặt câu hỏi không thể bình chọn câu trả lời");
+    // Kiểm tra xem người dùng có phải là người tạo câu trả lời không
+    const answer = question?.answers?.find((a: any) => a.id === answerId);
+    if (answer && answer.user_id === user.id) {
+      message.warning("Bạn không thể bình chọn câu trả lời của chính mình");
       return;
     }
 

@@ -5,6 +5,7 @@ import { Comment } from '@/services/Comments/typing';
 import { tags, question_tags } from './tags';
 import { Vote } from '@/services/Votes/typing';
 import { parse } from 'url';
+import { format } from 'date-fns';
 
 import {users} from "./users";
 import answers from './answers';
@@ -369,9 +370,8 @@ export default {
         message: 'Quản trị viên không có quyền đặt câu hỏi',
       });
     }
-    
-    // Tạo câu hỏi mới
-    const now = new Date().toISOString();
+      // Tạo câu hỏi mới
+    const now = format(new Date(), 'yyyy-MM-dd'); // Format date as YYYY-MM-DD
     const newQuestion: Question = {
       id: nextQuestionId++,
       user_id: userId,
@@ -391,7 +391,7 @@ export default {
     // Xử lý tags
     if (tagNames && Array.isArray(tagNames)) {
             tagNames.forEach(tagName => {
-        const tagObj = tags.find(t => t.name === tagName);
+        const tagObj = tags.find( t => t.name === tagName);
         if (tagObj) {
           question_tags.push({ question_id: newQuestion.id, tag_id: tagObj.id });
         }
@@ -491,11 +491,25 @@ export default {
     
     const index = questions.findIndex(q => q.id === id);
     questions[index] = question;
+      // Include answers when returning a question after voting
+    const questionAnswers = answers.filter(a => a.question_id === id).map(answer => {
+      return {
+        ...answer,
+        user: users.find(u => u.id === answer.user_id),
+        comments: comments.filter(c => c.answer_id === answer.id).map(comment => {
+          return {
+            ...comment,
+            user: users.find(u => u.id === comment.user_id)
+          };
+        })
+      };
+    });
     
     const responseQuestion = {
       ...question,
       user: users.find(u => u.id === question.user_id),
-      tags: tags.filter(t => question_tags.some(qt => qt.question_id === id && qt.tag_id === t.id))
+      tags: tags.filter(t => question_tags.some(qt => qt.question_id === id && qt.tag_id === t.id)),
+      answers: questionAnswers
     };
     
     res.send({
@@ -551,9 +565,8 @@ export default {
         message: 'Quản trị viên không có quyền trả lời câu hỏi',
       });
     }
-    
-    // Tạo câu trả lời mới
-    const now = new Date().toISOString();
+      // Tạo câu trả lời mới
+    const now = format(new Date(), 'yyyy-MM-dd'); // Format date as YYYY-MM-DD
     const newAnswer: Answer = {
       id: nextAnswerId++,
       question_id: questionId,
@@ -605,12 +618,11 @@ export default {
         message: 'Không tìm thấy câu trả lời hoặc câu hỏi',
       });
     }
-    
-    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
-    if (question.user_id === userId) {
+      // Kiểm tra xem người dùng có phải là người tạo câu trả lời không
+    if (answer.user_id === userId) {
       return res.status(403).send({
         success: false,
-        message: 'Người đặt câu hỏi không thể bình chọn câu trả lời',
+        message: 'Bạn không thể bình chọn câu trả lời của chính mình',
       });
     }
     
@@ -771,9 +783,8 @@ export default {
         message: 'Quản trị viên không có quyền bình luận câu trả lời',
       });
     }
-    
-    // Tạo bình luận mới
-    const now = new Date().toISOString();
+      // Tạo bình luận mới
+    const now = format(new Date(), 'yyyy-MM-dd'); // Format date as YYYY-MM-DD
     const newComment: Comment = {
       id: nextCommentId++,
       user_id: userId,

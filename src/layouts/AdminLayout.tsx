@@ -5,7 +5,8 @@ import {
   UploadOutlined,
   UserOutlined,
   LogoutOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  TagOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Dropdown, Avatar } from "antd";
 import type { MenuProps } from "antd";
@@ -24,16 +25,6 @@ const AdminLayout: React.FC = () => {
 const { user, handleLogout } = useModel("user");
 
 const userMenu: MenuProps["items"] = [
-  {    
-    key: "profile",
-    icon: <UserOutlined />,
-    label: "Hồ sơ",   
-    onClick: () => {
-      const userData = JSON.parse(localStorage.getItem("user") || "{}");
-      const formattedName = userData.name ? userData.name.replace(/\s+/g, '-') : '';
-      history.push(`/users/${userData.id}/${formattedName}`);
-    },
-  },
   {
     key: "logout",
     icon: <LogoutOutlined className="text-red-500" />,
@@ -77,7 +68,7 @@ const userMenu: MenuProps["items"] = [
             },
             {
               key: "4",
-              icon: <UploadOutlined />,
+              icon: <TagOutlined />,
               label: <Link to="/dashboard/tags">Quản lý tag</Link>,
             },
           ]}
@@ -105,7 +96,7 @@ const userMenu: MenuProps["items"] = [
             }}
           />
           <div className="flex items-center">
-            <Notification numberOfNotifications={10} bellColor={"#1677ff"} />
+            <Notification numberOfNotifications={0} bellColor={"#1677ff"} />
             <Dropdown menu={{ items: userMenu }} placement="bottomRight">
               <div className="flex items-center ml-4 cursor-pointer">
                 <Avatar

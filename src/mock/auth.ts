@@ -1,5 +1,5 @@
 import {users} from './users'; // Thay đổi đường dẫn import
-import { User } from "@/services/Users/typing";
+import { format } from 'date-fns';
 
 export default {
   "POST /api/login": (req: any, res: any) => {
@@ -64,12 +64,11 @@ export default {
     });
     
     const exists = users.find((u) => u.email === email);
-    
-    if (exists) {
+      if (exists) {
       console.log("Registration failed: Email already exists");
       res.status(400).send({ success: false, message: "Email đã tồn tại" });
     } else {
-      const now = new Date().toLocaleDateString("vi-VN");
+      const now = format(new Date(), 'yyyy-MM-dd'); // Format date as YYYY-MM-DD using date-fns
       const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
       
       const newUser = {

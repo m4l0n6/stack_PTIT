@@ -49,8 +49,8 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
   handleSubmitComment,
   commentForms,
   submittingComments,
-}) => {
-  const isQuestionOwner = currentUserId && questionUserId === currentUserId;
+}) => {  const isQuestionOwner = currentUserId && questionUserId === currentUserId;
+  const isAnswerOwner = currentUserId && answer.user_id === currentUserId;
 
   return (
     <Card key={answer.id} className="mb-4 answer-card">
@@ -63,10 +63,10 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
               icon={<ArrowUpOutlined />}
               onClick={() => handleVoteAnswer(answer.id, "up")}
               className="vote-button"
-              disabled={!!isQuestionOwner}
+              disabled={!!isAnswerOwner}
               title={
-                isQuestionOwner
-                  ? "Người đặt câu hỏi không thể bình chọn câu trả lời"
+                isAnswerOwner
+                  ? "Bạn không thể bình chọn câu trả lời của chính mình"
                   : ""
               }
             />
@@ -80,10 +80,10 @@ const AnswerCard: React.FC<AnswerCardProps> = ({
               icon={<ArrowDownOutlined />}
               onClick={() => handleVoteAnswer(answer.id, "down")}
               className="vote-button"
-              disabled={!!isQuestionOwner}
+              disabled={!!isAnswerOwner}
               title={
-                isQuestionOwner
-                  ? "Người đặt câu hỏi không thể bình chọn câu trả lời"
+                isAnswerOwner
+                  ? "Bạn không thể bình chọn câu trả lời của chính mình"
                   : ""
               }
             />
