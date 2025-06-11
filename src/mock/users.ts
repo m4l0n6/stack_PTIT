@@ -140,4 +140,19 @@ export default {
         .send({ success: false, message: "Email hoặc mật khẩu không đúng" });
     }
   },
+
+  // Tăng kinh nghiệm cho user
+  "POST /api/users/:id/increase-reputation": (req: any, res: any) => {
+    const id = parseInt(req.params.id, 10);
+    const { amount } = req.body;
+    const user = users.find((u) => u.id === id);
+    if (!user) {
+      return res.status(404).send({ success: false, message: "Không tìm thấy người dùng" });
+    }
+    if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+      return res.status(400).send({ success: false, message: "Số kinh nghiệm tăng không hợp lệ" });
+    }
+    user.reputation += amount;
+    res.send({ success: true, data: { ...user, password: undefined } });
+  },
 };
