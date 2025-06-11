@@ -90,19 +90,6 @@ export default {
     }
   },
 
-  // Huỷ API xoá người dùng
-  // "DELETE /api/users/:id": (req: any, res: any) => {
-  //   const id = parseInt(req.params.id, 10);
-  //   const idx = users.findIndex((u) => u.id === id);
-  //   if (idx !== -1) {
-  //     // Xoá các dữ liệu liên quan nếu cần (ví dụ: answers, comments, votes)
-  //     // TODO: Nếu có mock answers/comments/votes thì filter ở đây
-  //     users.splice(idx, 1);
-  //     res.send({ success: true });
-  //   } else {
-  //     res.status(404).send({ success: false, message: "Không tìm thấy người dùng" });
-  //   }
-  // },
 
   // Xoá nhiều người dùng cùng lúc
   "DELETE /api/users": (req: any, res: any) => {

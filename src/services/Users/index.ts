@@ -10,6 +10,31 @@ interface APIResponse<T> {
   message?: string;
 }
 
+// Thêm hàm updateUser để cập nhật thông tin người dùng
+export const updateUser = async (id: string, userData: Partial<User>): Promise<APIResponse<User>> => {
+  // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
+  
+  try {
+    const response = await request.put(`/api/users/${id}`, {
+      data: userData,
+      headers: {
+        'Authorization': token ? `Bearer ${token}` : '',
+      },
+    });
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return {
+      success: false,
+      message: "Không thể cập nhật thông tin người dùng"
+    };
+  }
+};
+
 export const getUserById = async (id: string): Promise<APIResponse<User>> => {
   try {
     const response = await request.get(`/api/users/${id}`);

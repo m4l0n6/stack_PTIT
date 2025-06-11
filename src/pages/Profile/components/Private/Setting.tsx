@@ -21,19 +21,19 @@ const Setting: React.FC = () => {
   const settingItems: TabsProps["items"] = [
     {
       key: "profile",
-      label: "Thông tin tài khoản",
-      children: <ProfileSetting />
+      label: "Chỉnh sửa hồ sơ",
+      children: <ProfileSetting />,
     },
     {
       key: "account",
-      label: "Chỉnh sửa tài khoản",
-      children: <AccountSetting />
+      label: "Cài đặt tài khoản",
+      children: <AccountSetting />,
     },
     {
       key: "preferences",
-      label: "Giao diện",
-      children: <PreferencesSetting />
-    }
+      label: "Cài đặt giao diện",
+      children: <PreferencesSetting />,
+    },
   ];
 
   return (

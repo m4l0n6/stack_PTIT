@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, useModel, history } from "umi";
 import { register } from "@/services/auth";
 import SocialAuth from "@/components/SocialAuth";
-import ModalChooseRole from "@/components/Modal/ModalChooseRole";
+
 
 const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
@@ -31,12 +31,15 @@ const RegisterPage = () => {
       });
       
       if (res.success) {
+        // Store authentication and user data
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         setUser(res.data.user);
-        message.success("Đăng ký thành công");
         
-        // Mở modal chọn role thay vì chuyển hướng ngay
-        setRoleModalVisible(true);
+        message.success("Đăng ký thành công! Đang đăng nhập...");
+        
+        // Redirect user based on role instead of going to login page
+        redirectBasedOnRole(res.data.user);
       }
     } catch (err: any) {
       message.error(err?.data?.message || "Lỗi đăng ký");
@@ -44,31 +47,31 @@ const RegisterPage = () => {
       setLoading(false);
     }
   };
-  // Xử lý khi người dùng xác nhận role
-  const handleRoleConfirm = (role: string) => {
-    // Chuyển hướng người dùng sau khi chọn role
-    redirectBasedOnRole({...JSON.parse(localStorage.getItem("user") || "{}"), role});
-  };
-    // Chuyển hướng nếu modal đóng mà không chọn role
-  const handleModalClose = () => {
-    setRoleModalVisible(false);
+  // // Xử lý khi người dùng xác nhận role
+  // const handleRoleConfirm = (role: string) => {
+  //   // Chuyển hướng người dùng sau khi chọn role
+  //   redirectBasedOnRole({...JSON.parse(localStorage.getItem("user") || "{}"), role});
+  // };
+  //   // Chuyển hướng nếu modal đóng mà không chọn role
+  // const handleModalClose = () => {
+  //   setRoleModalVisible(false);
     
-    // Lấy thông tin user hiện tại
-    const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  //   // Lấy thông tin user hiện tại
+  //   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
     
-    // Nếu user chưa có role, đặt giá trị mặc định là 'student'
-    if (!currentUser.role || currentUser.role === "") {
-      currentUser.role = "student";
-      // Cập nhật localStorage với role mặc định
-      localStorage.setItem("user", JSON.stringify(currentUser));
+  //   // Nếu user chưa có role, đặt giá trị mặc định là 'student'
+  //   if (!currentUser.role || currentUser.role === "") {
+  //     currentUser.role = "student";
+  //     // Cập nhật localStorage với role mặc định
+  //     localStorage.setItem("user", JSON.stringify(currentUser));
       
-      // Cập nhật state với role mặc định
-      setUser(currentUser);
-    }
+  //     // Cập nhật state với role mặc định
+  //     setUser(currentUser);
+  //   }
     
-    // Chuyển hướng với thông tin user đã cập nhật
-    redirectBasedOnRole(currentUser);
-  };
+  //   // Chuyển hướng với thông tin user đã cập nhật
+  //   redirectBasedOnRole(currentUser);
+  // };
 
   return (
     <>
@@ -181,11 +184,6 @@ const RegisterPage = () => {
           </div>
         </Form>
       </Card>      {/* Modal chọn role */}
-      <ModalChooseRole 
-        visible={roleModalVisible} 
-        setVisible={handleModalClose}
-        onRoleConfirm={handleRoleConfirm}
-      />
     </>
   );
 };

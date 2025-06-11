@@ -5,8 +5,6 @@ import {
   UserOutlined,
   ClockCircleOutlined,
   EditOutlined,
-  SaveOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 import type { TabsProps } from "antd";
 import { useEffect, useState } from "react";
@@ -20,6 +18,7 @@ import Setting from "./components/Private/Setting";
 const PublicProfile = () => {
   const params = useParams<{ id: string; name: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
+  // Sử dụng model user từ Umi để lấy thông tin người dùng hiện tại
   const { user: currentUser } = useModel("user");
   const [profileUser, setProfileUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,14 +29,20 @@ const PublicProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       if (!params.id) return;
-
+      
       setLoading(true);
       try {
-        const response = await getUserById(params.id);
-        if (response.success && response.data) {
-          setProfileUser(response.data);
+        // Nếu là profile của người dùng hiện tại, sử dụng dữ liệu từ model
+        if (isOwnProfile && currentUser) {
+          setProfileUser(currentUser);
         } else {
-          message.error("Không thể tải thông tin người dùng");
+          // Nếu không phải, fetch từ API
+          const response = await getUserById(params.id);
+          if (response.success && response.data) {
+            setProfileUser(response.data);
+          } else {
+            message.error("Không thể tải thông tin người dùng");
+          }
         }
       } catch (error) {
         message.error("Có lỗi xảy ra khi tải thông tin người dùng");
@@ -47,7 +52,7 @@ const PublicProfile = () => {
     };
 
     fetchUser();
-  }, [params.id]);
+  }, [params.id, currentUser, isOwnProfile]);  // Thêm currentUser vào dependencies
 
   const handleRole = (role: string) => {
     switch (role) {
@@ -57,6 +62,8 @@ const PublicProfile = () => {
         return "Sinh viên";
       case "teacher":
         return "Giảng viên";
+      default:
+        return role;
     }
   };
 
@@ -95,7 +102,7 @@ const PublicProfile = () => {
     setSearchParams({ tab: key });
   }; 
 
-   // Tạo items cho tabs với điều kiện hiển thị
+  // Tạo items cho tabs với điều kiện hiển thị
   const items: TabsProps["items"] = [
     {
       key: "profile",
@@ -108,6 +115,7 @@ const PublicProfile = () => {
       children: <Activity />,
     },
   ];
+  
   // Chỉ thêm các tab private nếu là profile của chính user
   if (isOwnProfile) {
     items.push(
@@ -165,6 +173,9 @@ const PublicProfile = () => {
               <UserOutlined className="mr-2" />
               {handleRole(profileUser.role ?? "")}
             </p>
+            {profileUser.bio && (
+              <p className="mt-2 text-gray-600">{profileUser.bio}</p>
+            )}
             <div className="flex gap-4 mt-2">
               <Tooltip title={`Tham gia vào: ${profileUser.created_at}`}>
                 <p className="text-gray-500">
@@ -177,11 +188,16 @@ const PublicProfile = () => {
 
           {/* Chỉ hiển thị nút chỉnh sửa nếu là profile của chính user */}
           {isOwnProfile && (
-            <Link to={`/user/settings/${params.id}/profile`}>
-              <Button type="primary" icon={<EditOutlined />} className="mr-4">
-                Chỉnh sửa hồ sơ
-              </Button>
-            </Link>
+            <Button 
+              type="primary" 
+              icon={<EditOutlined />} 
+              className="mr-4"
+              onClick={() => {
+                setSearchParams({ tab: "settings" });
+              }}
+            >
+              Chỉnh sửa hồ sơ
+            </Button>
           )}
         </div>
       </div>

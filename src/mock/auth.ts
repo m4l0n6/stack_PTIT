@@ -4,15 +4,41 @@ import { User } from "@/services/Users/typing";
 export default {
   "POST /api/login": (req: any, res: any) => {
     const { email, password } = req.body;
+    
+    console.log("Login attempt:", { email, providedPassword: password });
+    console.log("Available users:", users.map(u => ({ 
+      email: u.email, 
+      password: u.password, 
+      id: u.id, 
+      passwordLength: u.password ? u.password.length : 0 
+    })));
+    
+    // Find user by email first to debug
+    const userByEmail = users.find(u => u.email === email);
+    if (userByEmail) {
+      console.log("Found user by email:", {
+        id: userByEmail.id,
+        providedPass: password,
+        storedPass: userByEmail.password,
+        match: userByEmail.password === password
+      });
+    } else {
+      console.log("No user found with email:", email);
+    }
+    
     const user = users.find(
       (u) => u.email === email && u.password === password
     );
+    
     if (user) {
       if (user.is_activate === false) {
         return res.status(403).send({ success: false, message: "Tài khoản đã bị khoá" });
       }
       // Tạo phiên bản user không có password để trả về
       const { password: _, ...safeUser } = user;
+      
+      console.log("Login successful:", { userId: user.id, email: user.email });
+      
       res.send({
         success: true,
         data: {
@@ -21,35 +47,67 @@ export default {
         },
       });
     } else {
-      res
-        .status(401)
-        .send({ success: false, message: "Email hoặc mật khẩu không đúng" });
+      console.log("Login failed: Invalid credentials");
+      res.status(401).send({ success: false, message: "Email hoặc mật khẩu không đúng" });
     }
   },
 
   "POST /api/register": (req: any, res: any) => {
     const { email, password, username, role = "student" } = req.body;
+    
+    console.log("Registration attempt:", { 
+      email, 
+      username, 
+      role, 
+      providedPassword: password,
+      passwordLength: password ? password.length : 0
+    });
+    
     const exists = users.find((u) => u.email === email);
     
     if (exists) {
+      console.log("Registration failed: Email already exists");
       res.status(400).send({ success: false, message: "Email đã tồn tại" });
     } else {
-      const now = new Date().toISOString();
-      const newUser: User = {
-        id: users.length + 1,
+      const now = new Date().toLocaleDateString("vi-VN");
+      const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+      
+      const newUser = {
+        id: newId,
         username,
         email,
-        password,
+        password: password, // Make sure password is explicitly assigned
         created_at: now,
-        reputation: 1, // Người dùng mới bắt đầu với 1 reputation
-        avatar: `https://placehold.co/150?text=${username.charAt(0).toUpperCase()}`, // Avatar mặc định
+        reputation: 1,
+        avatar: `https://placehold.co/150?text=${username.charAt(0).toUpperCase()}`,
         role,
+        is_activate: true
       };
       
+      console.log("New user before adding:", {
+        id: newUser.id,
+        email: newUser.email,
+        passwordSet: !!newUser.password,
+        passwordLength: newUser.password ? newUser.password.length : 0
+      });
+      
+      // Add the new user to the users array
       users.push(newUser);
+      
+      // Verify the user was added with password
+      const addedUser = users.find(u => u.id === newId);
+      console.log("Added user verification:", {
+        found: !!addedUser,
+        id: addedUser?.id,
+        email: addedUser?.email,
+        passwordSet: !!addedUser?.password,
+        passwordLength: addedUser?.password ? addedUser.password.length : 0
+      });
       
       // Tạo phiên bản user không có password để trả về
       const { password: _, ...safeUser } = newUser;
+      
+      console.log("Registration successful:", { newId, email });
       
       res.send({
         success: true,

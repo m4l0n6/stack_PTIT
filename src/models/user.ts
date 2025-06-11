@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { history } from "umi";
 import { message } from "antd";
 import { User } from "@/services/Users/typing";
+import { updateUser } from "@/services/Users";
 
 export default () => {
   const [user, setUser] = useState<User>();
+  const [loading, setLoading] = useState(false);
 
   const loadUserFromStorage = useCallback(() => {
     const userStr = localStorage.getItem("user");
@@ -69,11 +71,41 @@ export default () => {
     }
     setUser(userData);
   };
+
+  // Cập nhật thông tin người dùng
+  const updateUserInfo = useCallback(async (userData: Partial<User>) => {
+    if (!user) return false;
+    
+    setLoading(true);
+    try {
+      // Gọi API cập nhật user
+      const response = await updateUser(user.id.toString(), userData);
+      
+      if (response.success) {
+        // Cập nhật state local với dữ liệu mới
+        setUser({...user, ...userData});
+        message.success('Cập nhật thông tin thành công');
+        return true;
+      } else {
+        message.error(response.message || 'Cập nhật thông tin thất bại');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      message.error('Có lỗi xảy ra khi cập nhật thông tin');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
   return {
     user,
     setUser: setUserData,
     handleLogout,
     loadUserFromStorage,
     redirectBasedOnRole,
+    loading,
+    updateUserInfo,
   };
 };

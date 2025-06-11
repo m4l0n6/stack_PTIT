@@ -72,7 +72,7 @@ const QuestionCreatePage = () => {
 
       if (result?.success) {
         message.success("Đã đăng câu hỏi thành công!");
-        history.push(`/question/${result.data.id}`);
+        history.push(`/questions`);
       } else {
         message.error(result?.message || "Không thể tạo câu hỏi");
       }
