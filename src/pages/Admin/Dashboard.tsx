@@ -16,47 +16,17 @@ const AdminDashboard: React.FC = () => {
   // Lấy 5 ngày gần nhất (dạng dd/MM/yyyy, luôn đủ 2 số)
   const labels = Array.from({ length: 5 }, (_, i) => dayjs().subtract(4 - i, 'day').format('DD/MM/YYYY'));
 
-  // Thống kê số user đăng ký mới mỗi ngày (theo created_at)
-  const userChartData = labels.flatMap(date => [
-    {
-      type: 'Số sinh viên đăng ký',
-      date,
-      value: users.filter(u => u.role === 'student' && dayjs(u.created_at).format('DD/MM/YYYY') === date).length,
-    },
-    {
-      type: 'Số giảng viên đăng ký',
-      date,
-      value: users.filter(u => u.role === 'teacher' && dayjs(u.created_at).format('DD/MM/YYYY') === date).length,
-    },
-  ]);
-
   // Thống kê bài viết được đăng mỗi ngày (theo created_at)
-  const postChartData = labels.flatMap(date => [
-    {
-      type: 'Bài viết được đăng',
-      date,
-      value: Number(questions.questions.filter(q => q.created_at && dayjs(q.created_at).format('DD/MM/YYYY') === date).length),
-    },
-  ]);
+  const postChartData = labels.map(date => ({
+    date,
+    value: Number(questions.questions.filter(q => q.created_at && dayjs(q.created_at).format('DD/MM/YYYY') === date).length),
+  }));
 
   const chartConfig = {
-    data: activeTab === 'posts' ? postChartData : userChartData,
+    data: postChartData,
     xField: 'date',
     yField: 'value',
-    seriesField: 'type',
-    isGroup: true,
-    legend: {
-      position: 'top',
-      itemName: {
-        style: {
-          fontWeight: 600,
-          fontSize: 16,
-        },
-      },
-    },
-    color: activeTab === 'posts'
-      ? ['#4CAF50', '#1976D2', '#FFB300']
-      : ['#FF9800', '#2196F3', '#8BC34A'],
+    color: ['#4CAF50'],
     label: {
       position: 'top',
       style: {
@@ -92,7 +62,7 @@ const AdminDashboard: React.FC = () => {
           ${items.map(item => {
             let v = Number(item.value);
             if (isNaN(v) || v == null) v = 0;
-            return `<div style='margin-bottom:2px;'><span style='display:inline-block;width:12px;height:12px;background:${item.color};border-radius:2px;margin-right:6px;'></span>${item.name}: <b>${v}</b></div>`;
+            return `<div style='margin-bottom:2px;'><span style='display:inline-block;width:12px;height:12px;background:${item.color};border-radius:2px;margin-right:6px;'></span>${item.name ? item.name : ''}: <b>${v}</b></div>`;
           }).join('')}
         </div>`;
       },
@@ -191,25 +161,8 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-semibold text-gray-800 text-lg">
-                {activeTab === 'posts'
-                  ? 'Thống kê bài viết 5 ngày gần nhất'
-                  : 'Thống kê đăng nhập 5 ngày gần nhất'}
+                Thống kê số câu hỏi được hỏi trong 5 ngày gần nhất
               </h3>
-              <div>
-                <Button
-                  type={activeTab === 'posts' ? 'primary' : 'default'}
-                  onClick={() => setActiveTab('posts')}
-                  style={{ marginRight: '10px' }}
-                >
-                  Thống kê bài đăng
-                </Button>
-                <Button
-                  type={activeTab === 'users' ? 'primary' : 'default'}
-                  onClick={() => setActiveTab('users')}
-                >
-                  Thống kê người dùng
-                </Button>
-              </div>
             </div>
             <Bar {...chartConfig} />
           </div>

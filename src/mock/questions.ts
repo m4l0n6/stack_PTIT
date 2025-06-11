@@ -683,52 +683,43 @@ export default {
     const questionId = parseInt(req.params.questionId, 10);
     const answerId = parseInt(req.params.answerId, 10);
     const token = req.headers.authorization?.split(' ')[1];
-    
     if (!token || !token.startsWith('mock-token-')) {
       return res.status(401).send({
         success: false,
         message: 'Bạn cần đăng nhập để chấp nhận câu trả lời',
       });
     }
-    
     const userId = parseInt(token.replace('mock-token-', ''), 10);
     const question = questions.find(q => q.id === questionId);
-    
     if (!question) {
-      return res.status(404).send({
-        success: false,
-        message: 'Không tìm thấy câu hỏi',
-      });
+      return res.status(404).send({ success: false, message: 'Không tìm thấy câu hỏi', });
     }
-    
-    // Kiểm tra xem người dùng có phải là người đặt câu hỏi không
     if (question.user_id !== userId) {
-      return res.status(403).send({
-        success: false,
-        message: 'Chỉ người đặt câu hỏi mới có thể chấp nhận câu trả lời',
-      });
+      return res.status(403).send({ success: false, message: 'Chỉ người đặt câu hỏi mới có thể chấp nhận câu trả lời', });
     }
-    
     const answer = answers.find(a => a.id === answerId && a.question_id === questionId);
-    
     if (!answer) {
-      return res.status(404).send({
-        success: false,
-        message: 'Không tìm thấy câu trả lời',
-      });
+      return res.status(404).send({ success: false, message: 'Không tìm thấy câu trả lời', });
     }
-    
     // Reset tất cả các câu trả lời của câu hỏi này về false
     answers.forEach(a => {
       if (a.question_id === questionId) {
         a.is_accepted = false;
       }
     });
-    
     // Đánh dấu câu trả lời được chọn là true
     const answerIndex = answers.findIndex(a => a.id === answerId);
     answers[answerIndex].is_accepted = true;
-    
+
+    // Tăng 5 điểm kinh nghiệm cho user trả lời nếu chưa từng được accept trước đó
+    const answerUser = users.find(u => u.id === answer.user_id);
+    if (answerUser) {
+      // Nếu trước đó chưa được accept thì cộng điểm
+      if (!answer.is_accepted) {
+        answerUser.reputation += 5;
+      }
+    }
+
     const responseAnswer = {
       ...answers[answerIndex],
       user: users.find(u => u.id === answers[answerIndex].user_id),
@@ -737,11 +728,7 @@ export default {
         user: users.find(u => u.id === comment.user_id)
       }))
     };
-    
-    res.send({
-      success: true,
-      data: responseAnswer,
-    });
+    res.send({ success: true, data: responseAnswer, });
   },
   
   // API thêm bình luận cho câu trả lời
